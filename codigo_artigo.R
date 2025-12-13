@@ -14,6 +14,8 @@ library(stargazer)
 
 ##### Importando base de dados #####
 
+od_1997 <- import('OD97Zona.dbf')
+
 od_2007 <- import('OD_2007_v2d.dbf')
 
 od_2017 <- import('OD_2017_v1.dbf')
@@ -21,6 +23,61 @@ od_2017 <- import('OD_2017_v1.dbf')
 od_2023 <- import('Banco2023_divulgacao_190225.dbf')
 
 ##### Filtrando as variáveis importantes de cada base #####
+
+od_1997_filtrada <- od_1997 |>
+    select(
+        ZONA, # Zona do domicílio
+        MUNI_DOM, # Município do domicílio
+        ID_DOM, # Identificação do domicílio
+        TIPO_DOM, # Tipo do domicílio: 1 - Particular; 2 - Coletivo; 3 - Favela
+        CONDMORA, # Condição de moradia: 1 - Alugada; 2 - Própria; 3 - Cedida, 4 - Outros; 5 - Não respondeu
+        ABIPEME, # Critério de Classificação Econômica Brasil (antiga, chamada de ABIPEME)
+        ID_PESS, # Identificação da pessoa
+        SIT_FAM, # Situação Familiar: 1 - Responsável; 2 - Cônjuge/companheiro(a); 3 - Filho(a)/Enteado(a); 4 - Outro Parente; 5 - Empregado Residente; 6 - Visitante não residente
+        IDADE,
+        SEXO,
+        SE_ESTUD, # 1 - Não; 2 - Creche/Pré-Escola; 3 - Ensino Básico/Fundamental/Médio; 4 - Outros
+        GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado; 2 - Pré-Escola; 3 - Fundamental Incompleto; 4 - Fundamental Completo; 5 - Médio Incompleto; 6 - Médio Completo; 7 - Superior Incompleto; 8 - Superior Completo
+        CD_ATIVI, # Condição de atividade: 1 - Trabalho Regular; 2 - Bico; 3 - Licença Médica; 4 - Desempregado; 5 - Aposentado/Pensionista; 6 - Nunca trabalhou; 7 - Dona de Casa; 8 - Estudante
+        VL_REN_I, # Renda Individual
+        ZONATRA1, # Zona de Trabalho 1
+        MUNITRA1, # Município de Trabalho 1
+        SET_ATIV, # Setor do Trabalho 1
+        OCUP_PRI, # Vínculo do Trabalho 1
+        MODO1, # Modo de Transporte da Viagem 1
+        DURACAO, # Duração da Viagem (MINUTOS)
+        MODOPRIN, # Modo Principal da Viagem
+        ZONA_O, # Zona de Origem da Viagem
+        ZONA_D, # Zona de Destino da Viagem
+        MOTIVO_O, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Outros
+        MOTIVO_D # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Outros
+    ) |>
+    mutate(
+        ano = 1997,
+        TOT_VIAG = NA,
+        CO_DOM_X = NA,
+        CO_DOM_Y = NA,
+        CO_TR1_X = NA,
+        CO_TR1_Y = NA,
+        DISTANCIA = NA,
+        CO_O_X = NA,
+        CO_O_Y = NA,
+        CO_D_X = NA,
+        CO_D_Y = NA,
+        ID_DOM = as.character(ID_DOM)
+    )
+
+# Problemas: 1997 não possui coordenadas, critério econômico antigo, grau de instrução limitado, sem total de viagens, ocupação do trabalho 1 e setor do trabalho 1 diferentes
+
+## Trocando nomes diferentes da base de 1997
+
+od_1997_filtrada <- od_1997_filtrada |>
+    rename(
+        CRITERIOBR = ABIPEME,
+        ESTUDA = SE_ESTUD,
+        VINC1 = OCUP_PRI,
+        SETOR1 = SET_ATIV
+    )
 
 od_2007_filtrada <- od_2007 |>
     select(
@@ -60,7 +117,8 @@ od_2007_filtrada <- od_2007 |>
         CO_D_Y, # Coordenada Y do Destino da Viagem
         MOTIVO_O, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
         MOTIVO_D # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
-    )
+    ) |>
+    mutate(ano = 2007, VL_REN_I = as.numeric(VL_REN_I))
 
 od_2017_filtrada <- od_2017 |>
     select(
@@ -100,7 +158,9 @@ od_2017_filtrada <- od_2017 |>
         CO_D_Y, # Coordenada Y do Destino da Viagem
         MOTIVO_O, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
         MOTIVO_D # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
-    )
+    ) |>
+    mutate(ano = 2017)
+
 
 od_2023_filtrada <- od_2023 |>
     select(
@@ -140,4 +200,32 @@ od_2023_filtrada <- od_2023 |>
         CO_D_Y, # Coordenada Y do Destino da Viagem
         MOTIVO_O, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
         MOTIVO_D # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
+    ) |>
+    mutate(
+        ano = 2023,
+        ID_PESS = as.character(ID_PESS),
+        VL_REN_I = as.numeric(VL_REN_I)
     )
+
+##### Arrumando diferenças entre as pesquisas de cada base #####
+
+### Em 1997 e 2007, a variável de tipo de domicílio engloba favelas como um tipo diferente, enquanto as outras não fazem a separação. Vamos separá-las como domicílios particulares ###
+
+od_1997_filtrada <- od_1997_filtrada |>
+    mutate(
+        TIPO_DOM = ifelse(TIPO_DOM == 3, 1, TIPO_DOM)
+    )
+
+od_2007_filtrada <- od_2007_filtrada |>
+    mutate(
+        TIPO_DOM = ifelse(TIPO_DOM == 3, 1, TIPO_DOM)
+    )
+
+##### Unindo as bases filtradas #####
+
+od_completa <- bind_rows(
+    od_1997_filtrada,
+    od_2007_filtrada,
+    od_2017_filtrada,
+    od_2023_filtrada
+)
