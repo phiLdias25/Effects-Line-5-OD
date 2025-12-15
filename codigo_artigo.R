@@ -204,7 +204,8 @@ od_2023_filtrada <- od_2023 |>
     mutate(
         ano = 2023,
         ID_PESS = as.character(ID_PESS),
-        VL_REN_I = as.numeric(VL_REN_I)
+        VL_REN_I = as.numeric(VL_REN_I),
+        OCUP1 = DS_OCUP_TR
     )
 
 ##### Arrumando diferenças entre as pesquisas de cada base #####
@@ -221,11 +222,28 @@ od_2007_filtrada <- od_2007_filtrada |>
         TIPO_DOM = ifelse(TIPO_DOM == 3, 1, TIPO_DOM)
     )
 
+### Em 1997, o grau de instrução estava mais detalhado. Vamos adequá-lo às outras pesquisas ###
+
+od_1997_filtrada <- od_1997_filtrada |>
+    mutate(
+        GRAU_INS_ANTIGO = GRAU_INS,
+        GRAU_INS = case_when(
+            GRAU_INS %in% c(1L, 2L, 3L) ~ 1L, # não alfabetizado / pré-escola / fund. incompleto
+            GRAU_INS == 4L ~ 2L, # fund. completo
+            GRAU_INS == 5L ~ 3L, # médio incompleto
+            GRAU_INS %in% c(6L, 7L) ~ 4L, # médio completo / superior incompleto
+            GRAU_INS == 8L ~ 5L, # superior completo
+            TRUE ~ NA_integer_
+        )
+    )
+
+
 ##### Unindo as bases filtradas #####
 
 od_completa <- bind_rows(
-    od_1997_filtrada,
     od_2007_filtrada,
     od_2017_filtrada,
     od_2023_filtrada
 )
+
+##### Fazendo uma variável indicadora se a viagem dos indivíduos foi realizada ao centro expandido de SP #####
