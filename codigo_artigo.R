@@ -164,7 +164,9 @@ od_2017_filtrada <- od_2017 |>
         CO_O_X_SIRGAS = CO_O_X,
         CO_O_Y_SIRGAS = CO_O_Y,
         CO_D_X_SIRGAS = CO_D_X,
-        CO_D_Y_SIRGAS = CO_D_Y
+        CO_D_Y_SIRGAS = CO_D_Y,
+        CO_DOM_X_SIRGAS = CO_DOM_X,
+        CO_DOM_Y_SIRGAS = CO_DOM_Y
     )
 
 
@@ -214,7 +216,9 @@ od_2023_filtrada <- od_2023 |>
         CO_O_X_SIRGAS = CO_O_X,
         CO_O_Y_SIRGAS = CO_O_Y,
         CO_D_X_SIRGAS = CO_D_X,
-        CO_D_Y_SIRGAS = CO_D_Y
+        CO_D_Y_SIRGAS = CO_D_Y,
+        CO_DOM_X_SIRGAS = CO_DOM_X,
+        CO_DOM_Y_SIRGAS = CO_DOM_Y
     )
 
 ##### Arrumando diferenças entre as pesquisas de cada base #####
@@ -294,6 +298,27 @@ od_2007_coord_destino <- od_2007_filtrada |>
 
 od_2007_filtrada <- od_2007_filtrada |>
     left_join(od_2007_coord_destino, by = 'id_temp_row')
+
+
+## Coordenadas do domicílio ##
+
+od_2007_filtrada <- od_2007_filtrada |>
+    mutate(id_temp_row = row_number())
+
+od_2007_coord_dom <- od_2007_filtrada |>
+    filter(!is.na(CO_DOM_X) & !is.na(CO_DOM_Y)) |>
+    select(id_temp_row, CO_DOM_X, CO_DOM_Y) |>
+    st_as_sf(coords = c('CO_DOM_X', 'CO_DOM_Y'), crs = 29193, remove = FALSE) |>
+    st_transform(crs = 31983) |>
+    mutate(
+        CO_DOM_X_SIRGAS = st_coordinates(geometry)[, 1],
+        CO_DOM_Y_SIRGAS = st_coordinates(geometry)[, 2]
+    ) |>
+    st_drop_geometry() |>
+    select(id_temp_row, CO_DOM_X_SIRGAS, CO_DOM_Y_SIRGAS)
+
+od_2007_filtrada <- od_2007_filtrada |>
+    left_join(od_2007_coord_dom, by = 'id_temp_row')
 
 #### Criando variável indicadora do destino da viagem ser no centro expandido ####
 
@@ -404,3 +429,70 @@ od_completa <- bind_rows(
     od_2017_filtrada,
     od_2023_filtrada
 )
+
+##### Definindo o grupo de tratamento e grupo de controle paramétrico #####
+
+#### Grupo de Tratamento: Indivíduos que, em 2007, moravam em domicílios contemplados pela criação da Linha 5 - Lilás do Metrô de SP ####
+### As zonas da época contempladas, segundo o mapa da OD, são: 284, 285, 286, 292, 294, 300, 301 e 302 ###
+
+## Abrindo o shapefile das zonas da OD de 2007 ##
+
+zonas_2007 <- st_read('Zonas2007_region.shp')
+
+zonas_2007 <- zonas_2007 |>
+    st_transform(31983)
+
+## Filtrando as zonas tratadas e criando um polígono a partir delas ##
+
+zonas_tratadas_2007 <- zonas_2007 |>
+    filter(Zona07 %in% c(284, 285, 286, 292, 294, 300, 301, 302)) |>
+    st_union() |>
+    st_as_sf() |>
+    mutate(tipo_regiao = 'Região Tratada')
+
+#### Grupo de Controle Paramétrico: Indivíduos que, em 2017, moravam em domicílios que foram contempladas EXCLUSIVAMENTE pela criação da Linha 4 - Amarela do Metrô de SP ####
+### As zonas da época contempladas, segundo o mapa da OD, são: 76, 78, 80, 81, 82, 340 ###
+
+## Abrindo o shapefile das zonas da OD de 2017 ##
+
+zonas_2017 <- st_read('Zonas_2017_region.shp') |>
+    st_transform(31983)
+
+## Filtrando as zonas tratadas e criando um polígono a partir delas ##
+
+zonas_tratadas_2017 <- zonas_2017 |>
+    filter(NumeroZona %in% c(76, 78, 80, 81, 82, 340)) |>
+    st_union() |>
+    st_as_sf() |>
+    mutate(tipo_regiao = 'Região Controle Paramétrico')
+
+#### Juntando as duas regiões ####
+
+regioes_importantes <- bind_rows(
+    zonas_tratadas_2007,
+    zonas_tratadas_2017
+)
+
+##### Adicionando as informações de tratamento e controle paramétrico na base completa #####
+
+od_grupos <- od_completa |>
+    filter(!is.na(CO_DOM_X_SIRGAS) & !is.na(CO_DOM_Y_SIRGAS)) |>
+    st_as_sf(
+        coords = c('CO_DOM_X_SIRGAS', 'CO_DOM_Y_SIRGAS'),
+        crs = 31983,
+        remove = FALSE
+    ) |>
+    st_join(regioes_importantes) |>
+    st_drop_geometry() |>
+    mutate(
+        tipo_grupo = case_when(
+            tipo_regiao == 'Região Tratada' ~ 'Tratamento',
+            tipo_regiao ==
+                'Região Controle Paramétrico' ~ 'Controle_Parametrico',
+            TRUE ~ 'Candidatos_Controle_MatchIt'
+        )
+    )
+
+##### Salvando a base final #####
+
+export(od_grupos, 'od_base_completa.dbf')
