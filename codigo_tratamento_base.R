@@ -1,4 +1,4 @@
-##### Código - Artigo APS #####
+###### Tratamento das bases da OD ######
 
 ##### Abrindo Bibliotecas #####
 
@@ -8,9 +8,6 @@ library(sf)
 library(fixest)
 library(did)
 library(bacondecomp)
-library(MatchIt)
-library(cobalt)
-library(stargazer)
 
 ##### Importando base de dados #####
 
@@ -118,7 +115,37 @@ od_2007_filtrada <- od_2007 |>
         MOTIVO_O, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
         MOTIVO_D # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
     ) |>
-    mutate(ano = 2007, VL_REN_I = as.numeric(VL_REN_I))
+    mutate(
+        ano = 2007,
+        VL_REN_I = as.numeric(VL_REN_I),
+        CRITERIOBR = case_when(
+            CRITERIOBR %in% c(1, 2) ~ 1,
+            CRITERIOBR == 3 ~ 2,
+            CRITERIOBR == 4 ~ 3,
+            CRITERIOBR == 5 ~ 4,
+            CRITERIOBR == 6 ~ 5,
+            CRITERIOBR %in% c(7, 8) ~ 6
+        ),
+        ESTUDA = case_when(
+            ESTUDA == 6 ~ 5,
+            ESTUDA == 7 ~ 6,
+            TRUE ~ ESTUDA
+        ),
+        MODOPRIN = case_when(
+            MODOPRIN %in% c(1, 9) ~ 4,
+            MODOPRIN %in% c(2, 10) ~ 5,
+            MODOPRIN %in% c(3, 11) ~ 6,
+            MODOPRIN == 4 ~ 7,
+            MODOPRIN == 5 ~ 8,
+            MODOPRIN == 6 ~ 9,
+            MODOPRIN == 7 ~ 10,
+            MODOPRIN == 8 ~ 11,
+            MODOPRIN == 12 ~ 1,
+            MODOPRIN == 13 ~ 2,
+            MODOPRIN == 14 ~ 13,
+            TRUE ~ MODOPRIN
+        )
+    )
 
 od_2017_filtrada <- od_2017 |>
     select(
@@ -166,7 +193,13 @@ od_2017_filtrada <- od_2017 |>
         CO_D_X_SIRGAS = CO_D_X,
         CO_D_Y_SIRGAS = CO_D_Y,
         CO_DOM_X_SIRGAS = CO_DOM_X,
-        CO_DOM_Y_SIRGAS = CO_DOM_Y
+        CO_DOM_Y_SIRGAS = CO_DOM_Y,
+        MODOPRIN = case_when(
+            MODOPRIN == 3 ~ 17,
+            MODOPRIN == 12 ~ 11,
+            MODOPRIN == 14 ~ 13,
+            TRUE ~ MODOPRIN
+        )
     )
 
 
@@ -218,7 +251,21 @@ od_2023_filtrada <- od_2023 |>
         CO_D_X_SIRGAS = CO_D_X,
         CO_D_Y_SIRGAS = CO_D_Y,
         CO_DOM_X_SIRGAS = CO_DOM_X,
-        CO_DOM_Y_SIRGAS = CO_DOM_Y
+        CO_DOM_Y_SIRGAS = CO_DOM_Y,
+        VINC1 = case_when(
+            VINC1 %in% c(5, 6) ~ 4,
+            VINC1 == 4 ~ 6,
+            VINC1 == 7 ~ 5,
+            VINC1 == 8 ~ 7,
+            VINC1 == 9 ~ 8,
+            TRUE ~ VINC1
+        ),
+        MODOPRIN = case_when(
+            MODOPRIN == 3 ~ 17,
+            MODOPRIN == 12 ~ 11,
+            MODOPRIN == 14 ~ 13,
+            TRUE ~ MODOPRIN
+        )
     )
 
 ##### Arrumando diferenças entre as pesquisas de cada base #####
