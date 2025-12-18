@@ -1,5 +1,7 @@
 ###### Tratamento das bases da OD ######
 
+rm(list = ls())
+
 ##### Abrindo Bibliotecas #####
 
 library(tidyverse)
@@ -8,6 +10,7 @@ library(sf)
 library(fixest)
 library(did)
 library(bacondecomp)
+library(deflateBR)
 
 ##### Importando base de dados #####
 
@@ -264,6 +267,10 @@ od_2023_filtrada <- od_2023 |>
             MODOPRIN == 3 ~ 17,
             MODOPRIN == 12 ~ 11,
             MODOPRIN == 14 ~ 13,
+            MODOPRIN == 15 ~ 13,
+            MODOPRIN == 16 ~ 15,
+            MODOPRIN == 17 ~ 16,
+            MODOPRIN == 18 ~ 17,
             TRUE ~ MODOPRIN
         )
     )
@@ -537,6 +544,31 @@ od_grupos <- od_completa |>
             tipo_regiao ==
                 'Região Controle Paramétrico' ~ 'Controle_Parametrico',
             TRUE ~ 'Candidatos_Controle_MatchIt'
+        )
+    )
+
+##### Deflacionando a renda individual #####
+
+od_grupos <- od_grupos |>
+    mutate(
+        data_original = case_when(
+            ano == 2007 ~ '10/2007',
+            ano == 2017 ~ '09/2017',
+            ano == 2023 ~ '09/2023',
+            TRUE ~ NA_character_
+        ),
+        VL_REN_I_DEF = ifelse(
+            !is.na(VL_REN_I) & !is.na(data_original),
+            deflate(
+                nominal_values = VL_REN_I,
+                nominal_dates = as.Date(
+                    paste0('01/', data_original),
+                    format = '%d/%m/%Y'
+                ),
+                real_date = '11/2025',
+                index = 'ipca'
+            ),
+            VL_REN_I
         )
     )
 

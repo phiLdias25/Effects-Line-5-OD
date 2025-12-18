@@ -1,5 +1,7 @@
 ###### Estatísticas Descritivas e formação do grupo de controle pelo MatchIt ######
 
+rm(list = ls())
+
 ##### Abrindo Bibliotecas #####
 
 library(tidyverse)
@@ -147,7 +149,7 @@ tabela_latex_critbr <- tabela_critbr |>
 #### Tabela com descritivas econômicas - Renda, condição empregatícia e vínculo empregatício ####
 
 od_estat_econo <- od_completa |>
-  select(ano, VL_REN_I, CD_ATIVI, VINC1) |>
+  select(ano, VL_REN_I_D, CD_ATIVI, VINC1) |>
   mutate(
     CD_ATIVI = case_when(
       CD_ATIVI == 1 ~ 'Trabalho Regular',
@@ -174,15 +176,299 @@ od_estat_econo <- od_completa |>
     ano = as.factor(ano)
   )
 
-renda_anual <- od_estat_econo |> 
+renda_anual <- od_estat_econo |>
   group_by(ano) |>
-  filter(!is.na(VL_REN_I)) |>
+  filter(!is.na(VL_REN_I_D)) |>
   summarise(
-    Valor = mean(VL_REN_I, na.rm = TRUE),
+    Valor = mean(VL_REN_I_D, na.rm = TRUE),
     Variavel = 'Renda Individual Média (R$)'
-  ) |> 
+  ) |>
   ungroup() |>
   mutate(Valor = round(Valor, 2)) |>
   select(ano, Variavel, Valor)
 
-  
+categorias_econo_anual <- od_estat_econo |>
+  select(-VL_REN_I_D) |>
+  pivot_longer(
+    cols = c(CD_ATIVI, VINC1),
+    names_to = 'origem',
+    values_to = 'categoria'
+  ) |>
+  filter(!is.na(categoria)) |>
+  count(ano, origem, categoria) |>
+  group_by(ano, origem) |>
+  mutate(
+    prob = n / sum(n),
+    Valor = round(prob, 3)
+  ) |>
+  ungroup() |>
+  select(ano, Variavel = categoria, Valor)
+
+tabela_descrit_econo <- bind_rows(renda_anual, categorias_econo_anual) |>
+  pivot_wider(
+    names_from = ano,
+    values_from = Valor
+  ) |>
+  arrange(factor(
+    Variavel,
+    levels = c(
+      'Renda Individual Média (R$)',
+      'Trabalho Regular',
+      'Bico',
+      'Licença Médica',
+      'Aposentado/Pensionista',
+      'Desempregado',
+      'Nunca Trabalhou',
+      'Dona de Casa',
+      'Estudante',
+      'Assalariado com carteira',
+      'Assalariado sem carteira',
+      'Funcionário Público',
+      'Autônomo',
+      'Empregador',
+      'Profissional Liberal',
+      'Dono de Negócio Familiar',
+      'Trabalhador Familiar'
+    )
+  ))
+
+tabela_latex_econo <- tabela_descrit_econo |>
+  kbl(
+    format = 'latex',
+    booktabs = TRUE,
+    label = 'tab:descritivas_economicas',
+    align = 'lrrr'
+  ) |>
+  kable_styling(
+    latex_options = c('striped', 'hold_position'),
+    position = 'center'
+  )
+
+
+#### Tabela com descritivas de viagem - Total de viagens médio, duração média e modo principal ####
+
+od_estat_viagens <- od_completa |>
+  select(ano, TOT_VIAG, DURACAO, MODOPRIN) |>
+  mutate(
+    MODOPRIN = case_when(
+      MODOPRIN == 1 ~ 'Metrô',
+      MODOPRIN == 2 ~ 'Trem',
+      MODOPRIN == 4 ~ 'Ônibus/Micro-ônibus/Van Municipal',
+      MODOPRIN == 5 ~ 'Ônibus/Micro-ônibus/Van Intermunicipal',
+      MODOPRIN == 6 ~ 'Ônibus/Micro-ônibus/Van Metropolitano',
+      MODOPRIN == 7 ~ 'Transporte Fretado',
+      MODOPRIN == 8 ~ 'Transporte Escolar',
+      MODOPRIN == 9 ~ 'Dirigindo Automóvel',
+      MODOPRIN == 10 ~ 'Passageiro de Automóvel',
+      MODOPRIN == 11 ~ 'Táxi',
+      MODOPRIN == 13 ~ 'Moto',
+      MODOPRIN == 15 ~ 'Bicicleta',
+      MODOPRIN == 16 ~ 'A Pé',
+      MODOPRIN == 17 ~ 'Outros',
+      TRUE ~ NA_character_
+    ),
+    ano = as.factor(ano)
+  )
+
+totviag_anual <- od_estat_viagens |>
+  group_by(ano) |>
+  filter(!is.na(TOT_VIAG)) |>
+  summarise(
+    Valor = mean(TOT_VIAG, na.rm = TRUE),
+    Variavel = 'Média de Total de Viagens'
+  ) |>
+  ungroup() |>
+  mutate(Valor = round(Valor, 2)) |>
+  select(ano, Variavel, Valor)
+
+duracao_anual <- od_estat_viagens |>
+  group_by(ano) |>
+  filter(!is.na(DURACAO)) |>
+  summarise(
+    Valor = mean(DURACAO, na.rm = TRUE),
+    Variavel = 'Duração Média das Viagens (em minutos)'
+  ) |>
+  ungroup() |>
+  mutate(Valor = round(Valor, 2)) |>
+  select(ano, Variavel, Valor)
+
+modo_viagem_anual <- od_estat_viagens |>
+  select(-TOT_VIAG, DURACAO) |>
+  pivot_longer(
+    cols = MODOPRIN,
+    names_to = 'origem',
+    values_to = 'categoria'
+  ) |>
+  filter(!is.na(categoria)) |>
+  count(ano, origem, categoria) |>
+  group_by(ano, origem) |>
+  mutate(
+    prob = n / sum(n),
+    Valor = round(prob, 3)
+  ) |>
+  ungroup() |>
+  select(ano, Variavel = categoria, Valor)
+
+tabela_descrit_viagens <- bind_rows(
+  totviag_anual,
+  duracao_anual,
+  modo_viagem_anual
+) |>
+  pivot_wider(
+    names_from = ano,
+    values_from = Valor
+  ) |>
+  arrange(factor(
+    Variavel,
+    levels = c(
+      'Média de Total de Viagens',
+      'Duração Média das Viagens (em minutos)',
+      'Metrô',
+      'Trem',
+      'Ônibus/Micro-ônibus/Van Municipal',
+      'Ônibus/Micro-ônibus/Van Intermunicipal',
+      'Ônibus/Micro-ônibus/Van Metropolitano',
+      'Transporte Fretado',
+      'Transporte Escolar',
+      'Dirigindo Automóvel',
+      'Passageiro de Automóvel',
+      'Táxi',
+      'Moto',
+      'Bicicleta',
+      'A Pé',
+      'Outros'
+    )
+  ))
+
+tabela_latex_viagens <- tabela_descrit_viagens |>
+  kbl(
+    format = 'latex',
+    booktabs = TRUE,
+    label = 'tab:descritivas_viagens',
+    align = 'lrrr'
+  ) |>
+  kable_styling(
+    latex_options = c('striped', 'hold_position'),
+    position = 'center'
+  )
+
+
+#### Mapas de calor de renda média e duração média das viagens por zonas e ano ####
+
+### Renda Média ###
+
+## 2007 ##
+
+zonas_2007 <- st_read('Zonas2007_region.shp') |>
+  st_buffer(dist = 0) |>
+  st_make_valid() |>
+  st_transform(31983)
+
+pontos_2007 <- od_completa |>
+  filter(ano == 2007) |>
+  mutate(
+    CO_DOM_X_S = as.numeric(CO_DOM_X_S),
+    CO_DOM_Y_S = as.numeric(CO_DOM_Y_S)
+  ) |>
+  filter(
+    !is.na(CO_DOM_X_S),
+    !is.na(CO_DOM_Y_S),
+    is.finite(CO_DOM_X_S),
+    is.finite(CO_DOM_Y_S)
+  ) |>
+  st_as_sf(coords = c('CO_DOM_X_S', 'CO_DOM_Y_S'), crs = 31983) |>
+  st_zm(drop = TRUE, what = "ZM")
+
+any(st_is_empty(pontos_2007))
+
+localiz_2007 <- st_join(pontos_2007, zonas_2007)
+
+renda_media_2007 <- localiz_2007 |>
+  select(
+    VL_REN_I_D,
+    Zona07,
+    NomeZona07,
+    Municipio,
+    NomeMunici,
+    Area_ha,
+    geometry
+  ) |>
+  st_drop_geometry() |>
+  group_by(Zona07) |>
+  summarise(
+    Renda_Media = mean(VL_REN_I_D, na.rm = TRUE),
+    n_zona = n()
+  )
+
+mapa_renda_2007 <- zonas_2007 |>
+  left_join(renda_media_2007, by = 'Zona07')
+
+ggplot(mapa_renda_2007) +
+  geom_sf(aes(fill = Renda_Media), color = 'NA', size = 0.1) +
+  scale_fill_viridis_c(
+    option = 'magma',
+    direction = -1,
+    name = 'Renda Real (R$)',
+    na.value = 'grey90'
+  ) +
+  coord_sf(clip = 'off') +
+  theme_void() +
+  theme(legend.position = 'right', plot.margin = margin(r = 0.5, unit = 'cm'))
+
+## 2017 ##
+
+zonas_2017 <- st_read('Zonas_2017_region.shp') |>
+  st_buffer(dist = 0) |>
+  st_make_valid() |>
+  st_transform(31983)
+
+pontos_2017 <- od_completa |>
+  filter(ano == 2017) |>
+  mutate(
+    CO_DOM_X_S = as.numeric(CO_DOM_X_S),
+    CO_DOM_Y_S = as.numeric(CO_DOM_Y_S)
+  ) |>
+  filter(
+    !is.na(CO_DOM_X_S),
+    !is.na(CO_DOM_Y_S),
+    is.finite(CO_DOM_X_S),
+    is.finite(CO_DOM_Y_S)
+  ) |>
+  st_as_sf(coords = c('CO_DOM_X_S', 'CO_DOM_Y_S'), crs = 31983) |>
+  st_zm(drop = TRUE, what = "ZM")
+
+any(st_is_empty(pontos_2017))
+
+localiz_2017 <- st_join(pontos_2017, zonas_2017)
+
+renda_media_2017 <- localiz_2017 |>
+  select(
+    VL_REN_I_D,
+    NumeroZona,
+    NomeZona,
+    NumeroMuni,
+    NomeMunici,
+    Area_ha_2,
+    geometry
+  ) |>
+  st_drop_geometry() |>
+  group_by(NumeroZona) |>
+  summarise(
+    Renda_Media = mean(VL_REN_I_D, na.rm = TRUE),
+    n_zona = n()
+  )
+
+mapa_renda_2017 <- zonas_2017 |>
+  left_join(renda_media_2017, by = 'NumeroZona')
+
+ggplot(mapa_renda_2017) +
+  geom_sf(aes(fill = Renda_Media), color = 'NA', size = 0.1) +
+  scale_fill_viridis_c(
+    option = 'magma',
+    direction = -1,
+    name = 'Renda Real (R$)',
+    na.value = 'grey90'
+  ) +
+  coord_sf(clip = 'off') +
+  theme_void() +
+  theme(legend.position = 'right', plot.margin = margin(r = 0.5, unit = 'cm'))
