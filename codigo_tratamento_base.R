@@ -16,11 +16,11 @@ library(deflateBR)
 
 #od_1997 <- import('OD97Zona.dbf')
 
-od_2007 <- import('OD_2007_v2d.dbf')
+od_2007 <- import('Bases de dados OD/OD_2007_v2d.dbf')
 
-od_2017 <- import('OD_2017_v1.dbf')
+od_2017 <- import('Bases de dados OD/OD_2017_v1.dbf')
 
-od_2023 <- import('Banco2023_divulgacao_190225.dbf')
+od_2023 <- import('Bases de dados OD/Banco2023_divulgacao_190225.dbf')
 
 ##### Filtrando as variáveis importantes de cada base #####
 
@@ -306,7 +306,9 @@ od_2007_filtrada <- od_2007_filtrada |>
 
 ##### Fazendo uma variável indicadora se a viagem dos indivíduos foi realizada ao centro expandido de SP #####
 
-centro_exp_shp <- st_read('SIRGAS_SHP_restricaoveiculomian.shp')
+centro_exp_shp <- st_read(
+    'Shapefile centro exp SP/SIRGAS_SHP_restricaoveiculomian.shp'
+)
 
 centro_exp_shp <- centro_exp_shp |>
     st_set_crs(31983)
@@ -491,7 +493,7 @@ od_completa <- bind_rows(
 
 ## Abrindo o shapefile das zonas da OD de 2007 ##
 
-zonas_2007 <- st_read('Zonas2007_region.shp')
+zonas_2007 <- st_read('Shapefiles OD/Zonas2007_region.shp')
 
 zonas_2007 <- zonas_2007 |>
     st_transform(31983)
@@ -509,7 +511,7 @@ zonas_tratadas_2007 <- zonas_2007 |>
 
 ## Abrindo o shapefile das zonas da OD de 2017 ##
 
-zonas_2017 <- st_read('Zonas_2017_region.shp') |>
+zonas_2017 <- st_read('Shapefiles OD/Zonas_2017_region.shp') |>
     st_transform(31983)
 
 ## Filtrando as zonas tratadas e criando um polígono a partir delas ##

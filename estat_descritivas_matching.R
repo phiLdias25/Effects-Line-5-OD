@@ -11,6 +11,8 @@ library(stargazer)
 library(rio)
 library(sf)
 library(kableExtra)
+library(scales)
+library(scico)
 
 ##### Abrindo base de dados #####
 
@@ -359,7 +361,7 @@ tabela_latex_viagens <- tabela_descrit_viagens |>
 
 ## 2007 ##
 
-zonas_2007 <- st_read('Zonas2007_region.shp') |>
+zonas_2007 <- st_read('Shapefiles OD/Zonas2007_region.shp') |>
   st_buffer(dist = 0) |>
   st_make_valid() |>
   st_transform(31983)
@@ -405,19 +407,30 @@ mapa_renda_2007 <- zonas_2007 |>
 
 ggplot(mapa_renda_2007) +
   geom_sf(aes(fill = Renda_Media), color = 'NA', size = 0.1) +
-  scale_fill_viridis_c(
-    option = 'magma',
+  scale_fill_scico(
+    palette = 'lajolla',
     direction = -1,
     name = 'Renda Real (R$)',
-    na.value = 'grey90'
+    na.value = 'grey90',
+    limits = c(0, 15000),
+    oob = squish,
+    breaks = seq(0, 15000, by = 5000),
+    guide = guide_colorbar(
+      title.position = "top",
+      title.hjust = 0.5,
+      title.vjust = 1.0,
+      frame.colour = 'black',
+      barwidth = 15,
+      barheight = 1
+    )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'right', plot.margin = margin(r = 0.5, unit = 'cm'))
+  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
 
 ## 2017 ##
 
-zonas_2017 <- st_read('Zonas_2017_region.shp') |>
+zonas_2017 <- st_read('Shapefiles OD/Zonas_2017_region.shp') |>
   st_buffer(dist = 0) |>
   st_make_valid() |>
   st_transform(31983)
@@ -463,12 +476,229 @@ mapa_renda_2017 <- zonas_2017 |>
 
 ggplot(mapa_renda_2017) +
   geom_sf(aes(fill = Renda_Media), color = 'NA', size = 0.1) +
-  scale_fill_viridis_c(
-    option = 'magma',
+  scale_fill_scico(
+    palette = 'lajolla',
     direction = -1,
     name = 'Renda Real (R$)',
-    na.value = 'grey90'
+    na.value = 'grey90',
+    limits = c(0, 15000),
+    oob = squish,
+    breaks = seq(0, 15000, by = 5000),
+    guide = guide_colorbar(
+      title.position = "top",
+      title.hjust = 0.5,
+      title.vjust = 1.0,
+      frame.colour = 'black',
+      barwidth = 15,
+      barheight = 1
+    )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'right', plot.margin = margin(r = 0.5, unit = 'cm'))
+  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+
+## 2023 ##
+
+zonas_2023 <- st_read('Shapefiles OD/Zonas_2023.shp') |>
+  st_buffer(dist = 0) |>
+  st_make_valid() |>
+  st_transform(31983)
+
+pontos_2023 <- od_completa |>
+  filter(ano == 2023) |>
+  mutate(
+    CO_DOM_X_S = as.numeric(CO_DOM_X_S),
+    CO_DOM_Y_S = as.numeric(CO_DOM_Y_S)
+  ) |>
+  filter(
+    !is.na(CO_DOM_X_S),
+    !is.na(CO_DOM_Y_S),
+    is.finite(CO_DOM_X_S),
+    is.finite(CO_DOM_Y_S)
+  ) |>
+  st_as_sf(coords = c('CO_DOM_X_S', 'CO_DOM_Y_S'), crs = 31983) |>
+  st_zm(drop = TRUE, what = "ZM")
+
+any(st_is_empty(pontos_2023))
+
+localiz_2023 <- st_join(pontos_2023, zonas_2023)
+
+renda_media_2023 <- localiz_2023 |>
+  select(
+    VL_REN_I_D,
+    NumeroZona,
+    NomeZona,
+    NumeroMuni,
+    NomeMunici,
+    Area_ha_2,
+    geometry
+  ) |>
+  st_drop_geometry() |>
+  group_by(NumeroZona) |>
+  summarise(
+    Renda_Media = mean(VL_REN_I_D, na.rm = TRUE),
+    n_zona = n()
+  )
+
+mapa_renda_2023 <- zonas_2023 |>
+  left_join(renda_media_2023, by = 'NumeroZona')
+
+ggplot(mapa_renda_2023) +
+  geom_sf(aes(fill = Renda_Media), color = 'NA', size = 0.1) +
+  scale_fill_scico(
+    palette = 'lajolla',
+    direction = -1,
+    name = 'Renda Real (R$)',
+    na.value = 'grey90',
+    limits = c(0, 15000),
+    oob = squish,
+    breaks = seq(0, 15000, by = 5000),
+    guide = guide_colorbar(
+      title.position = "top",
+      title.hjust = 0.5,
+      title.vjust = 1.0,
+      frame.colour = 'black',
+      barwidth = 15,
+      barheight = 1
+    )
+  ) +
+  coord_sf(clip = 'off') +
+  theme_void() +
+  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+
+### Duração Média das Viagens ###
+
+## 2007 ##
+
+duracao_media_2007 <- localiz_2007 |>
+  select(
+    DURACAO,
+    Zona07,
+    NomeZona07,
+    Municipio,
+    NomeMunici,
+    Area_ha,
+    geometry
+  ) |>
+  st_drop_geometry() |>
+  group_by(Zona07) |>
+  summarise(
+    Duracao_media = mean(DURACAO, na.rm = TRUE),
+    n_zona = n()
+  )
+
+mapa_duracao_2007 <- zonas_2007 |>
+  left_join(duracao_media_2007, by = 'Zona07')
+
+ggplot(mapa_duracao_2007) +
+  geom_sf(aes(fill = Duracao_media), color = 'NA', size = 0.1) +
+  scale_fill_scico(
+    palette = 'oslo',
+    direction = -1,
+    name = 'Tempo Médio de Viagem (Minutos)',
+    na.value = 'grey90',
+    limits = c(2, 60),
+    oob = squish,
+    breaks = seq(0, 60, by = 10),
+    guide = guide_colorbar(
+      title.position = "top",
+      title.hjust = 0.5,
+      title.vjust = 1.0,
+      frame.colour = 'black',
+      barwidth = 15,
+      barheight = 1
+    )
+  ) +
+  coord_sf(clip = 'off') +
+  theme_void() +
+  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+
+## 2017 ##
+
+duracao_media_2017 <- localiz_2017 |>
+  select(
+    DURACAO,
+    NumeroZona,
+    NomeZona,
+    NumeroMuni,
+    NomeMunici,
+    Area_ha_2,
+    geometry
+  ) |>
+  st_drop_geometry() |>
+  group_by(NumeroZona) |>
+  summarise(
+    Duracao_Media = mean(DURACAO, na.rm = TRUE),
+    n_zona = n()
+  )
+
+mapa_duracao_2017 <- zonas_2017 |>
+  left_join(duracao_media_2017, by = 'NumeroZona')
+
+ggplot(mapa_duracao_2017) +
+  geom_sf(aes(fill = Duracao_Media), color = 'NA', size = 0.1) +
+  scale_fill_scico(
+    palette = 'oslo',
+    direction = -1,
+    name = 'Tempo Médio de Viagem (Minutos)',
+    na.value = 'grey90',
+    limits = c(2, 60),
+    oob = squish,
+    breaks = seq(0, 60, by = 10),
+    guide = guide_colorbar(
+      title.position = "top",
+      title.hjust = 0.5,
+      title.vjust = 1.0,
+      frame.colour = 'black',
+      barwidth = 15,
+      barheight = 1
+    )
+  ) +
+  coord_sf(clip = 'off') +
+  theme_void() +
+  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+
+## 2023 ##
+
+duracao_media_2023 <- localiz_2023 |>
+  select(
+    DURACAO,
+    NumeroZona,
+    NomeZona,
+    NumeroMuni,
+    NomeMunici,
+    Area_ha_2,
+    geometry
+  ) |>
+  st_drop_geometry() |>
+  group_by(NumeroZona) |>
+  summarise(
+    Duracao_Media = mean(DURACAO, na.rm = TRUE),
+    n_zona = n()
+  )
+
+mapa_duracao_2023 <- zonas_2023 |>
+  left_join(duracao_media_2023, by = 'NumeroZona')
+
+ggplot(mapa_duracao_2023) +
+  geom_sf(aes(fill = Duracao_Media), color = 'NA', size = 0.1) +
+  scale_fill_scico(
+    palette = 'oslo',
+    direction = -1,
+    name = 'Tempo Médio de Viagem (Minutos)',
+    na.value = 'grey90',
+    limits = c(2, 60),
+    oob = squish,
+    breaks = seq(0, 60, by = 10),
+    guide = guide_colorbar(
+      title.position = "top",
+      title.hjust = 0.5,
+      title.vjust = 1.0,
+      frame.colour = 'black',
+      barwidth = 15,
+      barheight = 1
+    )
+  ) +
+  coord_sf(clip = 'off') +
+  theme_void() +
+  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
