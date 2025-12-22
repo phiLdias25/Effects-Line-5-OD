@@ -7,7 +7,6 @@ rm(list = ls())
 library(tidyverse)
 library(MatchIt)
 library(cobalt)
-library(stargazer)
 library(rio)
 library(sf)
 library(kableExtra)
@@ -57,7 +56,8 @@ od_matching <- od_completa |>
     trabemp,
     lazcompsa,
     lazcomp,
-    trabeduc
+    trabeduc,
+    ZONA_O
   ) |>
   mutate(
     SEXO = case_when(
@@ -101,6 +101,10 @@ match <- matchit(
 )
 
 summary(match)
+
+base_completa_match <- match.data(match)
+
+export(base_completa_match, 'base_pareamento.dbf')
 
 ##### Fazendo o diagnóstico do pareamento #####
 

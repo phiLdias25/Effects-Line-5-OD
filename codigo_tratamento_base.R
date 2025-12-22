@@ -7,9 +7,6 @@ rm(list = ls())
 library(tidyverse)
 library(rio)
 library(sf)
-library(fixest)
-library(did)
-library(bacondecomp)
 library(deflateBR)
 
 ##### Importando base de dados #####
