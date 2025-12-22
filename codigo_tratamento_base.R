@@ -486,6 +486,67 @@ od_completa <- bind_rows(
     od_2023_filtrada
 )
 
+#### Criando variáveis relacionando a viagem ao centro ao motivo da viagem ####
+
+od_completa <- od_completa |>
+    mutate(
+        trab_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D %in% c(1, 2, 3),
+            1,
+            0
+        ),
+        educ_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D == 4,
+            1,
+            0
+        ),
+        saude_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D == 6,
+            1,
+            0
+        ),
+        lazer_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D == 7,
+            1,
+            0
+        ),
+        compras_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D == 5,
+            1,
+            0
+        ),
+        emp_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D == 9,
+            1,
+            0
+        ),
+        trab_educ_emp_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D %in% c(1, 2, 3, 4, 9),
+            1,
+            0
+        ),
+        trab_emp_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D %in% c(1, 2, 3, 9),
+            1,
+            0
+        ),
+        lazer_comp_saude_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D %in% c(5, 6, 7),
+            1,
+            0
+        ),
+        lazer_comp_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D %in% c(5, 7),
+            1,
+            0
+        ),
+        trab_educ_centro = ifelse(
+            indic_destino_centro_exp == 1 & MOTIVO_D %in% c(1, 2, 3, 4),
+            1,
+            0
+        )
+    )
+
 ##### Definindo o grupo de tratamento e grupo de controle paramétrico #####
 
 #### Grupo de Tratamento: Indivíduos que, em 2007, moravam em domicílios contemplados pela criação da Linha 5 - Lilás do Metrô de SP ####
