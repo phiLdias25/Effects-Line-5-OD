@@ -131,3 +131,148 @@ did_agregado_match_lazcomp <- feols(
 )
 
 etable(did_agregado_match_lazcomp)
+
+#### Event Study ####
+
+event_study_match_dest <- feols(
+  indic_dest ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_dest)
+
+event_study_match_trab <- feols(
+  trab_cen ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+etable(event_study_match_trab)
+
+event_study_match_educ <- feols(
+  educ_cen ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_educ)
+
+event_study_match_saude <- feols(
+  saude_cen ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_saude)
+
+event_study_match_lazer <- feols(
+  lazer_cen ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_lazer)
+
+event_study_match_comp <- feols(
+  comp_cen ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_comp)
+
+event_study_match_emp <- feols(
+  emp_cen ~ i(ano, tratamento, ref = 2017) + IDADE + SEXO + GRAU_INS + CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_emp)
+
+event_study_match_trabeducem <- feols(
+  trabeducem ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_trabeducem)
+
+event_study_match_trabemp <- feols(
+  trabemp ~ i(ano, tratamento, ref = 2017) + IDADE + SEXO + GRAU_INS + CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_trabemp)
+
+event_study_match_trabeduc <- feols(
+  trabeduc ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_trabeduc)
+
+event_study_match_lazcompsa <- feols(
+  lazcompsa ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_lazcompsa)
+
+event_study_match_lazcomp <- feols(
+  lazcomp ~ i(ano, tratamento, ref = 2017) + IDADE + SEXO + GRAU_INS + CD_ATIVI,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZONA_O
+)
+
+etable(event_study_match_lazcomp)
