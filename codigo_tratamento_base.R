@@ -113,7 +113,8 @@ od_2007_filtrada <- od_2007 |>
         CO_D_X, # Coordenada X do Destino da Viagem
         CO_D_Y, # Coordenada Y do Destino da Viagem
         MOTIVO_O, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
-        MOTIVO_D # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
+        MOTIVO_D, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais,
+        TIPVG # Tipo de Viagem: 1 - Coletivo; 2 - Individual; 3 - A pé; 4 - Bicicleta
     ) |>
     mutate(
         ano = 2007,
@@ -184,7 +185,8 @@ od_2017_filtrada <- od_2017 |>
         CO_D_X, # Coordenada X do Destino da Viagem
         CO_D_Y, # Coordenada Y do Destino da Viagem
         MOTIVO_O, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
-        MOTIVO_D # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
+        MOTIVO_D, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
+        TIPVG # Tipo de Viagem: 1 - Coletivo; 2 - Individual; 3 - A pé; 4 - Bicicleta
     ) |>
     mutate(
         ano = 2017,
@@ -240,7 +242,8 @@ od_2023_filtrada <- od_2023 |>
         CO_D_X, # Coordenada X do Destino da Viagem
         CO_D_Y, # Coordenada Y do Destino da Viagem
         MOTIVO_O, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
-        MOTIVO_D # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
+        MOTIVO_D, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
+        TIPVG # Tipo de Viagem: 1 - Coletivo; 2 - Individual; 3 - A pé; 4 - Bicicleta
     ) |>
     mutate(
         ano = 2023,
@@ -631,6 +634,11 @@ od_grupos <- od_grupos |>
             VL_REN_I
         )
     )
+
+##### Filtrando os indivíduos que possuem como motivo da origem da viagem somente residência #####
+
+od_grupos <- od_grupos |>
+    filter(MOTIVO_O == 8)
 
 ##### Salvando a base final #####
 

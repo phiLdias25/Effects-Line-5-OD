@@ -44,6 +44,7 @@ od_matching <- od_completa |>
     GRAU_INS,
     CD_ATIVI,
     VL_REN_I_D,
+    TIPVG,
     ano,
     indic_dest,
     trab_cen,
@@ -88,6 +89,7 @@ od_matching <- od_completa |>
     ),
     CD_ATIVI = as.factor(CD_ATIVI)
   ) |>
+  mutate(VIAGEM_TRANS_PUBL = ifelse(TIPVG == 1, 1, 0)) |>
   drop_na()
 
 ##### Fazendo o pareamento #####
@@ -95,7 +97,12 @@ od_matching <- od_completa |>
 set.seed(42)
 
 match <- matchit(
-  tratamento_binario ~ IDADE + SEXO + GRAU_INS + CD_ATIVI + VL_REN_I_D,
+  tratamento_binario ~ IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI +
+    VL_REN_I_D +
+    VIAGEM_TRANS_PUBL,
   data = od_matching,
   method = "nearest"
 )
@@ -131,7 +138,7 @@ print(plot_comparativo)
 
 od_estat_par <- od_completa |>
   filter(tipo_grupo == 'Controle_Parametrico') |>
-  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D) |>
+  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG) |>
   mutate(
     SEXO = case_when(
       SEXO == 1 ~ 'Masculino',
@@ -159,7 +166,15 @@ od_estat_par <- od_completa |>
       CD_ATIVI == 8 ~ 'Estudante',
       TRUE ~ NA_character_
     ),
-    CD_ATIVI = as.factor(CD_ATIVI)
+    CD_ATIVI = as.factor(CD_ATIVI),
+    TIPVG = case_when(
+      TIPVG == 1 ~ 'Coletivo',
+      TIPVG == 2 ~ 'Particular',
+      TIPVG == 3 ~ 'A pé',
+      TIPVG == 4 ~ 'Bicicleta',
+      TRUE ~ NA_character_
+    ),
+    TIPVG = as.factor(TIPVG)
   ) |>
   drop_na()
 
@@ -175,7 +190,7 @@ idade_anual_par <- od_estat_par |>
 categorias_anual_par <- od_estat_par |>
   select(-IDADE) |>
   pivot_longer(
-    cols = c(SEXO, GRAU_INS, CD_ATIVI),
+    cols = c(SEXO, GRAU_INS, CD_ATIVI, TIPVG),
     names_to = 'origem',
     values_to = 'categoria'
   ) |>
@@ -223,7 +238,11 @@ tabela_descrit_par <- bind_rows(
       'Desempregado',
       'Nunca Trabalhou',
       'Dona de Casa',
-      'Estudante'
+      'Estudante',
+      'Coletivo',
+      'Particular',
+      'A pé',
+      'Bicicleta'
     )
   ))
 
@@ -245,7 +264,17 @@ od_pareada <- match.data(match) |>
     categoria = ifelse(tratamento_binario == 1, 'Tratados', 'Controle Pareado')
   ) |>
   filter(categoria == 'Controle Pareado') |>
-  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D) |>
+  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG) |>
+  mutate(
+    TIPVG = case_when(
+      TIPVG == 1 ~ 'Coletivo',
+      TIPVG == 2 ~ 'Particular',
+      TIPVG == 3 ~ 'A pé',
+      TIPVG == 4 ~ 'Bicicleta',
+      TRUE ~ NA_character_
+    ),
+    TIPVG = as.factor(TIPVG)
+  ) |>
   drop_na()
 
 idade_anual_match <- od_pareada |>
@@ -260,7 +289,7 @@ idade_anual_match <- od_pareada |>
 categorias_anual_match <- od_pareada |>
   select(-IDADE) |>
   pivot_longer(
-    cols = c(SEXO, GRAU_INS, CD_ATIVI),
+    cols = c(SEXO, GRAU_INS, CD_ATIVI, TIPVG),
     names_to = 'origem',
     values_to = 'categoria'
   ) |>
@@ -308,7 +337,11 @@ tabela_descrit_match <- bind_rows(
       'Desempregado',
       'Nunca Trabalhou',
       'Dona de Casa',
-      'Estudante'
+      'Estudante',
+      'Coletivo',
+      'Particular',
+      'A pé',
+      'Bicicleta'
     )
   ))
 
@@ -330,7 +363,17 @@ od_tratado <- match.data(match) |>
     categoria = ifelse(tratamento_binario == 1, 'Tratados', 'Controle Pareado')
   ) |>
   filter(categoria == 'Tratados') |>
-  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D) |>
+  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG) |>
+  mutate(
+    TIPVG = case_when(
+      TIPVG == 1 ~ 'Coletivo',
+      TIPVG == 2 ~ 'Particular',
+      TIPVG == 3 ~ 'A pé',
+      TIPVG == 4 ~ 'Bicicleta',
+      TRUE ~ NA_character_
+    ),
+    TIPVG = as.factor(TIPVG)
+  ) |>
   drop_na()
 
 idade_anual_tratado <- od_tratado |>
@@ -345,7 +388,7 @@ idade_anual_tratado <- od_tratado |>
 categorias_anual_tratado <- od_tratado |>
   select(-IDADE) |>
   pivot_longer(
-    cols = c(SEXO, GRAU_INS, CD_ATIVI),
+    cols = c(SEXO, GRAU_INS, CD_ATIVI, TIPVG),
     names_to = 'origem',
     values_to = 'categoria'
   ) |>
@@ -393,7 +436,11 @@ tabela_descrit_tratado <- bind_rows(
       'Desempregado',
       'Nunca Trabalhou',
       'Dona de Casa',
-      'Estudante'
+      'Estudante',
+      'Coletivo',
+      'Particular',
+      'A pé',
+      'Bicicleta'
     )
   ))
 
