@@ -34,7 +34,9 @@ od_completa <- import('od_base_completa.dbf') |>
 #### Filtrando o grupo de controle paramétrico da base para criar o grupo de controle por pareamento e adicionando as variáveis para o pareamento ####
 
 od_matching <- od_completa |>
-  filter(tipo_grupo != 'Controle_Parametrico') |>
+  filter(tipo_grupo != 'Morador_Centro_Exp') |>
+  filter(tipo_grupo != 'Controle_Linhas_Futuras') |>
+  filter(tipo_grupo != 'Controle_CPTM') |>
   mutate(tratamento_binario = ifelse(tipo_grupo == 'Tratamento', 1, 0)) |>
   select(
     tipo_grupo,
@@ -132,7 +134,7 @@ plot_comparativo <- love.plot(
 
 print(plot_comparativo)
 
-##### Analisando estatísticas descritivas dos grupos de controle criados, tanto o paramétrico quanto o por pareamento #####
+##### Analisando estatísticas descritivas dos grupos de controle criados, tanto os paramétricos quanto o por pareamento #####
 
 #### Grupo de controle paramétrico ####
 

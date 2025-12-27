@@ -547,7 +547,7 @@ od_completa <- od_completa |>
         )
     )
 
-##### Definindo o grupo de tratamento e grupo de controle paramétrico #####
+##### Definindo o grupo de tratamento e grupos de controle paramétricos #####
 
 #### Grupo de Tratamento: Indivíduos que, em 2007, moravam em domicílios contemplados pela criação da Linha 5 - Lilás do Metrô de SP ####
 ### As zonas da época contempladas, segundo o mapa da OD, são: 284, 285, 286, 292, 294, 300, 301 e 302 ###
@@ -567,48 +567,175 @@ zonas_tratadas_2007 <- zonas_2007 |>
     st_as_sf() |>
     mutate(tipo_regiao = 'Região Tratada')
 
-#### Grupo de Controle Paramétrico: Indivíduos que, em 2017, moravam em domicílios que foram contempladas EXCLUSIVAMENTE pela criação da Linha 4 - Amarela do Metrô de SP ####
-### As zonas da época contempladas, segundo o mapa da OD, são: 76, 78, 80, 81, 82, 340 ###
+#### Grupo de Controle Paramétrico 1: Indivíduos que residem em áreas que, futuramente, serão contempladas pelas linhas 6 - Laranja, 16 - Violeta, 19 - Celeste e 22 - Marrom ####
 
-## Abrindo o shapefile das zonas da OD de 2017 ##
+### Listando as estações futuras ###
 
-zonas_2017 <- st_read('Shapefiles OD/Zonas_2017_region.shp') |>
-    st_transform(31983)
+estacoes_futuras <- tribble(
+    ~linha    , ~nome_estacao      , ~lat     , ~lon     ,
 
-## Filtrando as zonas tratadas e criando um polígono a partir delas ##
+    # Linha 6 - Laranja
+    "Laranja" , "Brasilândia"     , -23.4673 , -46.6946 ,
+    "Laranja" , "Vila Cardoso"     , -23.4764 , -46.6976 , # Antiga Maristela
+    "Laranja" , "Itaberaba"        , -23.4839 , -46.7011 ,
+    "Laranja" , "João Paulo I"    , -23.4962 , -46.7029 ,
+    "Laranja" , "Freguesia do Ó"  , -23.4884 , -46.7032 ,
+    "Laranja" , "Santa Marina"     , -23.5085 , -46.6934 ,
+    "Laranja" , "Água Branca"     , -23.5159 , -46.6836 ,
+    "Laranja" , "SESC-Pompeia"     , -23.5264 , -46.6816 ,
+    "Laranja" , "Perdizes"         , -23.5354 , -46.6738 ,
+    "Laranja" , "PUC-Cardoso"      , -23.5367 , -46.6687 ,
+    "Laranja" , "FAAP-Pacaembu"    , -23.5434 , -46.6598 ,
+    "Laranja" , "Higienópolis"    , -23.5489 , -46.6522 ,
+    "Laranja" , "14 Bis"           , -23.5558 , -46.6457 ,
+    "Laranja" , "Bela Vista"       , -23.5594 , -46.6416 ,
+    "Laranja" , "São Joaquim"     , -23.5615 , -46.6385 ,
 
-zonas_tratadas_2017 <- zonas_2017 |>
-    filter(NumeroZona %in% c(76, 78, 80, 81, 82, 340)) |>
-    st_union() |>
-    st_as_sf() |>
-    mutate(tipo_regiao = 'Região Controle Paramétrico')
+    ## Coordenadas definidas a partir dos locais reais das obras da estação
 
-#### Juntando as duas regiões ####
+    # Linha 19 - Celeste
+    "Celeste" , "Bosque Maia"      , -23.4474 , -46.5222 ,
+    "Celeste" , "Guarulhos Centro" , -23.4635 , -46.5332 ,
+    "Celeste" , "Vila Augusta"     , -23.4705 , -46.5458 ,
+    "Celeste" , "Dutra"            , -23.4754 , -46.5516 ,
+    "Celeste" , "Itapegica"        , -23.4851 , -46.5574 ,
+    "Celeste" , "Jardim Julieta"   , -23.4925 , -46.5656 ,
+    "Celeste" , "Vila Sabrina"     , -23.5012 , -46.5723 ,
+    "Celeste" , "Cerejeiras"       , -23.4981 , -46.5784 ,
+    "Celeste" , "Vila Maria"       , -23.5132 , -46.5910 ,
+    "Celeste" , "Catumbi"          , -23.5324 , -46.6021 ,
+    "Celeste" , "Silva Teles"      , -23.5365 , -46.6095 ,
+    "Celeste" , "Cerealista"       , -23.5422 , -46.6231 ,
+    "Celeste" , "São Bento"       , -23.5445 , -46.6339 ,
+    "Celeste" , "Anhangabaú"      , -23.5492 , -46.6386 ,
 
-regioes_importantes <- bind_rows(
-    zonas_tratadas_2007,
-    zonas_tratadas_2017
+    ## Coordenadas definidas a partir dos cruzamentos viários principais dos nomes das estações
+
+    # Linha 16 - Violeta
+    "Violeta" , "Oscar Freire"     , -23.5605 , -46.6716 ,
+    "Violeta" , "Nove de Julho"    , -23.5668 , -46.6622 ,
+    "Violeta" , "Jardim Paulista"  , -23.5714 , -46.6558 ,
+    "Violeta" , "Ibirapuera"       , -23.5768 , -46.6514 , # Pq Ibirapuera
+    "Violeta" , "Ana Rosa"         , -23.5816 , -46.6384 ,
+    "Violeta" , "Aclimação"      , -23.5721 , -46.6242 ,
+    "Violeta" , "Independência"   , -23.5804 , -46.6115 , # Pq Independencia
+    "Violeta" , "São Carlos"      , -23.5683 , -46.6025 ,
+    "Violeta" , "Paes de Barros"   , -23.5635 , -46.5886 ,
+    "Violeta" , "Vila Bertioga"    , -23.5612 , -46.5784 ,
+    "Violeta" , "Anália Franco"   , -23.5583 , -46.5623 ,
+    "Violeta" , "Abel Ferreira"    , -23.5601 , -46.5452 ,
+
+    ## Coordenadas definidas pelos centróides dos bairros ou regiões de referência da estação
+
+    # Linha 22 - Marrom
+    "Marrom"  , "Cotia Centro"     , -23.6033 , -46.9192 ,
+    "Marrom"  , "Santo Antônio"   , -23.5992 , -46.8854 ,
+    "Marrom"  , "Sabiá"           , -23.5965 , -46.8643 ,
+    "Marrom"  , "Mesopotâmia"     , -23.5942 , -46.8456 , # Pq Alexandra/Embu
+    "Marrom"  , "Granja Viana"     , -23.5935 , -46.8335 ,
+    "Marrom"  , "Santa Maria"      , -23.5898 , -46.8152 ,
+    "Marrom"  , "Victor Civita"    , -23.5864 , -46.7956 ,
+    "Marrom"  , "Jardim Boa Vista" , -23.5822 , -46.7750 ,
+    "Marrom"  , "Monte Belo"       , -23.5765 , -46.7589 ,
+    "Marrom"  , "Rio Pequeno"      , -23.5724 , -46.7456 ,
+    "Marrom"  , "USP"              , -23.5662 , -46.7324 ,
+    "Marrom"  , "Vital Brasil"     , -23.5689 , -46.7125 ,
+    "Marrom"  , "Faria Lima"       , -23.5677 , -46.6934 ,
+    "Marrom"  , "Sumaré"          , -23.5516 , -46.6775
+
+    ## Coordenadas definidas pelos centróides dos bairros ou regiões de referência da estação
 )
 
-##### Adicionando as informações de tratamento e controle paramétrico na base completa #####
+### Convertendo as coordenadas em shapefile ###
 
-od_grupos <- od_completa |>
+shp_estacoes_futuras <- estacoes_futuras |>
+    st_as_sf(coords = c('lon', 'lat'), crs = 4674) |>
+    st_transform(31983)
+
+#### Grupo de Controle Paramétrico 2: Indivíduos que residem em áreas que já são contempladas por estações de trem da CPTM até 2017, ano antes da conexão da linha lilás ####
+
+### Abrindo o shapefile das estações mais recentes ###
+
+cptm_atual <- st_read(
+    'Shapefile estações trem SP/SIRGAS_SHP_estacaotrem.shp'
+) |>
+    st_set_crs(31983)
+
+### Filtrando as estações que não existiam em 2017 ###
+
+nomes <- c('MENDES-VILA NATAL', 'JOÃO DIAS')
+
+estacoes_2017 <- cptm_atual |>
+    filter(!etr_linha == 'JADE') |>
+    filter(!etr_nome %in% nomes) |>
+    select(etr_nome, etr_linha, geometry)
+
+#### Criando uma distância limite para definir os indivíduos de cada grupo controle ####
+
+limite_dist <- 1000 # 1 km
+
+#### Calculando as distâncias para cada grupo ####
+
+od_grupos_sf <- od_completa |>
     filter(!is.na(CO_DOM_X_SIRGAS) & !is.na(CO_DOM_Y_SIRGAS)) |>
     st_as_sf(
         coords = c('CO_DOM_X_SIRGAS', 'CO_DOM_Y_SIRGAS'),
         crs = 31983,
         remove = FALSE
-    ) |>
-    st_join(regioes_importantes) |>
-    st_drop_geometry() |>
+    )
+
+### Grupo de Controle Paramétrico 1: Linhas Futuras ###
+
+indica_futuro <- st_nearest_feature(
+    od_grupos_sf,
+    shp_estacoes_futuras
+)
+
+dist_futuro <- st_distance(
+    od_grupos_sf,
+    shp_estacoes_futuras[indica_futuro, ],
+    by_element = TRUE
+)
+
+### Grupo de Controle Paramétrico 2: CPTM ###
+
+indica_cptm <- st_nearest_feature(
+    od_grupos_sf,
+    estacoes_2017
+)
+
+dist_cptm <- st_distance(
+    od_grupos_sf,
+    estacoes_2017[indica_cptm, ],
+    by_element = TRUE
+)
+
+### Criando variável indicadora se o indivíduo mora no centro expandido ###
+
+indica_centro <- st_intersects(
+    od_grupos_sf,
+    centro_exp_shp,
+    sparse = FALSE
+)
+
+#### Criando a base final com as dummies que definem cada grupo ####
+
+od_grupos <- od_grupos_sf |>
+    st_join(zonas_tratadas_2007) |>
     mutate(
+        dist_m_futuro = as.numeric(dist_futuro),
+        dist_m_cptm = as.numeric(dist_cptm),
+        mora_centro_exp = ifelse(indica_centro[, 1] == TRUE, 1, 0),
         tipo_grupo = case_when(
             tipo_regiao == 'Região Tratada' ~ 'Tratamento',
-            tipo_regiao ==
-                'Região Controle Paramétrico' ~ 'Controle_Parametrico',
+            dist_m_futuro <= limite_dist &
+                mora_centro_exp == 0 ~ 'Controle_Linhas_Futuras',
+            dist_m_cptm <= limite_dist & mora_centro_exp == 0 ~ 'Controle_CPTM',
+            mora_centro_exp == 1 ~ 'Morador_Centro_Exp',
             TRUE ~ 'Candidatos_Controle_MatchIt'
         )
-    )
+    ) |>
+    st_drop_geometry()
 
 ##### Deflacionando a renda individual #####
 
