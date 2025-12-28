@@ -86,7 +86,7 @@ tabela_descrit_sociais <- bind_rows(idade_anual, categorias_anual) |>
     )
   ))
 
-tabela_latex <- tabela_descrit_sociais |>
+tabela_descrit_sociais_latex <- tabela_descrit_sociais |>
   kbl(
     format = 'latex',
     booktabs = TRUE,

@@ -9,6 +9,7 @@ library(rio)
 library(fixest)
 library(did)
 library(bacondecomp)
+library(broom)
 
 ##### Abrindo bases de dados #####
 
@@ -278,6 +279,73 @@ event_study_linhas_lazcomp <- feols(
 
 etable(event_study_linhas_lazcomp)
 
+#### Agregando todos os resultados em duas tabelas, uma para cada tipo de estimação ####
+
+### Diferença em Diferenças - Média Simples do Efeito ###
+
+lista_did_agregado_linhas <- list(
+  'Destino Centro Expandido' = did_agregado_linhas_dest,
+  'Trabalho Centro Expandido' = did_agregado_linhas_trab,
+  'Educação Centro Expandido' = did_agregado_linhas_educ,
+  'Saúde Centro Expandido' = did_agregado_linhas_saude,
+  'Lazer Centro Expandido' = did_agregado_linhas_lazer,
+  'Compras Centro Expandido' = did_agregado_linhas_comp,
+  'Buscar Emprego Centro Expandido' = did_agregado_linhas_emp,
+  'Trabalho ou Educação ou Buscar Emprego Centro Expandido' = did_agregado_linhas_trabeducem,
+  'Trabalho ou Educação Centro Expandido' = did_agregado_linhas_trabeduc,
+  'Trabalho ou Buscar Emprego Centro Expandido' = did_agregado_linhas_trabemp,
+  'Lazer ou Compras ou Saúde Centro Expandido' = did_agregado_linhas_lazcompsa,
+  'Lazer ou Compras Centro Expandido' = did_agregado_linhas_lazcomp
+)
+
+tabela_result_did_linhas <- etable(
+  lista_did_agregado_linhas,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Diferença em Diferenças - Grupo de Controle Linhas Futuras'
+)
+
+tabela_result_did_linhas_latex <- etable(
+  lista_did_agregado_linhas,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Diferença em Diferenças - Grupo de Controle Linhas Futuras'
+)
+
+### Event Study ###
+
+lista_event_study_linhas <- list(
+  'Destino Centro Expandido' = event_study_linhas_dest,
+  'Trabalho Centro Expandido' = event_study_linhas_trab,
+  'Educação Centro Expandido' = event_study_linhas_educ,
+  'Saúde Centro Expandido' = event_study_linhas_saude,
+  'Lazer Centro Expandido' = event_study_linhas_lazer,
+  'Compras Centro Expandido' = event_study_linhas_comp,
+  'Buscar Emprego Centro Expandido' = event_study_linhas_emp,
+  'Trabalho ou Educação ou Buscar Emprego Centro Expandido' = event_study_linhas_trabeducem,
+  'Trabalho ou Educação Centro Expandido' = event_study_linhas_trabeduc,
+  'Trabalho ou Buscar Emprego Centro Expandido' = event_study_linhas_trabemp,
+  'Lazer ou Compras ou Saúde Centro Expandido' = event_study_linhas_lazcompsa,
+  'Lazer ou Compras Centro Expandido' = event_study_linhas_lazcomp
+)
+
+tabela_result_es_linhas <- etable(
+  lista_event_study_linhas,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Event Study - Grupo de Controle Linhas Futuras'
+)
+
+tabela_result_es_linhas_latex <- etable(
+  lista_event_study_linhas,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Event Study - Grupo de Controle Linhas Futuras'
+)
 
 ##### Criando as variáveis de pré e pós e realizando a estimação com o grupo de controle 2 - CPTM #####
 
@@ -541,6 +609,74 @@ event_study_cptm_lazcomp <- feols(
 
 etable(event_study_cptm_lazcomp)
 
+#### Agregando todos os resultados em duas tabelas, uma para cada tipo de estimação ####
+
+### Diferença em Diferenças - Média Simples do Efeito ###
+
+lista_did_agregado_cptm <- list(
+  'Destino Centro Expandido' = did_agregado_cptm_dest,
+  'Trabalho Centro Expandido' = did_agregado_cptm_trab,
+  'Educação Centro Expandido' = did_agregado_cptm_educ,
+  'Saúde Centro Expandido' = did_agregado_cptm_saude,
+  'Lazer Centro Expandido' = did_agregado_cptm_lazer,
+  'Compras Centro Expandido' = did_agregado_cptm_comp,
+  'Buscar Emprego Centro Expandido' = did_agregado_cptm_emp,
+  'Trabalho ou Educação ou Buscar Emprego Centro Expandido' = did_agregado_cptm_trabeducem,
+  'Trabalho ou Educação Centro Expandido' = did_agregado_cptm_trabeduc,
+  'Trabalho ou Buscar Emprego Centro Expandido' = did_agregado_cptm_trabemp,
+  'Lazer ou Compras ou Saúde Centro Expandido' = did_agregado_cptm_lazcompsa,
+  'Lazer ou Compras Centro Expandido' = did_agregado_cptm_lazcomp
+)
+
+tabela_result_did_cptm <- etable(
+  lista_did_agregado_cptm,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Diferença em Diferenças - Grupo de Controle CPTM'
+)
+
+tabela_result_did_cptm_latex <- etable(
+  lista_did_agregado_cptm,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Diferença em Diferenças - Grupo de Controle CPTM'
+)
+
+### Event Study ###
+
+lista_event_study_cptm <- list(
+  'Destino Centro Expandido' = event_study_cptm_dest,
+  'Trabalho Centro Expandido' = event_study_cptm_trab,
+  'Educação Centro Expandido' = event_study_cptm_educ,
+  'Saúde Centro Expandido' = event_study_cptm_saude,
+  'Lazer Centro Expandido' = event_study_cptm_lazer,
+  'Compras Centro Expandido' = event_study_cptm_comp,
+  'Buscar Emprego Centro Expandido' = event_study_cptm_emp,
+  'Trabalho ou Educação ou Buscar Emprego Centro Expandido' = event_study_cptm_trabeducem,
+  'Trabalho ou Educação Centro Expandido' = event_study_cptm_trabeduc,
+  'Trabalho ou Buscar Emprego Centro Expandido' = event_study_cptm_trabemp,
+  'Lazer ou Compras ou Saúde Centro Expandido' = event_study_cptm_lazcompsa,
+  'Lazer ou Compras Centro Expandido' = event_study_cptm_lazcomp
+)
+
+tabela_result_es_cptm <- etable(
+  lista_event_study_cptm,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Event Study - Grupo de Controle CPTM'
+)
+
+tabela_result_es_cptm_latex <- etable(
+  lista_event_study_cptm,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Event Study - Grupo de Controle CPTM'
+)
+
 ##### Criando as variáveis de pré e pós e realizando a estimação com o grupo de controle pareado #####
 
 base_reg_matching <- base_matching |>
@@ -802,3 +938,71 @@ event_study_match_lazcomp <- feols(
 )
 
 etable(event_study_match_lazcomp)
+
+#### Agregando todos os resultados em duas tabelas, uma para cada tipo de estimação ####
+
+### Diferença em Diferenças - Média Simples do Efeito ###
+
+lista_did_agregado_match <- list(
+  'Destino Centro Expandido' = did_agregado_match_dest,
+  'Trabalho Centro Expandido' = did_agregado_match_trab,
+  'Educação Centro Expandido' = did_agregado_match_educ,
+  'Saúde Centro Expandido' = did_agregado_match_saude,
+  'Lazer Centro Expandido' = did_agregado_match_lazer,
+  'Compras Centro Expandido' = did_agregado_match_comp,
+  'Buscar Emprego Centro Expandido' = did_agregado_match_emp,
+  'Trabalho ou Educação ou Buscar Emprego Centro Expandido' = did_agregado_match_trabeducem,
+  'Trabalho ou Educação Centro Expandido' = did_agregado_match_trabeduc,
+  'Trabalho ou Buscar Emprego Centro Expandido' = did_agregado_match_trabemp,
+  'Lazer ou Compras ou Saúde Centro Expandido' = did_agregado_match_lazcompsa,
+  'Lazer ou Compras Centro Expandido' = did_agregado_match_lazcomp
+)
+
+tabela_result_did_match <- etable(
+  lista_did_agregado_match,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Diferença em Diferenças - Grupo de Controle Pareado'
+)
+
+tabela_result_did_match_latex <- etable(
+  lista_did_agregado_match,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Diferença em Diferenças - Grupo de Controle Pareado'
+)
+
+### Event Study ###
+
+lista_event_study_match <- list(
+  'Destino Centro Expandido' = event_study_match_dest,
+  'Trabalho Centro Expandido' = event_study_match_trab,
+  'Educação Centro Expandido' = event_study_match_educ,
+  'Saúde Centro Expandido' = event_study_match_saude,
+  'Lazer Centro Expandido' = event_study_match_lazer,
+  'Compras Centro Expandido' = event_study_match_comp,
+  'Buscar Emprego Centro Expandido' = event_study_match_emp,
+  'Trabalho ou Educação ou Buscar Emprego Centro Expandido' = event_study_match_trabeducem,
+  'Trabalho ou Educação Centro Expandido' = event_study_match_trabeduc,
+  'Trabalho ou Buscar Emprego Centro Expandido' = event_study_match_trabemp,
+  'Lazer ou Compras ou Saúde Centro Expandido' = event_study_match_lazcompsa,
+  'Lazer ou Compras Centro Expandido' = event_study_match_lazcomp
+)
+
+tabela_result_es_match <- etable(
+  lista_event_study_match,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Event Study - Grupo de Controle Pareado'
+)
+
+tabela_result_es_match_latex <- etable(
+  lista_event_study_match,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados - Event Study - Grupo de Controle Pareado'
+)
