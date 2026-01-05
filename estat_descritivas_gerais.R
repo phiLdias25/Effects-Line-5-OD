@@ -10,6 +10,7 @@ library(sf)
 library(kableExtra)
 library(scales)
 library(scico)
+library(classInt)
 
 ##### Abrindo base de dados #####
 
@@ -402,28 +403,56 @@ renda_media_2007 <- localiz_2007 |>
 mapa_renda_2007 <- zonas_2007 |>
   left_join(renda_media_2007, by = 'Zona07')
 
-ggplot(mapa_renda_2007) +
-  geom_sf(aes(fill = Renda_Media), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+quartis_renda_2007 <- c(
+  0,
+  1000,
+  3000,
+  6000,
+  max(mapa_renda_2007$Renda_Media, na.rm = TRUE)
+)
+
+labels_quartis_renda <- c(
+  'R$ 0 - R$ 1.000',
+  'R$ 1.000 - R$ 3.000',
+  'R$ 3.000 - R$ 6.000',
+  paste0('Mais de R$ 6.000')
+)
+
+mapa_renda_2007_final <- mapa_renda_2007 |>
+  mutate(
+    Renda_Categoria = cut(
+      Renda_Media,
+      breaks = quartis_renda_2007,
+      labels = labels_quartis_renda,
+      include.lowest = TRUE,
+      right = FALSE
+    )
+  ) |>
+  st_make_valid(mapa_renda_2007_final)
+
+ggplot(mapa_renda_2007_final) +
+  geom_sf(aes(fill = Renda_Categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = 'Renda Real (R$)',
     na.value = 'grey90',
-    limits = c(0, 15000),
-    oob = squish,
-    breaks = seq(0, 15000, by = 5000),
-    guide = guide_colorbar(
+    na.translate = FALSE,
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ## 2017 ##
 
@@ -471,28 +500,56 @@ renda_media_2017 <- localiz_2017 |>
 mapa_renda_2017 <- zonas_2017 |>
   left_join(renda_media_2017, by = 'NumeroZona')
 
-ggplot(mapa_renda_2017) +
-  geom_sf(aes(fill = Renda_Media), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+quartis_renda_2017 <- c(
+  0,
+  1000,
+  3000,
+  6000,
+  max(mapa_renda_2017$Renda_Media, na.rm = TRUE)
+)
+
+labels_quartis_renda <- c(
+  'R$ 0 - R$ 1.000',
+  'R$ 1.000 - R$ 3.000',
+  'R$ 3.000 - R$ 6.000',
+  paste0('Mais de R$ 6.000')
+)
+
+mapa_renda_2017_final <- mapa_renda_2017 |>
+  mutate(
+    Renda_Categoria = cut(
+      Renda_Media,
+      breaks = quartis_renda_2017,
+      labels = labels_quartis_renda,
+      include.lowest = TRUE,
+      right = FALSE
+    )
+  ) |>
+  st_make_valid(mapa_renda_2017_final)
+
+ggplot(mapa_renda_2017_final) +
+  geom_sf(aes(fill = Renda_Categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = 'Renda Real (R$)',
     na.value = 'grey90',
-    limits = c(0, 15000),
-    oob = squish,
-    breaks = seq(0, 15000, by = 5000),
-    guide = guide_colorbar(
+    na.translate = FALSE,
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ## 2023 ##
 
@@ -540,28 +597,56 @@ renda_media_2023 <- localiz_2023 |>
 mapa_renda_2023 <- zonas_2023 |>
   left_join(renda_media_2023, by = 'NumeroZona')
 
-ggplot(mapa_renda_2023) +
-  geom_sf(aes(fill = Renda_Media), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+quartis_renda_2023 <- c(
+  0,
+  1000,
+  3000,
+  6000,
+  max(mapa_renda_2023$Renda_Media, na.rm = TRUE)
+)
+
+labels_quartis_renda <- c(
+  'R$ 0 - R$ 1.000',
+  'R$ 1.000 - R$ 3.000',
+  'R$ 3.000 - R$ 6.000',
+  paste0('Mais de R$ 6.000')
+)
+
+mapa_renda_2023_final <- mapa_renda_2023 |>
+  mutate(
+    Renda_Categoria = cut(
+      Renda_Media,
+      breaks = quartis_renda_2023,
+      labels = labels_quartis_renda,
+      include.lowest = TRUE,
+      right = FALSE
+    )
+  ) |>
+  st_make_valid(mapa_renda_2023_final)
+
+ggplot(mapa_renda_2023_final) +
+  geom_sf(aes(fill = Renda_Categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = 'Renda Real (R$)',
     na.value = 'grey90',
-    limits = c(0, 15000),
-    oob = squish,
-    breaks = seq(0, 15000, by = 5000),
-    guide = guide_colorbar(
+    na.translate = FALSE,
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ### Duração Média das Viagens ###
 
@@ -587,28 +672,56 @@ duracao_media_2007 <- localiz_2007 |>
 mapa_duracao_2007 <- zonas_2007 |>
   left_join(duracao_media_2007, by = 'Zona07')
 
-ggplot(mapa_duracao_2007) +
-  geom_sf(aes(fill = Duracao_media), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+quartis_duracao_2007 <- c(
+  0,
+  15,
+  30,
+  45,
+  max(mapa_duracao_2007$Duracao_media, na.rm = TRUE)
+)
+
+labels_quartis_duracao <- c(
+  '0 - 15 minutos',
+  '15 - 30 minutos',
+  '30 - 45 minutos',
+  paste0('Mais de 45 minutos')
+)
+
+mapa_duracao_2007_final <- mapa_duracao_2007 |>
+  mutate(
+    Duracao_Categoria = cut(
+      Duracao_media,
+      breaks = quartis_duracao_2007,
+      labels = labels_quartis_duracao,
+      include.lowest = TRUE,
+      right = FALSE
+    )
+  ) |>
+  st_make_valid(mapa_duracao_2007_final)
+
+ggplot(mapa_duracao_2007_final) +
+  geom_sf(aes(fill = Duracao_Categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = 'Tempo Médio de Viagem (Minutos)',
     na.value = 'grey90',
-    limits = c(2, 60),
-    oob = squish,
-    breaks = seq(0, 60, by = 10),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ## 2017 ##
 
@@ -632,28 +745,56 @@ duracao_media_2017 <- localiz_2017 |>
 mapa_duracao_2017 <- zonas_2017 |>
   left_join(duracao_media_2017, by = 'NumeroZona')
 
-ggplot(mapa_duracao_2017) +
-  geom_sf(aes(fill = Duracao_Media), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+quartis_duracao_2017 <- c(
+  0,
+  15,
+  30,
+  45,
+  max(mapa_duracao_2017$Duracao_Media, na.rm = TRUE)
+)
+
+labels_quartis_duracao <- c(
+  '0 - 15 minutos',
+  '15 - 30 minutos',
+  '30 - 45 minutos',
+  paste0('Mais de 45 minutos')
+)
+
+mapa_duracao_2017_final <- mapa_duracao_2017 |>
+  mutate(
+    Duracao_Categoria = cut(
+      Duracao_Media,
+      breaks = quartis_duracao_2017,
+      labels = labels_quartis_duracao,
+      include.lowest = TRUE,
+      right = FALSE
+    )
+  ) |>
+  st_make_valid(mapa_duracao_2017_final)
+
+ggplot(mapa_duracao_2017_final) +
+  geom_sf(aes(fill = Duracao_Categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = 'Tempo Médio de Viagem (Minutos)',
     na.value = 'grey90',
-    limits = c(2, 60),
-    oob = squish,
-    breaks = seq(0, 60, by = 10),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ## 2023 ##
 
@@ -677,28 +818,56 @@ duracao_media_2023 <- localiz_2023 |>
 mapa_duracao_2023 <- zonas_2023 |>
   left_join(duracao_media_2023, by = 'NumeroZona')
 
-ggplot(mapa_duracao_2023) +
-  geom_sf(aes(fill = Duracao_Media), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+quartis_duracao_2023 <- c(
+  0,
+  15,
+  30,
+  45,
+  max(mapa_duracao_2023$Duracao_Media, na.rm = TRUE)
+)
+
+labels_quartis_duracao <- c(
+  '0 - 15 minutos',
+  '15 - 30 minutos',
+  '30 - 45 minutos',
+  paste0('Mais de 45 minutos')
+)
+
+mapa_duracao_2023_final <- mapa_duracao_2023 |>
+  mutate(
+    Duracao_Categoria = cut(
+      Duracao_Media,
+      breaks = quartis_duracao_2023,
+      labels = labels_quartis_duracao,
+      include.lowest = TRUE,
+      right = FALSE
+    )
+  ) |>
+  st_make_valid(mapa_duracao_2023_final)
+
+ggplot(mapa_duracao_2023_final) +
+  geom_sf(aes(fill = Duracao_Categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = 'Tempo Médio de Viagem (Minutos)',
     na.value = 'grey90',
-    limits = c(2, 60),
-    oob = squish,
-    breaks = seq(0, 60, by = 10),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 #### Mapas de calor de algumas variáveis indicadoras ####
 
@@ -771,52 +940,108 @@ desempregados_2007 <- localiz_2007_indic |>
 mapa_trabreg_2007 <- zonas_2007 |>
   left_join(empregados_2007, by = 'Zona07')
 
-mapa_desemp_2007 <- zonas_2007 |>
-  left_join(desempregados_2007, by = 'Zona07')
+quartis_trabreg_2007 <- c(
+  0,
+  0.25,
+  0.50,
+  0.75,
+  max(mapa_trabreg_2007$freq_trab_reg, na.rm = TRUE)
+)
 
-ggplot(mapa_trabreg_2007) +
-  geom_sf(aes(fill = freq_trab_reg), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+labels_quartis_trabreg <- c(
+  '0 - 25%',
+  '25% - 50%',
+  '50% - 75%',
+  paste0('Mais de 75%')
+)
+
+mapa_trabreg_2007_final <- mapa_trabreg_2007 |>
+  mutate(
+    categoria = cut(
+      freq_trab_reg,
+      breaks = quartis_trabreg_2007,
+      labels = labels_quartis_trabreg,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_trabreg_2007_final)
+
+ggplot(mapa_trabreg_2007_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas em trabalho regular',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_desemp_2007) +
-  geom_sf(aes(fill = freq_desempregado), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+mapa_desemp_2007 <- zonas_2007 |>
+  left_join(desempregados_2007, by = 'Zona07')
+
+quartis_desemp_2007 <- c(
+  0,
+  0.03,
+  0.06,
+  0.09,
+  max(mapa_desemp_2007$freq_desempregado, na.rm = TRUE)
+)
+
+labels_quartis_desemp <- c(
+  '0 - 3%',
+  '3% - 6%',
+  '6% - 9%',
+  paste0('Mais de 9%')
+)
+
+mapa_desemp_2007_final <- mapa_desemp_2007 |>
+  mutate(
+    categoria = cut(
+      freq_desempregado,
+      breaks = quartis_desemp_2007,
+      labels = labels_quartis_desemp,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_desemp_2007_final)
+
+ggplot(mapa_desemp_2007_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas desempregadas',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ## 2017 ##
 
@@ -878,52 +1103,108 @@ desempregados_2017 <- localiz_2017_indic |>
 mapa_trabreg_2017 <- zonas_2017 |>
   left_join(empregados_2017, by = 'NumeroZona')
 
-mapa_desemp_2017 <- zonas_2017 |>
-  left_join(desempregados_2017, by = 'NumeroZona')
+quartis_trabreg_2017 <- c(
+  0,
+  0.25,
+  0.50,
+  0.75,
+  max(mapa_trabreg_2017$freq_trab_reg, na.rm = TRUE)
+)
 
-ggplot(mapa_trabreg_2017) +
-  geom_sf(aes(fill = freq_trab_reg), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+labels_quartis_trabreg <- c(
+  '0 - 25%',
+  '25% - 50%',
+  '50% - 75%',
+  paste0('Mais de 75%')
+)
+
+mapa_trabreg_2017_final <- mapa_trabreg_2017 |>
+  mutate(
+    categoria = cut(
+      freq_trab_reg,
+      breaks = quartis_trabreg_2017,
+      labels = labels_quartis_trabreg,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_trabreg_2017_final)
+
+ggplot(mapa_trabreg_2017_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas em trabalho regular',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_desemp_2017) +
-  geom_sf(aes(fill = freq_desempregado), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+mapa_desemp_2017 <- zonas_2017 |>
+  left_join(desempregados_2017, by = 'NumeroZona')
+
+quartis_desemp_2017 <- c(
+  0,
+  0.03,
+  0.06,
+  0.09,
+  max(mapa_desemp_2017$freq_desempregado, na.rm = TRUE)
+)
+
+labels_quartis_desemp <- c(
+  '0 - 3%',
+  '3% - 6%',
+  '6% - 9%',
+  paste0('Mais de 9%')
+)
+
+mapa_desemp_2017_final <- mapa_desemp_2017 |>
+  mutate(
+    categoria = cut(
+      freq_desempregado,
+      breaks = quartis_desemp_2017,
+      labels = labels_quartis_desemp,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_desemp_2017_final)
+
+ggplot(mapa_desemp_2017_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas desempregadas',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ## 2023 ##
 
@@ -985,52 +1266,108 @@ desempregados_2023 <- localiz_2023_indic |>
 mapa_trabreg_2023 <- zonas_2023 |>
   left_join(empregados_2017, by = 'NumeroZona')
 
-mapa_desemp_2023 <- zonas_2023 |>
-  left_join(desempregados_2017, by = 'NumeroZona')
+quartis_trabreg_2023 <- c(
+  0,
+  0.25,
+  0.50,
+  0.75,
+  max(mapa_trabreg_2023$freq_trab_reg, na.rm = TRUE)
+)
 
-ggplot(mapa_trabreg_2023) +
-  geom_sf(aes(fill = freq_trab_reg), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+labels_quartis_trabreg <- c(
+  '0 - 25%',
+  '25% - 50%',
+  '50% - 75%',
+  paste0('Mais de 75%')
+)
+
+mapa_trabreg_2023_final <- mapa_trabreg_2023 |>
+  mutate(
+    categoria = cut(
+      freq_trab_reg,
+      breaks = quartis_trabreg_2023,
+      labels = labels_quartis_trabreg,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_trabreg_2023_final)
+
+ggplot(mapa_trabreg_2023_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas em trabalho regular',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_desemp_2023) +
-  geom_sf(aes(fill = freq_desempregado), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+mapa_desemp_2023 <- zonas_2023 |>
+  left_join(desempregados_2017, by = 'NumeroZona')
+
+quartis_desemp_2023 <- c(
+  0,
+  0.03,
+  0.06,
+  0.09,
+  max(mapa_desemp_2023$freq_desempregado, na.rm = TRUE)
+)
+
+labels_quartis_desemp <- c(
+  '0 - 3%',
+  '3% - 6%',
+  '6% - 9%',
+  paste0('Mais de 9%')
+)
+
+mapa_desemp_2023_final <- mapa_desemp_2023 |>
+  mutate(
+    categoria = cut(
+      freq_desempregado,
+      breaks = quartis_desemp_2023,
+      labels = labels_quartis_desemp,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_desemp_2023_final)
+
+ggplot(mapa_desemp_2023_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas desempregadas',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ### Frequência de indivíduos em trabalho com carteira assinada e autônomos por ano ###
 
@@ -1101,52 +1438,108 @@ autonomo_2007 <- localiz_2007_vinc |>
 mapa_carteira_2007 <- zonas_2007 |>
   left_join(carteira_2007, by = 'Zona07')
 
-mapa_autonomo_2007 <- zonas_2007 |>
-  left_join(autonomo_2007, by = 'Zona07')
+quartis_carteira_2007 <- c(
+  0,
+  0.25,
+  0.50,
+  0.75,
+  max(mapa_carteira_2007$freq_carteira, na.rm = TRUE)
+)
 
-ggplot(mapa_carteira_2007) +
-  geom_sf(aes(fill = freq_carteira), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+labels_quartis_carteira <- c(
+  '0 - 25%',
+  '25% - 50%',
+  '50% - 75%',
+  paste0('Mais de 75%')
+)
+
+mapa_carteira_2007_final <- mapa_carteira_2007 |>
+  mutate(
+    categoria = cut(
+      freq_carteira,
+      breaks = quartis_carteira_2007,
+      labels = labels_quartis_carteira,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_carteira_2007_final)
+
+ggplot(mapa_carteira_2007_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas trabalhando com carteira assinada',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_autonomo_2007) +
-  geom_sf(aes(fill = freq_autonomo), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+mapa_autonomo_2007 <- zonas_2007 |>
+  left_join(autonomo_2007, by = 'Zona07')
+
+quartis_autonomo_2007 <- c(
+  0,
+  0.10,
+  0.25,
+  0.35,
+  max(mapa_carteira_2007$freq_carteira, na.rm = TRUE)
+)
+
+labels_quartis_autonomo <- c(
+  '0 - 10%',
+  '10% - 25%',
+  '25% - 35%',
+  paste0('Mais de 35%')
+)
+
+mapa_autonomo_2007_final <- mapa_autonomo_2007 |>
+  mutate(
+    categoria = cut(
+      freq_autonomo,
+      breaks = quartis_autonomo_2007,
+      labels = labels_quartis_autonomo,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_autonomo_2007_final)
+
+ggplot(mapa_autonomo_2007_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas em trabalho autônomo',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ## 2017 ##
 
@@ -1208,52 +1601,108 @@ autonomo_2017 <- localiz_2017_vinc |>
 mapa_carteira_2017 <- zonas_2017 |>
   left_join(carteira_2017, by = 'NumeroZona')
 
-mapa_autonomo_2017 <- zonas_2017 |>
-  left_join(autonomo_2017, by = 'NumeroZona')
+quartis_carteira_2017 <- c(
+  0,
+  0.25,
+  0.50,
+  0.75,
+  max(mapa_carteira_2017$freq_carteira, na.rm = TRUE)
+)
 
-ggplot(mapa_carteira_2017) +
-  geom_sf(aes(fill = freq_carteira), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+labels_quartis_carteira <- c(
+  '0 - 25%',
+  '25% - 50%',
+  '50% - 75%',
+  paste0('Mais de 75%')
+)
+
+mapa_carteira_2017_final <- mapa_carteira_2017 |>
+  mutate(
+    categoria = cut(
+      freq_carteira,
+      breaks = quartis_carteira_2017,
+      labels = labels_quartis_carteira,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_carteira_2017_final)
+
+ggplot(mapa_carteira_2017_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas trabalhando com carteira assinada',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_autonomo_2017) +
-  geom_sf(aes(fill = freq_autonomo), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+mapa_autonomo_2017 <- zonas_2017 |>
+  left_join(autonomo_2017, by = 'NumeroZona')
+
+quartis_autonomo_2017 <- c(
+  0,
+  0.10,
+  0.25,
+  0.35,
+  max(mapa_carteira_2017$freq_carteira, na.rm = TRUE)
+)
+
+labels_quartis_autonomo <- c(
+  '0 - 10%',
+  '10% - 25%',
+  '25% - 35%',
+  paste0('Mais de 35%')
+)
+
+mapa_autonomo_2017_final <- mapa_autonomo_2017 |>
+  mutate(
+    categoria = cut(
+      freq_autonomo,
+      breaks = quartis_autonomo_2017,
+      labels = labels_quartis_autonomo,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_autonomo_2017_final)
+
+ggplot(mapa_autonomo_2017_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas em trabalho autônomo',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ## 2023 ##
 
@@ -1315,52 +1764,108 @@ autonomo_2023 <- localiz_2023_vinc |>
 mapa_carteira_2023 <- zonas_2023 |>
   left_join(carteira_2017, by = 'NumeroZona')
 
-mapa_autonomo_2023 <- zonas_2023 |>
-  left_join(autonomo_2023, by = 'NumeroZona')
+quartis_carteira_2023 <- c(
+  0,
+  0.25,
+  0.50,
+  0.75,
+  max(mapa_carteira_2023$freq_carteira, na.rm = TRUE)
+)
 
-ggplot(mapa_carteira_2023) +
-  geom_sf(aes(fill = freq_carteira), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+labels_quartis_carteira <- c(
+  '0 - 25%',
+  '25% - 50%',
+  '50% - 75%',
+  paste0('Mais de 75%')
+)
+
+mapa_carteira_2023_final <- mapa_carteira_2023 |>
+  mutate(
+    categoria = cut(
+      freq_carteira,
+      breaks = quartis_carteira_2023,
+      labels = labels_quartis_carteira,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_carteira_2023_final)
+
+ggplot(mapa_carteira_2023_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas trabalhando com carteira assinada',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_autonomo_2023) +
-  geom_sf(aes(fill = freq_autonomo), color = 'NA', size = 0.1) +
-  scale_fill_scico(
-    palette = 'lajolla',
+mapa_autonomo_2023 <- zonas_2023 |>
+  left_join(autonomo_2023, by = 'NumeroZona')
+
+quartis_autonomo_2023 <- c(
+  0,
+  0.10,
+  0.25,
+  0.35,
+  max(mapa_carteira_2023$freq_carteira, na.rm = TRUE)
+)
+
+labels_quartis_autonomo <- c(
+  '0 - 10%',
+  '10% - 25%',
+  '25% - 35%',
+  paste0('Mais de 35%')
+)
+
+mapa_autonomo_2023_final <- mapa_autonomo_2023 |>
+  mutate(
+    categoria = cut(
+      freq_autonomo,
+      breaks = quartis_autonomo_2023,
+      labels = labels_quartis_autonomo,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_autonomo_2023_final)
+
+ggplot(mapa_autonomo_2023_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
+    palette = 'bamako',
     direction = -1,
     name = '% de pessoas em trabalho autônomo',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ### Frequência de pessoas que utilizam ou metrô, ou ônibus municipal ou carro como meio de transporte principal ###
 
@@ -1447,77 +1952,161 @@ carro_2007 <- localiz_2007_transp |>
 mapa_metro_2007 <- zonas_2007 |>
   left_join(metro_2007, by = 'Zona07')
 
-mapa_onibus_2007 <- zonas_2007 |>
-  left_join(onibus_2007, by = 'Zona07')
+quartis_metro_2007 <- c(
+  0,
+  0.05,
+  0.10,
+  0.20,
+  max(mapa_metro_2007$freq_metro, na.rm = TRUE)
+)
 
-mapa_carro_2007 <- zonas_2007 |>
-  left_join(carro_2007, by = 'Zona07')
+labels_quartis_metro <- c(
+  '0 - 5%',
+  '5% - 10%',
+  '10% - 20%',
+  paste0('Mais de 20%')
+)
 
-ggplot(mapa_metro_2007) +
-  geom_sf(aes(fill = freq_metro), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+mapa_metro_2007_final <- mapa_metro_2007 |>
+  mutate(
+    categoria = cut(
+      freq_metro,
+      breaks = quartis_metro_2007,
+      labels = labels_quartis_metro,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_metro_2007_final)
+
+ggplot(mapa_metro_2007_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = '% de pessoas usando metrô como transporte principal',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_onibus_2007) +
-  geom_sf(aes(fill = freq_onibus), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+mapa_onibus_2007 <- zonas_2007 |>
+  left_join(onibus_2007, by = 'Zona07')
+
+quartis_onibus_2007 <- c(
+  0,
+  0.03,
+  0.06,
+  0.10,
+  max(mapa_onibus_2007$freq_onibus, na.rm = TRUE)
+)
+
+labels_quartis_onibus <- c(
+  '0 - 3%',
+  '3% - 6%',
+  '6% - 10%',
+  paste0('Mais de 10%')
+)
+
+mapa_onibus_2007_final <- mapa_onibus_2007 |>
+  mutate(
+    categoria = cut(
+      freq_onibus,
+      breaks = quartis_onibus_2007,
+      labels = labels_quartis_onibus,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_onibus_2007_final)
+
+ggplot(mapa_onibus_2007_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = '% de pessoas usando ônibus como transporte principal',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_carro_2007) +
-  geom_sf(aes(fill = freq_carro), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+mapa_carro_2007 <- zonas_2007 |>
+  left_join(carro_2007, by = 'Zona07')
+
+quartis_carro_2007 <- c(
+  0,
+  0.05,
+  0.10,
+  0.20,
+  max(mapa_carro_2007$freq_carro, na.rm = TRUE)
+)
+
+labels_quartis_carro <- c(
+  '0 - 5%',
+  '5% - 10%',
+  '10% - 20%',
+  paste0('Mais de 20%')
+)
+
+mapa_carro_2007_final <- mapa_carro_2007 |>
+  mutate(
+    categoria = cut(
+      freq_carro,
+      breaks = quartis_carro_2007,
+      labels = labels_quartis_carro,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_carro_2007_final)
+
+ggplot(mapa_carro_2007_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = '% de pessoas usando carro como transporte principal',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ## 2017 ##
 
@@ -1594,78 +2183,161 @@ carro_2017 <- localiz_2017_transp |>
 mapa_metro_2017 <- zonas_2017 |>
   left_join(metro_2017, by = 'NumeroZona')
 
-mapa_onibus_2017 <- zonas_2017 |>
-  left_join(onibus_2017, by = 'NumeroZona')
+quartis_metro_2017 <- c(
+  0,
+  0.05,
+  0.10,
+  0.20,
+  max(mapa_metro_2017$freq_metro, na.rm = TRUE)
+)
 
-mapa_carro_2017 <- zonas_2017 |>
-  left_join(carro_2017, by = 'NumeroZona')
+labels_quartis_metro <- c(
+  '0 - 5%',
+  '5% - 10%',
+  '10% - 20%',
+  paste0('Mais de 20%')
+)
 
+mapa_metro_2017_final <- mapa_metro_2017 |>
+  mutate(
+    categoria = cut(
+      freq_metro,
+      breaks = quartis_metro_2017,
+      labels = labels_quartis_metro,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_metro_2017_final)
 
-ggplot(mapa_metro_2017) +
-  geom_sf(aes(fill = freq_metro), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+ggplot(mapa_metro_2017_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = '% de pessoas usando metrô como transporte principal',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_onibus_2017) +
-  geom_sf(aes(fill = freq_onibus), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+mapa_onibus_2017 <- zonas_2017 |>
+  left_join(onibus_2017, by = 'NumeroZona')
+
+quartis_onibus_2017 <- c(
+  0,
+  0.03,
+  0.06,
+  0.10,
+  max(mapa_onibus_2017$freq_onibus, na.rm = TRUE)
+)
+
+labels_quartis_onibus <- c(
+  '0 - 3%',
+  '3% - 6%',
+  '6% - 10%',
+  paste0('Mais de 10%')
+)
+
+mapa_onibus_2017_final <- mapa_onibus_2017 |>
+  mutate(
+    categoria = cut(
+      freq_onibus,
+      breaks = quartis_onibus_2017,
+      labels = labels_quartis_onibus,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_onibus_2017_final)
+
+ggplot(mapa_onibus_2017_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = '% de pessoas usando ônibus como transporte principal',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_carro_2017) +
-  geom_sf(aes(fill = freq_carro), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+mapa_carro_2017 <- zonas_2017 |>
+  left_join(carro_2017, by = 'NumeroZona')
+
+quartis_carro_2017 <- c(
+  0,
+  0.05,
+  0.10,
+  0.20,
+  max(mapa_carro_2017$freq_carro, na.rm = TRUE)
+)
+
+labels_quartis_carro <- c(
+  '0 - 5%',
+  '5% - 10%',
+  '10% - 20%',
+  paste0('Mais de 20%')
+)
+
+mapa_carro_2017_final <- mapa_carro_2017 |>
+  mutate(
+    categoria = cut(
+      freq_carro,
+      breaks = quartis_carro_2017,
+      labels = labels_quartis_carro,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_carro_2017_final)
+
+ggplot(mapa_carro_2017_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = '% de pessoas usando carro como transporte principal',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
 ## 2023 ##
 
@@ -1740,77 +2412,160 @@ carro_2023 <- localiz_2023_transp |>
   )
 
 mapa_metro_2023 <- zonas_2023 |>
-  left_join(metro_2017, by = 'NumeroZona')
+  left_join(metro_2023, by = 'NumeroZona')
 
-mapa_onibus_2023 <- zonas_2023 |>
-  left_join(onibus_2017, by = 'NumeroZona')
+quartis_metro_2023 <- c(
+  0,
+  0.05,
+  0.10,
+  0.20,
+  max(mapa_metro_2023$freq_metro, na.rm = TRUE)
+)
 
-mapa_carro_2023 <- zonas_2023 |>
-  left_join(carro_2017, by = 'NumeroZona')
+labels_quartis_metro <- c(
+  '0 - 5%',
+  '5% - 10%',
+  '10% - 20%',
+  paste0('Mais de 20%')
+)
 
+mapa_metro_2023_final <- mapa_metro_2023 |>
+  mutate(
+    categoria = cut(
+      freq_metro,
+      breaks = quartis_metro_2023,
+      labels = labels_quartis_metro,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_metro_2023_final)
 
-ggplot(mapa_metro_2023) +
-  geom_sf(aes(fill = freq_metro), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+ggplot(mapa_metro_2023_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = '% de pessoas usando metrô como transporte principal',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_onibus_2023) +
-  geom_sf(aes(fill = freq_onibus), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+mapa_onibus_2023 <- zonas_2023 |>
+  left_join(onibus_2023, by = 'NumeroZona')
+
+quartis_onibus_2023 <- c(
+  0,
+  0.03,
+  0.06,
+  0.10,
+  max(mapa_onibus_2023$freq_onibus, na.rm = TRUE)
+)
+
+labels_quartis_onibus <- c(
+  '0 - 3%',
+  '3% - 6%',
+  '6% - 10%',
+  paste0('Mais de 10%')
+)
+
+mapa_onibus_2023_final <- mapa_onibus_2023 |>
+  mutate(
+    categoria = cut(
+      freq_onibus,
+      breaks = quartis_onibus_2023,
+      labels = labels_quartis_onibus,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_onibus_2023_final)
+
+ggplot(mapa_onibus_2023_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = '% de pessoas usando ônibus como transporte principal',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
 
-ggplot(mapa_carro_2023) +
-  geom_sf(aes(fill = freq_carro), color = 'NA', size = 0.1) +
-  scale_fill_scico(
+mapa_carro_2023 <- zonas_2023 |>
+  left_join(carro_2023, by = 'NumeroZona')
+
+quartis_carro_2023 <- c(
+  0,
+  0.05,
+  0.10,
+  0.20,
+  max(mapa_carro_2023$freq_carro, na.rm = TRUE)
+)
+
+labels_quartis_carro <- c(
+  '0 - 5%',
+  '5% - 10%',
+  '10% - 20%',
+  paste0('Mais de 20%')
+)
+
+mapa_carro_2023_final <- mapa_carro_2023 |>
+  mutate(
+    categoria = cut(
+      freq_carro,
+      breaks = quartis_carro_2023,
+      labels = labels_quartis_carro,
+      include.lowest = TRUE
+    )
+  ) |>
+  st_make_valid(mapa_carro_2023_final)
+
+ggplot(mapa_carro_2023_final) +
+  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+  scale_fill_scico_d(
     palette = 'oslo',
     direction = -1,
     name = '% de pessoas usando carro como transporte principal',
     na.value = 'grey90',
-    limits = c(0, 1),
-    breaks = seq(0, 1, by = 0.25),
-    guide = guide_colorbar(
+    breaks = function(x) na.omit(x),
+
+    guide = guide_legend(
       title.position = "top",
       title.hjust = 0.5,
-      title.vjust = 1.0,
-      frame.colour = 'black',
-      barwidth = 15,
-      barheight = 1
+      nrow = 1
     )
   ) +
   coord_sf(clip = 'off') +
   theme_void() +
-  theme(legend.position = 'bottom', legend.key.width = unit(1, "cm"))
+  theme(
+    legend.position = 'bottom',
+    legend.title = element_text(face = 'bold', vjust = 1),
+    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
