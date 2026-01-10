@@ -11,6 +11,7 @@ library(kableExtra)
 library(scales)
 library(scico)
 library(classInt)
+library(geobr)
 
 ##### Abrindo base de dados #####
 
@@ -383,6 +384,17 @@ any(st_is_empty(pontos_2007))
 
 localiz_2007 <- st_join(pontos_2007, zonas_2007)
 
+sp_urb_07 <- read_urban_area(year = 2005, code_state = "SP")
+
+mancha_urbana_sp_07 <- sp_urb_07[sp_urb_07$name_muni == "São Paulo", ] |>
+  st_transform(crs = 31983) |>
+  st_make_valid() |>
+  st_union()
+
+mun_07 <- read_metro_area(code_state = 'SP', year = 2005)
+
+mun_07 <- mun_07[mun_07$name_metro == "RM São Paulo", ]
+
 renda_media_2007 <- localiz_2007 |>
   select(
     VL_REN_I_D,
@@ -430,14 +442,25 @@ mapa_renda_2007_final <- mapa_renda_2007 |>
   ) |>
   st_make_valid(mapa_renda_2007_final)
 
-ggplot(mapa_renda_2007_final) +
-  geom_sf(aes(fill = Renda_Categoria), color = 'grey', size = 0.1) +
+mapa_renda_2007_final_2 <- st_intersection(
+  st_make_valid(mapa_renda_2007_final),
+  st_make_valid(mancha_urbana_sp_07)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_renda_2007_final_2,
+    aes(fill = Renda_Categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
     name = 'Renda Real (R$)',
     na.value = 'grey90',
-    na.translate = FALSE,
+    breaks = function(x) na.omit(x),
 
     guide = guide_legend(
       title.position = "top",
@@ -479,6 +502,17 @@ pontos_2017 <- od_completa |>
 any(st_is_empty(pontos_2017))
 
 localiz_2017 <- st_join(pontos_2017, zonas_2017)
+
+sp_urb_17 <- read_urban_area(year = 2015, code_state = "SP")
+
+mancha_urbana_sp_17 <- sp_urb_17[sp_urb_17$name_muni == "São Paulo/SP", ] |>
+  st_transform(crs = 31983) |>
+  st_make_valid() |>
+  st_union()
+
+mun_17 <- read_metro_area(code_state = 'SP', year = 2017)
+
+mun_17 <- mun_17[mun_17$name_metro == "RM São Paulo", ]
 
 renda_media_2017 <- localiz_2017 |>
   select(
@@ -527,14 +561,25 @@ mapa_renda_2017_final <- mapa_renda_2017 |>
   ) |>
   st_make_valid(mapa_renda_2017_final)
 
-ggplot(mapa_renda_2017_final) +
-  geom_sf(aes(fill = Renda_Categoria), color = 'grey', size = 0.1) +
+mapa_renda_2017_final_2 <- st_intersection(
+  st_make_valid(mapa_renda_2017_final),
+  st_make_valid(mancha_urbana_sp_17)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_renda_2017_final_2,
+    aes(fill = Renda_Categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
     name = 'Renda Real (R$)',
     na.value = 'grey90',
-    na.translate = FALSE,
+    breaks = function(x) na.omit(x),
 
     guide = guide_legend(
       title.position = "top",
@@ -576,6 +621,17 @@ pontos_2023 <- od_completa |>
 any(st_is_empty(pontos_2023))
 
 localiz_2023 <- st_join(pontos_2023, zonas_2023)
+
+sp_urb_23 <- read_urban_area(year = 2015, code_state = "SP")
+
+mancha_urbana_sp_23 <- sp_urb_23[sp_urb_23$name_muni == "São Paulo/SP", ] |>
+  st_transform(crs = 31983) |>
+  st_make_valid() |>
+  st_union()
+
+mun_23 <- read_metro_area(code_state = 'SP', year = 2018)
+
+mun_23 <- mun_23[mun_23$name_metro == "RM São Paulo", ]
 
 renda_media_2023 <- localiz_2023 |>
   select(
@@ -624,8 +680,19 @@ mapa_renda_2023_final <- mapa_renda_2023 |>
   ) |>
   st_make_valid(mapa_renda_2023_final)
 
-ggplot(mapa_renda_2023_final) +
-  geom_sf(aes(fill = Renda_Categoria), color = 'grey', size = 0.1) +
+mapa_renda_2023_final_2 <- st_intersection(
+  st_make_valid(mapa_renda_2023_final),
+  st_make_valid(mancha_urbana_sp_23)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_renda_2023_final_2,
+    aes(fill = Renda_Categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -699,10 +766,21 @@ mapa_duracao_2007_final <- mapa_duracao_2007 |>
   ) |>
   st_make_valid(mapa_duracao_2007_final)
 
-ggplot(mapa_duracao_2007_final) +
-  geom_sf(aes(fill = Duracao_Categoria), color = 'grey', size = 0.1) +
+mapa_duracao_2007_final_2 <- st_intersection(
+  st_make_valid(mapa_duracao_2007_final),
+  st_make_valid(mancha_urbana_sp_07)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_duracao_2007_final_2,
+    aes(fill = Duracao_Categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = 'Tempo Médio de Viagem (Minutos)',
     na.value = 'grey90',
@@ -772,10 +850,21 @@ mapa_duracao_2017_final <- mapa_duracao_2017 |>
   ) |>
   st_make_valid(mapa_duracao_2017_final)
 
-ggplot(mapa_duracao_2017_final) +
-  geom_sf(aes(fill = Duracao_Categoria), color = 'grey', size = 0.1) +
+mapa_duracao_2017_final_2 <- st_intersection(
+  st_make_valid(mapa_duracao_2017_final),
+  st_make_valid(mancha_urbana_sp_17)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_duracao_2017_final_2,
+    aes(fill = Duracao_Categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = 'Tempo Médio de Viagem (Minutos)',
     na.value = 'grey90',
@@ -845,10 +934,21 @@ mapa_duracao_2023_final <- mapa_duracao_2023 |>
   ) |>
   st_make_valid(mapa_duracao_2023_final)
 
-ggplot(mapa_duracao_2023_final) +
-  geom_sf(aes(fill = Duracao_Categoria), color = 'grey', size = 0.1) +
+mapa_duracao_2023_final_2 <- st_intersection(
+  st_make_valid(mapa_duracao_2023_final),
+  st_make_valid(mancha_urbana_sp_23)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_duracao_2023_final_2,
+    aes(fill = Duracao_Categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = 'Tempo Médio de Viagem (Minutos)',
     na.value = 'grey90',
@@ -966,8 +1066,19 @@ mapa_trabreg_2007_final <- mapa_trabreg_2007 |>
   ) |>
   st_make_valid(mapa_trabreg_2007_final)
 
-ggplot(mapa_trabreg_2007_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_trabreg_2007_final_2 <- st_intersection(
+  st_make_valid(mapa_trabreg_2007_final),
+  st_make_valid(mancha_urbana_sp_07)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_trabreg_2007_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1019,8 +1130,19 @@ mapa_desemp_2007_final <- mapa_desemp_2007 |>
   ) |>
   st_make_valid(mapa_desemp_2007_final)
 
-ggplot(mapa_desemp_2007_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_desemp_2007_final_2 <- st_intersection(
+  st_make_valid(mapa_desemp_2007_final),
+  st_make_valid(mancha_urbana_sp_07)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_desemp_2007_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1129,8 +1251,19 @@ mapa_trabreg_2017_final <- mapa_trabreg_2017 |>
   ) |>
   st_make_valid(mapa_trabreg_2017_final)
 
-ggplot(mapa_trabreg_2017_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_trabreg_2017_final_2 <- st_intersection(
+  st_make_valid(mapa_trabreg_2017_final),
+  st_make_valid(mancha_urbana_sp_17)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_trabreg_2017_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1182,8 +1315,19 @@ mapa_desemp_2017_final <- mapa_desemp_2017 |>
   ) |>
   st_make_valid(mapa_desemp_2017_final)
 
-ggplot(mapa_desemp_2017_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_desemp_2017_final_2 <- st_intersection(
+  st_make_valid(mapa_desemp_2017_final),
+  st_make_valid(mancha_urbana_sp_17)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_desemp_2017_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1292,8 +1436,19 @@ mapa_trabreg_2023_final <- mapa_trabreg_2023 |>
   ) |>
   st_make_valid(mapa_trabreg_2023_final)
 
-ggplot(mapa_trabreg_2023_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_trabreg_2023_final_2 <- st_intersection(
+  st_make_valid(mapa_trabreg_2023_final),
+  st_make_valid(mancha_urbana_sp_23)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_trabreg_2023_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1345,8 +1500,19 @@ mapa_desemp_2023_final <- mapa_desemp_2023 |>
   ) |>
   st_make_valid(mapa_desemp_2023_final)
 
-ggplot(mapa_desemp_2023_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_desemp_2023_final_2 <- st_intersection(
+  st_make_valid(mapa_desemp_2023_final),
+  st_make_valid(mancha_urbana_sp_23)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_desemp_2023_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1464,8 +1630,19 @@ mapa_carteira_2007_final <- mapa_carteira_2007 |>
   ) |>
   st_make_valid(mapa_carteira_2007_final)
 
-ggplot(mapa_carteira_2007_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_carteira_2007_final_2 <- st_intersection(
+  st_make_valid(mapa_carteira_2007_final),
+  st_make_valid(mancha_urbana_sp_07)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_carteira_2007_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1517,8 +1694,19 @@ mapa_autonomo_2007_final <- mapa_autonomo_2007 |>
   ) |>
   st_make_valid(mapa_autonomo_2007_final)
 
-ggplot(mapa_autonomo_2007_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_autonomo_2007_final_2 <- st_intersection(
+  st_make_valid(mapa_autonomo_2007_final),
+  st_make_valid(mancha_urbana_sp_07)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_autonomo_2007_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1627,8 +1815,19 @@ mapa_carteira_2017_final <- mapa_carteira_2017 |>
   ) |>
   st_make_valid(mapa_carteira_2017_final)
 
-ggplot(mapa_carteira_2017_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_carteira_2017_final_2 <- st_intersection(
+  st_make_valid(mapa_carteira_2017_final),
+  st_make_valid(mancha_urbana_sp_17)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_carteira_2017_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1680,8 +1879,19 @@ mapa_autonomo_2017_final <- mapa_autonomo_2017 |>
   ) |>
   st_make_valid(mapa_autonomo_2017_final)
 
-ggplot(mapa_autonomo_2017_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_autonomo_2017_final_2 <- st_intersection(
+  st_make_valid(mapa_autonomo_2017_final),
+  st_make_valid(mancha_urbana_sp_17)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_autonomo_2017_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1790,8 +2000,19 @@ mapa_carteira_2023_final <- mapa_carteira_2023 |>
   ) |>
   st_make_valid(mapa_carteira_2023_final)
 
-ggplot(mapa_carteira_2023_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_carteira_2023_final_2 <- st_intersection(
+  st_make_valid(mapa_carteira_2023_final),
+  st_make_valid(mancha_urbana_sp_23)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_carteira_2023_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1843,8 +2064,19 @@ mapa_autonomo_2023_final <- mapa_autonomo_2023 |>
   ) |>
   st_make_valid(mapa_autonomo_2023_final)
 
-ggplot(mapa_autonomo_2023_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_autonomo_2023_final_2 <- st_intersection(
+  st_make_valid(mapa_autonomo_2023_final),
+  st_make_valid(mancha_urbana_sp_23)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_autonomo_2023_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
@@ -1978,10 +2210,21 @@ mapa_metro_2007_final <- mapa_metro_2007 |>
   ) |>
   st_make_valid(mapa_metro_2007_final)
 
-ggplot(mapa_metro_2007_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_metro_2007_final_2 <- st_intersection(
+  st_make_valid(mapa_metro_2007_final),
+  st_make_valid(mancha_urbana_sp_07)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_metro_2007_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = '% de pessoas usando metrô como transporte principal',
     na.value = 'grey90',
@@ -2031,10 +2274,21 @@ mapa_onibus_2007_final <- mapa_onibus_2007 |>
   ) |>
   st_make_valid(mapa_onibus_2007_final)
 
-ggplot(mapa_onibus_2007_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_onibus_2007_final_2 <- st_intersection(
+  st_make_valid(mapa_onibus_2007_final),
+  st_make_valid(mancha_urbana_sp_07)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_onibus_2007_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = '% de pessoas usando ônibus como transporte principal',
     na.value = 'grey90',
@@ -2084,10 +2338,21 @@ mapa_carro_2007_final <- mapa_carro_2007 |>
   ) |>
   st_make_valid(mapa_carro_2007_final)
 
-ggplot(mapa_carro_2007_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_carro_2007_final_2 <- st_intersection(
+  st_make_valid(mapa_carro_2007_final),
+  st_make_valid(mancha_urbana_sp_07)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_carro_2007_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = '% de pessoas usando carro como transporte principal',
     na.value = 'grey90',
@@ -2209,10 +2474,21 @@ mapa_metro_2017_final <- mapa_metro_2017 |>
   ) |>
   st_make_valid(mapa_metro_2017_final)
 
-ggplot(mapa_metro_2017_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_metro_2017_final_2 <- st_intersection(
+  st_make_valid(mapa_metro_2017_final),
+  st_make_valid(mancha_urbana_sp_17)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_metro_2017_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = '% de pessoas usando metrô como transporte principal',
     na.value = 'grey90',
@@ -2262,10 +2538,21 @@ mapa_onibus_2017_final <- mapa_onibus_2017 |>
   ) |>
   st_make_valid(mapa_onibus_2017_final)
 
-ggplot(mapa_onibus_2017_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_onibus_2017_final_2 <- st_intersection(
+  st_make_valid(mapa_onibus_2017_final),
+  st_make_valid(mancha_urbana_sp_17)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_onibus_2017_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = '% de pessoas usando ônibus como transporte principal',
     na.value = 'grey90',
@@ -2315,10 +2602,21 @@ mapa_carro_2017_final <- mapa_carro_2017 |>
   ) |>
   st_make_valid(mapa_carro_2017_final)
 
-ggplot(mapa_carro_2017_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_carro_2017_final_2 <- st_intersection(
+  st_make_valid(mapa_carro_2017_final),
+  st_make_valid(mancha_urbana_sp_17)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_carro_2017_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = '% de pessoas usando carro como transporte principal',
     na.value = 'grey90',
@@ -2440,10 +2738,21 @@ mapa_metro_2023_final <- mapa_metro_2023 |>
   ) |>
   st_make_valid(mapa_metro_2023_final)
 
-ggplot(mapa_metro_2023_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_metro_2023_final_2 <- st_intersection(
+  st_make_valid(mapa_metro_2023_final),
+  st_make_valid(mancha_urbana_sp_23)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_metro_2023_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = '% de pessoas usando metrô como transporte principal',
     na.value = 'grey90',
@@ -2493,10 +2802,21 @@ mapa_onibus_2023_final <- mapa_onibus_2023 |>
   ) |>
   st_make_valid(mapa_onibus_2023_final)
 
-ggplot(mapa_onibus_2023_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_onibus_2023_final_2 <- st_intersection(
+  st_make_valid(mapa_onibus_2023_final),
+  st_make_valid(mancha_urbana_sp_23)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_onibus_2023_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = '% de pessoas usando ônibus como transporte principal',
     na.value = 'grey90',
@@ -2546,10 +2866,21 @@ mapa_carro_2023_final <- mapa_carro_2023 |>
   ) |>
   st_make_valid(mapa_carro_2023_final)
 
-ggplot(mapa_carro_2023_final) +
-  geom_sf(aes(fill = categoria), color = 'grey', size = 0.1) +
+mapa_carro_2023_final_2 <- st_intersection(
+  st_make_valid(mapa_carro_2023_final),
+  st_make_valid(mancha_urbana_sp_23)
+)
+
+ggplot() +
+  geom_sf(
+    data = mapa_carro_2023_final_2,
+    aes(fill = categoria),
+    color = 'grey',
+    size = 0.1
+  ) +
+  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'oslo',
+    palette = 'managua',
     direction = -1,
     name = '% de pessoas usando carro como transporte principal',
     na.value = 'grey90',
