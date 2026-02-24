@@ -731,17 +731,21 @@ vars_smd <- c("IDADE", "SEXO", "GRAU_INS", "CD_ATIVI", "VL_REN_I_D", "TIPVG")
 ### Tratado x Pareado ###
 
 od_estat_pareado <- od_pareada |>
-    mutate(across(c(SEXO, GRAU_INS, CD_ATIVI, TIPVG), as.character)) |>
-    select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG)
+  mutate(across(c(SEXO, GRAU_INS, CD_ATIVI, TIPVG), as.character)) |>
+  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG)
 
 comp_pareado <- bind_rows(
   od_estat_tratado |> mutate(trat = 1),
   od_estat_pareado |> mutate(trat = 0)
 )
 
-smd_calc_pareado <- bal.tab(comp_pareado[, vars_smd], 
-                            treat = comp_pareado$trat, 
-                            binary = "std", continuous = "std", s.d.denom = "pooled")
+smd_calc_pareado <- bal.tab(
+  comp_pareado[, vars_smd],
+  treat = comp_pareado$trat,
+  binary = "std",
+  continuous = "std",
+  s.d.denom = "pooled"
+)
 
 ### Tratado x CPTM ###
 
@@ -750,9 +754,13 @@ comp_cptm <- bind_rows(
   od_estat_cptm |> mutate(trat = 0)
 )
 
-smd_calc_cptm <- bal.tab(comp_cptm[, vars_smd], 
-                         treat = comp_cptm$trat, 
-                         binary = "std", continuous = "std", s.d.denom = "pooled")
+smd_calc_cptm <- bal.tab(
+  comp_cptm[, vars_smd],
+  treat = comp_cptm$trat,
+  binary = "std",
+  continuous = "std",
+  s.d.denom = "pooled"
+)
 
 ### Tratado x Linhas Futuras ###
 
@@ -761,22 +769,26 @@ comp_linhas <- bind_rows(
   od_estat_linhas |> mutate(trat = 0)
 )
 
-smd_calc_linhas <- bal.tab(comp_linhas[, vars_smd], 
-                           treat = comp_linhas$trat, 
-                           binary = "std", continuous = "std", s.d.denom = "pooled")
+smd_calc_linhas <- bal.tab(
+  comp_linhas[, vars_smd],
+  treat = comp_linhas$trat,
+  binary = "std",
+  continuous = "std",
+  s.d.denom = "pooled"
+)
 
 #### Extraindo os dados ####
 
 extrair_smd <- function(bal_obj, nome_coluna) {
-  bal_obj$Balance |> 
-    rownames_to_column("Variavel") |> 
-    select(Variavel, Diff.Un) |> 
-    rename(!!nome_coluna := Diff.Un) |> 
+  bal_obj$Balance |>
+    rownames_to_column("Variavel") |>
+    select(Variavel, Diff.Un) |>
+    rename(!!nome_coluna := Diff.Un) |>
     mutate(across(where(is.numeric), ~ round(., 3)))
 }
 
-resumo_smd <- extrair_smd(smd_calc_pareado, "SMD_Pareado") |> 
-  left_join(extrair_smd(smd_calc_cptm, "SMD_CPTM"), by = "Variavel") |> 
+resumo_smd <- extrair_smd(smd_calc_pareado, "SMD_Pareado") |>
+  left_join(extrair_smd(smd_calc_cptm, "SMD_CPTM"), by = "Variavel") |>
   left_join(extrair_smd(smd_calc_linhas, "SMD_Linhas"), by = "Variavel")
 
 print(resumo_smd)
