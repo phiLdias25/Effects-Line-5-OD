@@ -6,4 +6,9 @@ O objetivo do artigo é buscar entender o impacto da expansão da Linha 5-Lilás
 
 ### Mapas e tabelas ilustrativas do trabalho:
 
-
+<p>
+  <img src="Imagens/Mapas/mapa_metro_2023.png" alt="Mapa Metrô 2023";">
+  <img src="Imagens/Mapas/mapa_duracao_2023.png" alt="Mapa Duração da Viagem 2023";">
+  <img src="Imagens/Gráficos/Diff-in-Diff - Linhas Futuras.png" alt="Diff-in-Diff - Linhas Futuras";">
+  <img src="Imagens/Gráficos/Event Study - Linhas Futuras.png" alt="Event Study - Linhas Futuras";">
+</p>
