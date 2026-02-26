@@ -721,7 +721,6 @@ indica_centro <- st_intersects(
 #### Criando a base final com as dummies que definem cada grupo ####
 
 od_grupos <- od_grupos_sf |>
-    st_join(zonas_tratadas_2007) |>
     mutate(
         dist_m_futuro = as.numeric(dist_futuro),
         dist_m_cptm = as.numeric(dist_cptm),
