@@ -125,6 +125,7 @@ od_linhas_futuras <- od_completa |>
   filter(tipo_grupo != 'Controle_CPTM') |>
   mutate(tratamento_binario = ifelse(tipo_grupo == 'Tratamento', 1, 0)) |>
   select(
+    ZONA,
     tipo_grupo,
     tratamento_binario,
     IDADE,
