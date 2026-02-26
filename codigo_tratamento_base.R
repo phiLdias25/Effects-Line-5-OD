@@ -727,10 +727,13 @@ od_grupos <- od_grupos_sf |>
         dist_m_cptm = as.numeric(dist_cptm),
         mora_centro_exp = ifelse(indica_centro[, 1] == TRUE, 1, 0),
         tipo_grupo = case_when(
-            tipo_regiao == 'Região Tratada' ~ 'Tratamento',
-            dist_m_futuro <= limite_dist &
+            ZONA %in% c(284, 285, 286, 292, 294, 300, 301, 302) ~ 'Tratamento',
+            !(ZONA %in% c(284, 285, 286, 292, 294, 300, 301, 302)) &
+                dist_m_futuro <= limite_dist &
                 mora_centro_exp == 0 ~ 'Controle_Linhas_Futuras',
-            dist_m_cptm <= limite_dist & mora_centro_exp == 0 ~ 'Controle_CPTM',
+            !(ZONA %in% c(284, 285, 286, 292, 294, 300, 301, 302)) &
+                dist_m_cptm <= limite_dist &
+                mora_centro_exp == 0 ~ 'Controle_CPTM',
             mora_centro_exp == 1 ~ 'Morador_Centro_Exp',
             TRUE ~ 'Candidatos_Controle_MatchIt'
         )
