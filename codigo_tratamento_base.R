@@ -575,21 +575,21 @@ estacoes_futuras <- tribble(
     ~linha    , ~nome_estacao      , ~lat     , ~lon     ,
 
     # Linha 6 - Laranja
-    "Laranja" , "Brasilândia"     , -23.4673 , -46.6946 ,
+    "Laranja" , "Brasilândia"      , -23.4673 , -46.6946 ,
     "Laranja" , "Vila Cardoso"     , -23.4764 , -46.6976 , # Antiga Maristela
     "Laranja" , "Itaberaba"        , -23.4839 , -46.7011 ,
-    "Laranja" , "João Paulo I"    , -23.4962 , -46.7029 ,
-    "Laranja" , "Freguesia do Ó"  , -23.4884 , -46.7032 ,
+    "Laranja" , "João Paulo I"     , -23.4962 , -46.7029 ,
+    "Laranja" , "Freguesia do Ó"   , -23.4884 , -46.7032 ,
     "Laranja" , "Santa Marina"     , -23.5085 , -46.6934 ,
-    "Laranja" , "Água Branca"     , -23.5159 , -46.6836 ,
+    "Laranja" , "Água Branca"      , -23.5159 , -46.6836 ,
     "Laranja" , "SESC-Pompeia"     , -23.5264 , -46.6816 ,
     "Laranja" , "Perdizes"         , -23.5354 , -46.6738 ,
     "Laranja" , "PUC-Cardoso"      , -23.5367 , -46.6687 ,
     "Laranja" , "FAAP-Pacaembu"    , -23.5434 , -46.6598 ,
-    "Laranja" , "Higienópolis"    , -23.5489 , -46.6522 ,
+    "Laranja" , "Higienópolis"     , -23.5489 , -46.6522 ,
     "Laranja" , "14 Bis"           , -23.5558 , -46.6457 ,
     "Laranja" , "Bela Vista"       , -23.5594 , -46.6416 ,
-    "Laranja" , "São Joaquim"     , -23.5615 , -46.6385 ,
+    "Laranja" , "São Joaquim"      , -23.5615 , -46.6385 ,
 
     ## Coordenadas definidas a partir dos locais reais das obras da estação
 
@@ -606,8 +606,8 @@ estacoes_futuras <- tribble(
     "Celeste" , "Catumbi"          , -23.5324 , -46.6021 ,
     "Celeste" , "Silva Teles"      , -23.5365 , -46.6095 ,
     "Celeste" , "Cerealista"       , -23.5422 , -46.6231 ,
-    "Celeste" , "São Bento"       , -23.5445 , -46.6339 ,
-    "Celeste" , "Anhangabaú"      , -23.5492 , -46.6386 ,
+    "Celeste" , "São Bento"        , -23.5445 , -46.6339 ,
+    "Celeste" , "Anhangabaú"       , -23.5492 , -46.6386 ,
 
     ## Coordenadas definidas a partir dos cruzamentos viários principais dos nomes das estações
 
@@ -617,21 +617,21 @@ estacoes_futuras <- tribble(
     "Violeta" , "Jardim Paulista"  , -23.5714 , -46.6558 ,
     "Violeta" , "Ibirapuera"       , -23.5768 , -46.6514 , # Pq Ibirapuera
     "Violeta" , "Ana Rosa"         , -23.5816 , -46.6384 ,
-    "Violeta" , "Aclimação"      , -23.5721 , -46.6242 ,
-    "Violeta" , "Independência"   , -23.5804 , -46.6115 , # Pq Independencia
-    "Violeta" , "São Carlos"      , -23.5683 , -46.6025 ,
+    "Violeta" , "Aclimação"        , -23.5721 , -46.6242 ,
+    "Violeta" , "Independência"    , -23.5804 , -46.6115 , # Pq Independencia
+    "Violeta" , "São Carlos"       , -23.5683 , -46.6025 ,
     "Violeta" , "Paes de Barros"   , -23.5635 , -46.5886 ,
     "Violeta" , "Vila Bertioga"    , -23.5612 , -46.5784 ,
-    "Violeta" , "Anália Franco"   , -23.5583 , -46.5623 ,
+    "Violeta" , "Anália Franco"    , -23.5583 , -46.5623 ,
     "Violeta" , "Abel Ferreira"    , -23.5601 , -46.5452 ,
 
     ## Coordenadas definidas pelos centróides dos bairros ou regiões de referência da estação
 
     # Linha 22 - Marrom
     "Marrom"  , "Cotia Centro"     , -23.6033 , -46.9192 ,
-    "Marrom"  , "Santo Antônio"   , -23.5992 , -46.8854 ,
-    "Marrom"  , "Sabiá"           , -23.5965 , -46.8643 ,
-    "Marrom"  , "Mesopotâmia"     , -23.5942 , -46.8456 , # Pq Alexandra/Embu
+    "Marrom"  , "Santo Antônio"    , -23.5992 , -46.8854 ,
+    "Marrom"  , "Sabiá"            , -23.5965 , -46.8643 ,
+    "Marrom"  , "Mesopotâmia"      , -23.5942 , -46.8456 , # Pq Alexandra/Embu
     "Marrom"  , "Granja Viana"     , -23.5935 , -46.8335 ,
     "Marrom"  , "Santa Maria"      , -23.5898 , -46.8152 ,
     "Marrom"  , "Victor Civita"    , -23.5864 , -46.7956 ,
@@ -641,7 +641,7 @@ estacoes_futuras <- tribble(
     "Marrom"  , "USP"              , -23.5662 , -46.7324 ,
     "Marrom"  , "Vital Brasil"     , -23.5689 , -46.7125 ,
     "Marrom"  , "Faria Lima"       , -23.5677 , -46.6934 ,
-    "Marrom"  , "Sumaré"          , -23.5516 , -46.6775
+    "Marrom"  , "Sumaré"           , -23.5516 , -46.6775
 
     ## Coordenadas definidas pelos centróides dos bairros ou regiões de referência da estação
 )
@@ -766,6 +766,18 @@ od_grupos <- od_grupos |>
 
 od_grupos <- od_grupos |>
     filter(MOTIVO_O == 8)
+
+##### Decompondo a variável indicadora de viagem com destino ao centro (indic_dest) em viagens realizadas de metrô e de carro #####
+
+od_grupos <- od_grupos |>
+    mutate(
+        metro = ifelse(indic_destino_centro_exp == 1 & MODOPRIN == 1, 1, 0),
+        carro = ifelse(
+            indic_destino_centro_exp == 1 & MODOPRIN %in% c(9, 10),
+            1,
+            0
+        )
+    )
 
 ##### Salvando a base final #####
 

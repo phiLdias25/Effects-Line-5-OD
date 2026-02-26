@@ -146,6 +146,8 @@ od_linhas_futuras <- od_completa |>
     lazcompsa,
     lazcomp,
     trabeduc,
+    metro,
+    carro,
     ZONA_O
   ) |>
   mutate(
