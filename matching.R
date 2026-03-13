@@ -39,6 +39,7 @@ od_matching <- od_completa |>
   filter(tipo_grupo != 'Controle_CPTM') |>
   mutate(tratamento_binario = ifelse(tipo_grupo == 'Tratamento', 1, 0)) |>
   select(
+    ZMC,
     ZONA,
     tipo_grupo,
     tratamento_binario,
@@ -126,7 +127,10 @@ od_linhas_futuras <- od_completa |>
   filter(tipo_grupo != 'Controle_CPTM') |>
   mutate(tratamento_binario = ifelse(tipo_grupo == 'Tratamento', 1, 0)) |>
   select(
+    ZMC,
     ZONA,
+    CO_DOM_X_S,
+    CO_DOM_Y_S,
     tipo_grupo,
     tratamento_binario,
     IDADE,
@@ -197,6 +201,7 @@ od_cptm <- od_completa |>
   filter(tipo_grupo != 'Controle_Linhas_Futuras') |>
   mutate(tratamento_binario = ifelse(tipo_grupo == 'Tratamento', 1, 0)) |>
   select(
+    ZMC,
     ZONA,
     tipo_grupo,
     tratamento_binario,

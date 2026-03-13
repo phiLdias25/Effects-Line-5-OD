@@ -8,6 +8,7 @@ library(tidyverse)
 library(rio)
 library(sf)
 library(deflateBR)
+library(igraph)
 
 ##### Importando base de dados #####
 
@@ -550,14 +551,81 @@ od_completa <- od_completa |>
 ##### Definindo o grupo de tratamento e grupos de controle paramétricos #####
 
 #### Grupo de Tratamento: Indivíduos que, em 2007, moravam em domicílios contemplados pela criação da Linha 5 - Lilás do Metrô de SP ####
+
 ### As zonas da época contempladas, segundo o mapa da OD, são: 284, 285, 286, 292, 294, 300, 301 e 302 ###
 
-## Abrindo o shapefile das zonas da OD de 2007 ##
+### Como as zonas mudam conforme os anos, importante criar "Zonas mínimas comparáveis" ###
+
+## Abrindo o shapefile das zonas das ODs ##
 
 zonas_2007 <- st_read('Shapefiles OD/Zonas2007_region.shp')
 
 zonas_2007 <- zonas_2007 |>
+    st_zm(drop = TRUE) |>
     st_transform(31983)
+
+z07 <- zonas_2007 |>
+    select(ZONA = Zona07) |>
+    mutate(id_poly = paste0("2007_", ZONA), area_orig = st_area(geometry)) |>
+    st_make_valid()
+
+z17 <- st_read('Shapefiles OD/Zonas_2017_region.shp') |>
+    st_zm(drop = TRUE) |>
+    st_transform(31983) |>
+    select(ZONA = NumeroZona) |>
+    mutate(id_poly = paste0("2017_", ZONA), area_orig = st_area(geometry)) |>
+    st_make_valid()
+
+z23 <- st_read('Shapefiles OD/Zonas_2023.shp') |>
+    st_zm(drop = TRUE) |>
+    st_transform(31983) |>
+    select(ZONA = NumeroZona) |>
+    mutate(id_poly = paste0("2023_", ZONA), area_orig = st_area(geometry)) |>
+    st_make_valid()
+
+### Criando uma função para encontrar as zonas que se sobrepõem em diferentes anos ###
+
+links <- function(shp_a, shp_b) {
+    inter <- st_intersection(shp_a, shp_b)
+    inter$area_inter <- st_area(inter)
+
+    inter |>
+        st_drop_geometry() |>
+        filter(
+            as.numeric(area_inter / area_orig) > 0.05 |
+                as.numeric(area_inter / area_orig.1) > 0.05
+        ) |>
+        select(id_poly, id_poly.1)
+}
+
+links_07_17 <- links(z07, z17)
+links_17_23 <- links(z17, z23)
+links_07_23 <- links(z07, z23)
+
+arestas <- bind_rows(links_07_17, links_17_23, links_07_23)
+
+### Criando um grafo pelas arestas e encontrar a ZMC ###
+
+grafo <- graph_from_data_frame(arestas, directed = FALSE)
+zmc_grupos <- components(grafo)$membership
+
+### Fazendo o de-para ###
+
+de_para_zmc <- data.frame(
+    id_poly = names(zmc_grupos),
+    ZMC = as.integer(zmc_grupos)
+) |>
+    separate(id_poly, into = c("ano", "ZONA"), sep = "_", remove = FALSE) |>
+    mutate(
+        ano = as.numeric(ano),
+        ZONA = as.numeric(ZONA)
+    ) |>
+    select(ano, ZONA, ZMC)
+
+### Unindo a ZMC na base completa ###
+
+od_completa <- od_completa |>
+    left_join(de_para_zmc, by = c("ano", "ZONA"))
 
 ## Filtrando as zonas tratadas e criando um polígono a partir delas ##
 
