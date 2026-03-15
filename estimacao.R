@@ -27,7 +27,13 @@ base_reg_linhas <- base_linhas_futuras |>
 ### Média simples do efeito ###
 
 did_agregado_linhas_dest <- feols(
-  indic_dest ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  indic_dest ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -36,7 +42,7 @@ did_agregado_linhas_dest <- feols(
 etable(did_agregado_linhas_dest)
 
 did_agregado_linhas_trab <- feols(
-  trab_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trab_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_linhas,
   cluster = ~ZMC
 )
@@ -44,7 +50,7 @@ did_agregado_linhas_trab <- feols(
 etable(did_agregado_linhas_trab)
 
 did_agregado_linhas_educ <- feols(
-  educ_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  educ_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -53,7 +59,13 @@ did_agregado_linhas_educ <- feols(
 etable(did_agregado_linhas_educ)
 
 did_agregado_linhas_saude <- feols(
-  saude_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  saude_cen ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -62,7 +74,13 @@ did_agregado_linhas_saude <- feols(
 etable(did_agregado_linhas_saude)
 
 did_agregado_linhas_lazer <- feols(
-  lazer_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  lazer_cen ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -71,7 +89,7 @@ did_agregado_linhas_lazer <- feols(
 etable(did_agregado_linhas_lazer)
 
 did_agregado_linhas_comp <- feols(
-  comp_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  comp_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -80,7 +98,7 @@ did_agregado_linhas_comp <- feols(
 etable(did_agregado_linhas_comp)
 
 did_agregado_linhas_emp <- feols(
-  emp_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  emp_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -89,7 +107,13 @@ did_agregado_linhas_emp <- feols(
 etable(did_agregado_linhas_emp)
 
 did_agregado_linhas_trabeducem <- feols(
-  trabeducem ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trabeducem ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -98,7 +122,7 @@ did_agregado_linhas_trabeducem <- feols(
 etable(did_agregado_linhas_trabeducem)
 
 did_agregado_linhas_trabemp <- feols(
-  trabemp ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trabemp ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -107,7 +131,7 @@ did_agregado_linhas_trabemp <- feols(
 etable(did_agregado_linhas_trabemp)
 
 did_agregado_linhas_trabeduc <- feols(
-  trabeduc ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trabeduc ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -116,7 +140,13 @@ did_agregado_linhas_trabeduc <- feols(
 etable(did_agregado_linhas_trabeduc)
 
 did_agregado_linhas_lazcompsa <- feols(
-  lazcompsa ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  lazcompsa ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -125,7 +155,7 @@ did_agregado_linhas_lazcompsa <- feols(
 etable(did_agregado_linhas_lazcompsa)
 
 did_agregado_linhas_lazcomp <- feols(
-  lazcomp ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  lazcomp ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_linhas,
 
   cluster = ~ZMC
@@ -380,7 +410,13 @@ base_reg_cptm <- base_cptm |>
 ### Média simples do efeito ###
 
 did_agregado_cptm_dest <- feols(
-  indic_dest ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  indic_dest ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -389,7 +425,7 @@ did_agregado_cptm_dest <- feols(
 etable(did_agregado_cptm_dest)
 
 did_agregado_cptm_trab <- feols(
-  trab_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trab_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -398,7 +434,7 @@ did_agregado_cptm_trab <- feols(
 etable(did_agregado_cptm_trab)
 
 did_agregado_cptm_educ <- feols(
-  educ_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  educ_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -407,7 +443,13 @@ did_agregado_cptm_educ <- feols(
 etable(did_agregado_cptm_educ)
 
 did_agregado_cptm_saude <- feols(
-  saude_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  saude_cen ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -416,7 +458,13 @@ did_agregado_cptm_saude <- feols(
 etable(did_agregado_cptm_saude)
 
 did_agregado_cptm_lazer <- feols(
-  lazer_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  lazer_cen ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -425,7 +473,7 @@ did_agregado_cptm_lazer <- feols(
 etable(did_agregado_cptm_lazer)
 
 did_agregado_cptm_comp <- feols(
-  comp_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  comp_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -434,7 +482,7 @@ did_agregado_cptm_comp <- feols(
 etable(did_agregado_cptm_comp)
 
 did_agregado_cptm_emp <- feols(
-  emp_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  emp_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -443,7 +491,13 @@ did_agregado_cptm_emp <- feols(
 etable(did_agregado_cptm_emp)
 
 did_agregado_cptm_trabeducem <- feols(
-  trabeducem ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trabeducem ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -452,7 +506,7 @@ did_agregado_cptm_trabeducem <- feols(
 etable(did_agregado_cptm_trabeducem)
 
 did_agregado_cptm_trabemp <- feols(
-  trabemp ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trabemp ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -461,7 +515,7 @@ did_agregado_cptm_trabemp <- feols(
 etable(did_agregado_cptm_trabemp)
 
 did_agregado_cptm_trabeduc <- feols(
-  trabeduc ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trabeduc ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -470,7 +524,13 @@ did_agregado_cptm_trabeduc <- feols(
 etable(did_agregado_cptm_trabeduc)
 
 did_agregado_cptm_lazcompsa <- feols(
-  lazcompsa ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  lazcompsa ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -479,7 +539,7 @@ did_agregado_cptm_lazcompsa <- feols(
 etable(did_agregado_cptm_lazcompsa)
 
 did_agregado_cptm_lazcomp <- feols(
-  lazcomp ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  lazcomp ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_cptm,
 
   cluster = ~ZMC
@@ -746,7 +806,13 @@ base_reg_matching <- base_matching |>
 ### Média simples do efeito ###
 
 did_agregado_match_dest <- feols(
-  indic_dest ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  indic_dest ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -755,7 +821,7 @@ did_agregado_match_dest <- feols(
 etable(did_agregado_match_dest)
 
 did_agregado_match_trab <- feols(
-  trab_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trab_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -764,7 +830,7 @@ did_agregado_match_trab <- feols(
 etable(did_agregado_match_trab)
 
 did_agregado_match_educ <- feols(
-  educ_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  educ_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -773,7 +839,13 @@ did_agregado_match_educ <- feols(
 etable(did_agregado_match_educ)
 
 did_agregado_match_saude <- feols(
-  saude_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  saude_cen ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -782,7 +854,13 @@ did_agregado_match_saude <- feols(
 etable(did_agregado_match_saude)
 
 did_agregado_match_lazer <- feols(
-  lazer_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  lazer_cen ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -791,7 +869,7 @@ did_agregado_match_lazer <- feols(
 etable(did_agregado_match_lazer)
 
 did_agregado_match_comp <- feols(
-  comp_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  comp_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -800,7 +878,7 @@ did_agregado_match_comp <- feols(
 etable(did_agregado_match_comp)
 
 did_agregado_match_emp <- feols(
-  emp_cen ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  emp_cen ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -809,7 +887,13 @@ did_agregado_match_emp <- feols(
 etable(did_agregado_match_emp)
 
 did_agregado_match_trabeducem <- feols(
-  trabeducem ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trabeducem ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -818,7 +902,7 @@ did_agregado_match_trabeducem <- feols(
 etable(did_agregado_match_trabeducem)
 
 did_agregado_match_trabemp <- feols(
-  trabemp ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trabemp ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -827,7 +911,7 @@ did_agregado_match_trabemp <- feols(
 etable(did_agregado_match_trabemp)
 
 did_agregado_match_trabeduc <- feols(
-  trabeduc ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  trabeduc ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -836,7 +920,13 @@ did_agregado_match_trabeduc <- feols(
 etable(did_agregado_match_trabeduc)
 
 did_agregado_match_lazcompsa <- feols(
-  lazcompsa ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  lazcompsa ~ tratamento *
+    post +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
@@ -845,7 +935,7 @@ did_agregado_match_lazcompsa <- feols(
 etable(did_agregado_match_lazcompsa)
 
 did_agregado_match_lazcomp <- feols(
-  lazcomp ~ tratamento:post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
+  lazcomp ~ tratamento * post + IDADE + SEXO + GRAU_INS + CD_ATIVI | ZMC + ano,
   data = base_reg_matching,
   weights = ~weights,
   cluster = ~ZMC
