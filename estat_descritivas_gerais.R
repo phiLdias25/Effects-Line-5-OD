@@ -447,6 +447,13 @@ mapa_renda_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
+bbox <- st_bbox(mapa_renda_2007_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
+
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_renda_2007_final_2,
@@ -468,7 +475,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -566,6 +573,13 @@ mapa_renda_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
+bbox <- st_bbox(mapa_renda_2017_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
+
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_renda_2017_final_2,
@@ -587,7 +601,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -685,6 +699,13 @@ mapa_renda_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
+bbox <- st_bbox(mapa_renda_2023_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
+
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_renda_2023_final_2,
@@ -706,7 +727,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -771,6 +792,13 @@ mapa_duracao_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
+bbox <- st_bbox(mapa_duracao_2007_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
+
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_duracao_2007_final_2,
@@ -792,7 +820,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -855,6 +883,13 @@ mapa_duracao_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
+bbox <- st_bbox(mapa_duracao_2017_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
+
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_duracao_2017_final_2,
@@ -876,7 +911,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -939,6 +974,13 @@ mapa_duracao_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
+bbox <- st_bbox(mapa_duracao_2023_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
+
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_duracao_2023_final_2,
@@ -960,7 +1002,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -1071,6 +1113,13 @@ mapa_trabreg_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
+bbox <- st_bbox(mapa_trabreg_2007_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
+
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_trabreg_2007_final_2,
@@ -1092,7 +1141,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -1135,6 +1184,13 @@ mapa_desemp_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
+bbox <- st_bbox(mapa_desemp_2007_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
+
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_desemp_2007_final_2,
@@ -1156,7 +1212,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -1256,6 +1312,13 @@ mapa_trabreg_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
+bbox <- st_bbox(mapa_trabreg_2017_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
+
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_trabreg_2017_final_2,
@@ -1277,7 +1340,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -1320,6 +1383,12 @@ mapa_desemp_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
+bbox <- st_bbox(mapa_desemp_2017_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_desemp_2017_final_2,
@@ -1341,7 +1410,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -1441,6 +1510,12 @@ mapa_trabreg_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
+bbox <- st_bbox(mapa_trabreg_2023_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_trabreg_2023_final_2,
@@ -1462,7 +1537,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -1505,6 +1580,12 @@ mapa_desemp_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
+bbox <- st_bbox(mapa_desemp_2023_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_desemp_2023_final_2,
@@ -1526,7 +1607,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -1635,6 +1716,12 @@ mapa_carteira_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
+bbox <- st_bbox(mapa_carteira_2007_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_carteira_2007_final_2,
@@ -1656,7 +1743,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -1699,6 +1786,12 @@ mapa_autonomo_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
+bbox <- st_bbox(mapa_autonomo_2007_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_autonomo_2007_final_2,
@@ -1720,7 +1813,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -1820,6 +1913,12 @@ mapa_carteira_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
+bbox <- st_bbox(mapa_carteira_2017_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_carteira_2017_final_2,
@@ -1841,7 +1940,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -1884,6 +1983,12 @@ mapa_autonomo_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
+bbox <- st_bbox(mapa_autonomo_2017_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_autonomo_2017_final_2,
@@ -1905,7 +2010,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2005,6 +2110,12 @@ mapa_carteira_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
+bbox <- st_bbox(mapa_carteira_2023_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_carteira_2023_final_2,
@@ -2026,7 +2137,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2069,6 +2180,12 @@ mapa_autonomo_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
+bbox <- st_bbox(mapa_autonomo_2023_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_autonomo_2023_final_2,
@@ -2090,7 +2207,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2215,6 +2332,12 @@ mapa_metro_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
+bbox <- st_bbox(mapa_metro_2007_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_metro_2007_final_2,
@@ -2236,7 +2359,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2279,6 +2402,12 @@ mapa_onibus_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
+bbox <- st_bbox(mapa_onibus_2007_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_onibus_2007_final_2,
@@ -2300,7 +2429,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2343,6 +2472,12 @@ mapa_carro_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
+bbox <- st_bbox(mapa_carro_2007_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_carro_2007_final_2,
@@ -2364,7 +2499,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2479,6 +2614,12 @@ mapa_metro_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
+bbox <- st_bbox(mapa_metro_2017_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_metro_2017_final_2,
@@ -2500,7 +2641,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2543,6 +2684,12 @@ mapa_onibus_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
+bbox <- st_bbox(mapa_onibus_2017_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_onibus_2017_final_2,
@@ -2564,7 +2711,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2607,6 +2754,12 @@ mapa_carro_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
+bbox <- st_bbox(mapa_carro_2017_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_carro_2017_final_2,
@@ -2628,7 +2781,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2743,6 +2896,12 @@ mapa_metro_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
+bbox <- st_bbox(mapa_metro_2023_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_metro_2023_final_2,
@@ -2764,7 +2923,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2807,6 +2966,12 @@ mapa_onibus_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
+bbox <- st_bbox(mapa_onibus_2023_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_onibus_2023_final_2,
@@ -2828,7 +2993,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
@@ -2871,6 +3036,12 @@ mapa_carro_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
+bbox <- st_bbox(mapa_carro_2023_final_2)
+margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
+margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
+xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
 ggplot() +
   geom_sf(
     data = mapa_carro_2023_final_2,
@@ -2892,7 +3063,7 @@ ggplot() +
       nrow = 1
     )
   ) +
-  coord_sf(clip = 'off') +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
