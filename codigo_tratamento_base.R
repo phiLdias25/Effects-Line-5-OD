@@ -9,6 +9,7 @@ library(rio)
 library(sf)
 library(deflateBR)
 library(igraph)
+library(lwgeom)
 
 ##### Importando base de dados #####
 
@@ -622,18 +623,88 @@ de_para_zmc <- data.frame(
     ) |>
     select(ano, ZONA, ZMC)
 
-### Unindo a ZMC na base completa ###
-
 od_completa <- od_completa |>
     left_join(de_para_zmc, by = c("ano", "ZONA"))
 
-## Filtrando as zonas tratadas e criando um polígono a partir delas ##
+#### Definindo o grupo de tratamento a partir das ZMCs e da linha 5 - Lilás que existia em 2007 ####
 
-zonas_tratadas_2007 <- zonas_2007 |>
-    filter(Zona07 %in% c(284, 285, 286, 292, 294, 300, 301, 302)) |>
-    st_union() |>
-    st_as_sf() |>
-    mutate(tipo_regiao = 'Região Tratada')
+### Abrindo os shapefiles da linha 5 - Lilás ###
+
+shp_linhas <- st_read(
+    "Shapefiles estações metro SP/SIRGAS_SHP_linhametro_line.shp"
+) |>
+    st_set_crs(31983)
+
+shp_estac <- st_read(
+    "Shapefiles estações metro SP/SIRGAS_SHP_estacaometro.shp"
+) |>
+    st_set_crs(31983)
+
+shp_lilas <- shp_linhas |>
+    filter(str_detect(lmt_nome, "LILAS"))
+
+### Manter somente as extensões das linhas que existiam em 2007 ###
+
+est_largo_treze <- shp_estac |>
+    filter(str_detect(emt_nome, "LARGO TREZE"))
+
+corte_linha <- function(linha, est_limite) {
+    tesoura <- st_buffer(est_limite, dist = 10) |> st_union()
+
+    linha_cortada <- st_difference(linha, tesoura)
+
+    linha_fatiada <- st_cast(linha_cortada, "LINESTRING") |>
+        st_as_sf()
+
+    return(linha_fatiada)
+}
+
+lilas_cortada <- corte_linha(shp_lilas, est_largo_treze)
+
+lilas_2007 <- lilas_cortada[2, ]
+
+ggplot() + geom_sf(data = lilas_2007, color = "purple", size = 2) + theme_void()
+
+outras_linhas <- shp_linhas |>
+    filter(!str_detect(lmt_nome, "LILAS"))
+
+### Criando os polígonos específicos de cada ZMC ###
+
+zonas_completo <- bind_rows(
+    z07 |>
+        mutate(ano = 2007),
+    z17 |>
+        mutate(ano = 2017),
+    z23 |>
+        mutate(ano = 2023)
+) |>
+    left_join(de_para_zmc, by = c("ano", "ZONA")) |>
+    st_make_valid()
+
+zmc_polygons <- zonas_completo |>
+    group_by(ZMC) |>
+    summarise(geometry = st_union(geometry)) |>
+    st_make_valid()
+
+### Filtrando as ZMCs que se intersectam com a linha 5 - Lilás e as que se intersectam com outras linhas ###
+
+zmc_toca_lilas_07 <- st_filter(
+    zmc_polygons,
+    lilas_2007,
+    .predicate = st_intersects
+)
+
+zmc_toca_outras <- st_filter(
+    zmc_polygons,
+    outras_linhas,
+    .predicate = st_intersects
+)
+
+### Criando o grupo de ZMCs que definem o grupo de tratamento ###
+
+zmcs_tratadas <- zmc_toca_lilas_07 |>
+    filter(!ZMC %in% zmc_toca_outras$ZMC) |>
+    pull(ZMC)
 
 #### Grupo de Controle Paramétrico 1: Indivíduos que residem em áreas que, futuramente, serão contempladas pelas linhas 6 - Laranja, 16 - Violeta, 19 - Celeste e 22 - Marrom ####
 
@@ -793,15 +864,7 @@ od_grupos <- od_grupos_sf |>
         dist_m_futuro = as.numeric(dist_futuro),
         dist_m_cptm = as.numeric(dist_cptm),
         mora_centro_exp = ifelse(indica_centro[, 1] == TRUE, 1, 0),
-        is_tratamento = case_when(
-            ano == 2007 &
-                ZONA %in% c(284, 285, 286, 292, 294, 300, 301, 302) ~ TRUE,
-            ano == 2017 &
-                ZONA %in% c(303, 304, 305, 312, 313, 315, 321, 322, 323) ~ TRUE,
-            ano == 2023 &
-                ZONA %in% c(304, 305, 306, 313, 314, 316, 322, 323, 324) ~ TRUE,
-            TRUE ~ FALSE
-        ),
+        is_tratamento = ifelse(ZMC %in% zmcs_tratadas, TRUE, FALSE),
         tipo_grupo = case_when(
             is_tratamento ~ 'Tratamento',
             !is_tratamento &
