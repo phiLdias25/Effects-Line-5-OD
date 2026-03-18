@@ -10,12 +10,134 @@ library(fixest)
 library(did)
 library(bacondecomp)
 library(broom)
+library(geobr)
 
 ##### Abrindo bases de dados #####
 
 base_matching <- import('base_pareamento.dbf')
 base_linhas_futuras <- import('base_linhas_futuras.dbf')
 base_cptm <- import('base_cptm.dbf')
+
+##### Fazendo mapas mostrando a localização dos grupos tratados e controle nas ZMCs, com as linhas de metrô #####
+
+### Abrindo o arquivo de polígonos das ZMCs ###
+
+zmc_polygons <- st_read('zmc_polygons.gpkg') |>
+  st_make_valid() |>
+  st_transform(31983)
+
+### Abrindo o shapefile das linhas de metrô ###
+
+metro_linhas <- st_read(
+  "Shapefiles estações metro SP/SIRGAS_SHP_linhametro_line.shp"
+) |>
+  st_set_crs(31983) |>
+  mutate(
+    cores = case_when(
+      lmt_nome == "AZUL" ~ "#1F51FF",
+      lmt_nome == "VERDE" ~ "green",
+      lmt_nome == "VERMELHA" ~ "#EE3E34",
+      lmt_nome == "AMARELA" ~ "#FFD700",
+      lmt_nome == "LILAS" ~ "#BF00FF",
+      lmt_nome == "PRATA" ~ "#c8c8c8c1",
+      TRUE ~ "black"
+    )
+  )
+
+### Abrindo os arquivos de mancha urbana e os limites dos municípios de São Paulo ###
+
+sp_urb <- read_urban_area(year = 2015, code_state = "SP")
+mancha_urbana_sp <- sp_urb[sp_urb$name_muni == "São Paulo/SP", ] |>
+  st_transform(crs = 31983) |>
+  st_make_valid() |>
+  st_union()
+
+rmsp <- read_metro_area(code_state = "SP", year = 2018)
+rmsp <- rmsp[rmsp$name_metro == "RM São Paulo", ] |>
+  st_transform(crs = 31983)
+
+### Criando uma função para plotar os mapas ###
+
+criar_mapa_zmc_urbano <- function(base_dados, mult) {
+  classific_zmc <- base_dados |>
+    group_by(ZMC) |>
+    summarise(
+      zona_tratada = any(tratamento == 1, na.rm = TRUE),
+      zona_controle = any(tratamento == 0, na.rm = TRUE)
+    ) |>
+    mutate(
+      grupo_mapa = case_when(
+        zona_tratada & zona_controle ~ "Ambos",
+        zona_tratada & !zona_controle ~ "Tratamento",
+        !zona_tratada & zona_controle ~ "Controle",
+        TRUE ~ "Nenhum"
+      )
+    )
+
+  join_class_zonas <- zmc_polygons |>
+    inner_join(classific_zmc, by = "ZMC")
+
+  join_class_zonas_urb <- st_intersection(
+    st_make_valid(join_class_zonas),
+    st_make_valid(mancha_urbana_sp)
+  )
+
+  zonas_relevantes <- join_class_zonas_urb |>
+    filter(grupo_mapa %in% c("Tratamento", "Controle", "Ambos"))
+
+  bbox <- st_bbox(zonas_relevantes)
+  margem_x <- (bbox["xmax"] - bbox["xmin"]) * mult
+  margem_y <- (bbox["ymax"] - bbox["ymin"]) * mult
+  xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
+  ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+
+  mapa <- ggplot() +
+    geom_sf(
+      data = join_class_zonas_urb,
+      aes(fill = grupo_mapa),
+      color = "white",
+      size = 0.05,
+      alpha = 0.8
+    ) +
+    # Adicionando limites municipais ao fundo
+    geom_sf(data = rmsp, fill = NA, color = "grey50", linewidth = 0.3) +
+    # Adicionando Linhas
+    geom_sf(
+      data = metro_linhas,
+      aes(color = cores),
+      linewidth = 1,
+      show.legend = FALSE
+    ) +
+    scale_fill_manual(
+      values = c(
+        "Tratamento" = "#FF6B6B",
+        "Controle" = "#4ECDC4",
+        "Ambos" = "#FFD93D"
+      ),
+      name = "Grupos",
+      na.value = "grey90",
+      breaks = function(x) na.omit(x),
+      guide = guide_legend(title.hjust = 0.5)
+    ) +
+    scale_color_identity() +
+    coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
+    theme_void() +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold"),
+      plot.margin = margin(t = 5, r = 20, b = 5, l = 5, unit = "pt")
+    )
+
+  return(mapa)
+}
+
+### Gerando os mapas para cada grupo de controle ###
+
+mapa_linhas_futuras <- criar_mapa_zmc_urbano(base_linhas_futuras, mult = 0.5)
+plot(mapa_linhas_futuras)
+mapa_controle_cptm <- criar_mapa_zmc_urbano(base_cptm, mult = 0.01)
+plot(mapa_controle_cptm)
+mapa_controle_match <- criar_mapa_zmc_urbano(base_matching, mult = 0.00001)
+plot(mapa_controle_match)
 
 ##### Criando as variáveis de pré e pós e realizando a estimação com o grupo de controle 1 - Linhas Futuras #####
 

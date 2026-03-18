@@ -922,6 +922,8 @@ od_grupos <- od_grupos |>
         )
     )
 
-##### Salvando a base final #####
+##### Salvando a base final e os polígonos das ZMC's #####
 
 export(od_grupos, 'od_base_completa.dbf')
+
+st_write(zmc_polygons, 'zmc_polygons.gpkg', append = FALSE)
