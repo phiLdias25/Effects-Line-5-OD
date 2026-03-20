@@ -27,7 +27,7 @@ zmc_polygons <- st_read('zmc_polygons.gpkg') |>
   st_make_valid() |>
   st_transform(31983)
 
-### Abrindo o shapefile das linhas de metrô ###
+### Abrindo o shapefile das linhas de metrô, cptm e linhas futuras do metrô ###
 
 metro_linhas <- st_read(
   "Shapefiles estações metro SP/SIRGAS_SHP_linhametro_line.shp"
@@ -41,6 +41,38 @@ metro_linhas <- st_read(
       lmt_nome == "AMARELA" ~ "#FFD700",
       lmt_nome == "LILAS" ~ "#BF00FF",
       lmt_nome == "PRATA" ~ "#c8c8c8c1",
+      TRUE ~ "black"
+    )
+  )
+
+cptm_linhas <- st_read(
+  "Shapefile estações trem SP/SIRGAS_SHP_linhatrem.shp"
+) |>
+  st_set_crs(31983) |>
+  mutate(
+    cores = case_when(
+      nm_linha == "RUBI" ~ "#CA016B",
+      nm_linha == "DIAMANTE" ~ "#97A098",
+      nm_linha == "ESMERALDA" ~ "#019E58",
+      nm_linha == "TURQUESA" ~ "#01A9A8",
+      nm_linha == "CORAL" ~ "#F68F6B",
+      nm_linha == "SAFIRA" ~ "#133C8B",
+      nm_linha == "JADE" ~ "#00B352",
+      TRUE ~ "black"
+    )
+  )
+
+metro_linhas_proj <- st_read(
+  "Shapefiles estações metro SP/SIRGAS_SHP_linhametroprojeto.shp"
+) |>
+  st_set_crs(31983) |>
+  filter(lmtp_nome %in% c("LARANJA", "MARROM", "VIOLETA", "CELESTE")) |>
+  mutate(
+    cores = case_when(
+      lmtp_nome == "LARANJA" ~ "#FFA500",
+      lmtp_nome == "MARROM" ~ "#8B4513",
+      lmtp_nome == "VIOLETA" ~ "#61217dff",
+      lmtp_nome == "CELESTE" ~ "#096c7cff",
       TRUE ~ "black"
     )
   )
@@ -59,7 +91,10 @@ rmsp <- rmsp[rmsp$name_metro == "RM São Paulo", ] |>
 
 ### Criando uma função para plotar os mapas ###
 
-criar_mapa_zmc_urbano <- function(base_dados, mult) {
+xlim <- c(300000, 385000)
+ylim <- c(7365000, 7420000)
+
+criar_mapa_zmc_urbano <- function(base_dados) {
   classific_zmc <- base_dados |>
     group_by(ZMC) |>
     summarise(
@@ -86,12 +121,6 @@ criar_mapa_zmc_urbano <- function(base_dados, mult) {
   zonas_relevantes <- join_class_zonas_urb |>
     filter(grupo_mapa %in% c("Tratamento", "Controle", "Ambos"))
 
-  bbox <- st_bbox(zonas_relevantes)
-  margem_x <- (bbox["xmax"] - bbox["xmin"]) * mult
-  margem_y <- (bbox["ymax"] - bbox["ymin"]) * mult
-  xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-  ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
   mapa <- ggplot() +
     geom_sf(
       data = join_class_zonas_urb,
@@ -100,15 +129,7 @@ criar_mapa_zmc_urbano <- function(base_dados, mult) {
       size = 0.05,
       alpha = 0.8
     ) +
-    # Adicionando limites municipais ao fundo
     geom_sf(data = rmsp, fill = NA, color = "grey50", linewidth = 0.3) +
-    # Adicionando Linhas
-    geom_sf(
-      data = metro_linhas,
-      aes(color = cores),
-      linewidth = 1,
-      show.legend = FALSE
-    ) +
     scale_fill_manual(
       values = c(
         "Tratamento" = "#FF6B6B",
@@ -118,14 +139,16 @@ criar_mapa_zmc_urbano <- function(base_dados, mult) {
       name = "Grupos",
       na.value = "grey90",
       breaks = function(x) na.omit(x),
-      guide = guide_legend(title.hjust = 0.5)
+      guide = guide_legend(title.position = 'top', title.hjust = 0.5)
     ) +
-    scale_color_identity() +
-    coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
     theme_void() +
     theme(
+      legend.position = 'bottom',
+      legend.box = "horizontal",
+      legend.title = element_text(face = 'bold'),
       plot.title = element_text(hjust = 0.5, face = "bold"),
-      plot.margin = margin(t = 5, r = 20, b = 5, l = 5, unit = "pt")
+      panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+      plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
     )
 
   return(mapa)
@@ -133,11 +156,92 @@ criar_mapa_zmc_urbano <- function(base_dados, mult) {
 
 ### Gerando os mapas para cada grupo de controle ###
 
-mapa_linhas_futuras <- criar_mapa_zmc_urbano(base_linhas_futuras, mult = 0.5)
+mapa_linhas_futuras <- criar_mapa_zmc_urbano(base_linhas_futuras) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey50',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores, linetype = "Metrô (Atual)"),
+    linewidth = 1,
+    show.legend = "line"
+  ) +
+  geom_sf(
+    data = metro_linhas_proj,
+    aes(color = cores, linetype = "Metrô (Projetado até 2036)"),
+    linewidth = 1
+  ) +
+  scale_color_identity() +
+  scale_linetype_manual(
+    name = "Linhas",
+    values = c(
+      "Metrô (Atual)" = "solid",
+      "Metrô (Projetado até 2036)" = "twodash"
+    ),
+    guide = guide_legend(
+      title.position = 'top',
+      title.hjust = 0.5
+    )
+  ) +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE)
 plot(mapa_linhas_futuras)
-mapa_controle_cptm <- criar_mapa_zmc_urbano(base_cptm, mult = 0.01)
+
+mapa_controle_cptm <- criar_mapa_zmc_urbano(base_cptm) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey50',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores, linetype = "Metrô (Atual)"),
+    linewidth = 1,
+    show.legend = "line"
+  ) +
+  geom_sf(
+    data = cptm_linhas,
+    aes(color = cores, linetype = "CPTM (Atual)"),
+    linewidth = 1.3
+  ) +
+  scale_color_identity() +
+  scale_linetype_manual(
+    name = "Linhas",
+    values = c("Metrô (Atual)" = "solid", "CPTM (Atual)" = "dotted"),
+    guide = guide_legend(
+      title.position = 'top',
+      title.hjust = 0.5
+    )
+  ) +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE)
 plot(mapa_controle_cptm)
-mapa_controle_match <- criar_mapa_zmc_urbano(base_matching, mult = 0.00001)
+
+mapa_controle_match <- criar_mapa_zmc_urbano(base_matching) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey50',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores, linetype = "Metrô (Atual)"),
+    linewidth = 1,
+    show.legend = "line"
+  ) +
+  scale_color_identity() +
+  scale_linetype_manual(
+    name = "Linhas",
+    values = c("Metrô (Atual)" = "solid"),
+    guide = guide_legend(
+      title.position = 'top',
+      title.hjust = 0.5
+    )
+  ) +
+  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE)
 plot(mapa_controle_match)
 
 ##### Criando as variáveis de pré e pós e realizando a estimação com o grupo de controle 1 - Linhas Futuras #####
