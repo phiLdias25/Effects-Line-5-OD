@@ -11,6 +11,7 @@ library(did)
 library(bacondecomp)
 library(broom)
 library(geobr)
+library(sf)
 
 ##### Abrindo bases de dados #####
 

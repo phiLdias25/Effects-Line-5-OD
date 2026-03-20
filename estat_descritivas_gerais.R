@@ -17,6 +17,24 @@ library(geobr)
 
 od_completa <- import('od_base_completa.dbf')
 
+### Abrindo o shapefile das linhas de metrô ###
+
+metro_linhas <- st_read(
+  "Shapefiles estações metro SP/SIRGAS_SHP_linhametro_line.shp"
+) |>
+  st_set_crs(31983) |>
+  mutate(
+    cores = case_when(
+      lmt_nome == "AZUL" ~ "#1F51FF",
+      lmt_nome == "VERDE" ~ "green",
+      lmt_nome == "VERMELHA" ~ "#EE3E34",
+      lmt_nome == "AMARELA" ~ "#FFD700",
+      lmt_nome == "LILAS" ~ "#BF00FF",
+      lmt_nome == "PRATA" ~ "#c8c8c8c1",
+      TRUE ~ "black"
+    )
+  )
+
 ##### Estatísticas Descritivas #####
 
 #### Variáveis relevantes para serem analisadas: CRITERIOBR, IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I, VINC1, TOT_VIAG, DURACAO, MODOPRIN ####
@@ -384,14 +402,14 @@ any(st_is_empty(pontos_2007))
 
 localiz_2007 <- st_join(pontos_2007, zonas_2007)
 
-sp_urb_07 <- read_urban_area(year = 2005, code_state = "SP")
+sp_urb_07 <- read_urban_area(year = 2015, code_state = "SP")
 
-mancha_urbana_sp_07 <- sp_urb_07[sp_urb_07$name_muni == "São Paulo", ] |>
+mancha_urbana_sp_07 <- sp_urb_07[sp_urb_07$name_muni == "São Paulo/SP", ] |>
   st_transform(crs = 31983) |>
   st_make_valid() |>
   st_union()
 
-mun_07 <- read_metro_area(code_state = 'SP', year = 2005)
+mun_07 <- read_metro_area(code_state = 'SP', year = 2017)
 
 mun_07 <- mun_07[mun_07$name_metro == "RM São Paulo", ]
 
@@ -447,12 +465,10 @@ mapa_renda_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
-bbox <- st_bbox(mapa_renda_2007_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
+# Definindo os limites da visualização do mapa (Serão utilizados os mesmos limites em todos os mapas) #
 
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
+xlim <- c(300000, 385000)
+ylim <- c(7365000, 7420000)
 
 ggplot() +
   geom_sf(
@@ -475,13 +491,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ## 2017 ##
@@ -573,13 +604,6 @@ mapa_renda_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
-bbox <- st_bbox(mapa_renda_2017_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
-
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_renda_2017_final_2,
@@ -601,13 +625,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ## 2023 ##
@@ -699,13 +738,6 @@ mapa_renda_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
-bbox <- st_bbox(mapa_renda_2023_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
-
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_renda_2023_final_2,
@@ -727,13 +759,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ### Duração Média das Viagens ###
@@ -792,13 +839,6 @@ mapa_duracao_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
-bbox <- st_bbox(mapa_duracao_2007_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
-
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_duracao_2007_final_2,
@@ -820,13 +860,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ## 2017 ##
@@ -883,13 +938,6 @@ mapa_duracao_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
-bbox <- st_bbox(mapa_duracao_2017_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
-
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_duracao_2017_final_2,
@@ -911,13 +959,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ## 2023 ##
@@ -974,13 +1037,6 @@ mapa_duracao_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
-bbox <- st_bbox(mapa_duracao_2023_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
-
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_duracao_2023_final_2,
@@ -1002,13 +1058,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 #### Mapas de calor de algumas variáveis indicadoras ####
@@ -1113,13 +1184,6 @@ mapa_trabreg_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
-bbox <- st_bbox(mapa_trabreg_2007_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
-
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_trabreg_2007_final_2,
@@ -1141,13 +1205,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_desemp_2007 <- zonas_2007 |>
@@ -1184,13 +1263,6 @@ mapa_desemp_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
-bbox <- st_bbox(mapa_desemp_2007_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
-
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_desemp_2007_final_2,
@@ -1212,13 +1284,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ## 2017 ##
@@ -1312,13 +1399,6 @@ mapa_trabreg_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
-bbox <- st_bbox(mapa_trabreg_2017_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
-
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_trabreg_2017_final_2,
@@ -1340,13 +1420,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_desemp_2017 <- zonas_2017 |>
@@ -1383,12 +1478,6 @@ mapa_desemp_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
-bbox <- st_bbox(mapa_desemp_2017_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_desemp_2017_final_2,
@@ -1410,13 +1499,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ## 2023 ##
@@ -1510,12 +1614,6 @@ mapa_trabreg_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
-bbox <- st_bbox(mapa_trabreg_2023_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_trabreg_2023_final_2,
@@ -1537,13 +1635,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_desemp_2023 <- zonas_2023 |>
@@ -1580,12 +1693,6 @@ mapa_desemp_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
-bbox <- st_bbox(mapa_desemp_2023_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.00005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.00005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_desemp_2023_final_2,
@@ -1607,13 +1714,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ### Frequência de indivíduos em trabalho com carteira assinada e autônomos por ano ###
@@ -1716,12 +1838,6 @@ mapa_carteira_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
-bbox <- st_bbox(mapa_carteira_2007_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_carteira_2007_final_2,
@@ -1743,13 +1859,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_autonomo_2007 <- zonas_2007 |>
@@ -1786,12 +1917,6 @@ mapa_autonomo_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
-bbox <- st_bbox(mapa_autonomo_2007_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_autonomo_2007_final_2,
@@ -1813,13 +1938,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ## 2017 ##
@@ -1913,12 +2053,6 @@ mapa_carteira_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
-bbox <- st_bbox(mapa_carteira_2017_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_carteira_2017_final_2,
@@ -1940,13 +2074,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_autonomo_2017 <- zonas_2017 |>
@@ -1983,12 +2132,6 @@ mapa_autonomo_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
-bbox <- st_bbox(mapa_autonomo_2017_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_autonomo_2017_final_2,
@@ -2010,13 +2153,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ## 2023 ##
@@ -2110,12 +2268,6 @@ mapa_carteira_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
-bbox <- st_bbox(mapa_carteira_2023_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_carteira_2023_final_2,
@@ -2137,13 +2289,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_autonomo_2023 <- zonas_2023 |>
@@ -2180,12 +2347,6 @@ mapa_autonomo_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
-bbox <- st_bbox(mapa_autonomo_2023_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_autonomo_2023_final_2,
@@ -2207,13 +2368,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ### Frequência de pessoas que utilizam ou metrô, ou ônibus municipal ou carro como meio de transporte principal ###
@@ -2332,12 +2508,6 @@ mapa_metro_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
-bbox <- st_bbox(mapa_metro_2007_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_metro_2007_final_2,
@@ -2347,7 +2517,7 @@ ggplot() +
   ) +
   geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'managua',
+    palette = 'turku',
     direction = -1,
     name = '% de pessoas usando metrô como transporte principal',
     na.value = 'grey90',
@@ -2359,13 +2529,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_onibus_2007 <- zonas_2007 |>
@@ -2402,12 +2587,6 @@ mapa_onibus_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
-bbox <- st_bbox(mapa_onibus_2007_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_onibus_2007_final_2,
@@ -2417,7 +2596,7 @@ ggplot() +
   ) +
   geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'managua',
+    palette = 'turku',
     direction = -1,
     name = '% de pessoas usando ônibus como transporte principal',
     na.value = 'grey90',
@@ -2429,13 +2608,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_carro_2007 <- zonas_2007 |>
@@ -2472,12 +2666,6 @@ mapa_carro_2007_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_07)
 )
 
-bbox <- st_bbox(mapa_carro_2007_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.3
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.3
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_carro_2007_final_2,
@@ -2487,7 +2675,7 @@ ggplot() +
   ) +
   geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'managua',
+    palette = 'turku',
     direction = -1,
     name = '% de pessoas usando carro como transporte principal',
     na.value = 'grey90',
@@ -2499,13 +2687,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ## 2017 ##
@@ -2614,12 +2817,6 @@ mapa_metro_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
-bbox <- st_bbox(mapa_metro_2017_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_metro_2017_final_2,
@@ -2629,7 +2826,7 @@ ggplot() +
   ) +
   geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'managua',
+    palette = 'turku',
     direction = -1,
     name = '% de pessoas usando metrô como transporte principal',
     na.value = 'grey90',
@@ -2641,13 +2838,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_onibus_2017 <- zonas_2017 |>
@@ -2684,12 +2896,6 @@ mapa_onibus_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
-bbox <- st_bbox(mapa_onibus_2017_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_onibus_2017_final_2,
@@ -2699,7 +2905,7 @@ ggplot() +
   ) +
   geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'managua',
+    palette = 'turku',
     direction = -1,
     name = '% de pessoas usando ônibus como transporte principal',
     na.value = 'grey90',
@@ -2711,13 +2917,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_carro_2017 <- zonas_2017 |>
@@ -2754,12 +2975,6 @@ mapa_carro_2017_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_17)
 )
 
-bbox <- st_bbox(mapa_carro_2017_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_carro_2017_final_2,
@@ -2769,7 +2984,7 @@ ggplot() +
   ) +
   geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'managua',
+    palette = 'turku',
     direction = -1,
     name = '% de pessoas usando carro como transporte principal',
     na.value = 'grey90',
@@ -2781,13 +2996,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 ## 2023 ##
@@ -2896,12 +3126,6 @@ mapa_metro_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
-bbox <- st_bbox(mapa_metro_2023_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_metro_2023_final_2,
@@ -2911,7 +3135,7 @@ ggplot() +
   ) +
   geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'managua',
+    palette = 'turku',
     direction = -1,
     name = '% de pessoas usando metrô como transporte principal',
     na.value = 'grey90',
@@ -2923,13 +3147,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_onibus_2023 <- zonas_2023 |>
@@ -2966,12 +3205,6 @@ mapa_onibus_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
-bbox <- st_bbox(mapa_onibus_2023_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_onibus_2023_final_2,
@@ -2981,7 +3214,7 @@ ggplot() +
   ) +
   geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'managua',
+    palette = 'turku',
     direction = -1,
     name = '% de pessoas usando ônibus como transporte principal',
     na.value = 'grey90',
@@ -2993,13 +3226,28 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
 
 mapa_carro_2023 <- zonas_2023 |>
@@ -3036,12 +3284,6 @@ mapa_carro_2023_final_2 <- st_intersection(
   st_make_valid(mancha_urbana_sp_23)
 )
 
-bbox <- st_bbox(mapa_carro_2023_final_2)
-margem_x <- (bbox["xmax"] - bbox["xmin"]) * 0.0005
-margem_y <- (bbox["ymax"] - bbox["ymin"]) * 0.0005
-xlim <- c(bbox["xmin"] - margem_x, bbox["xmax"] + margem_x)
-ylim <- c(bbox["ymin"] - margem_y, bbox["ymax"] + margem_y)
-
 ggplot() +
   geom_sf(
     data = mapa_carro_2023_final_2,
@@ -3051,7 +3293,7 @@ ggplot() +
   ) +
   geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
   scale_fill_scico_d(
-    palette = 'managua',
+    palette = 'turku',
     direction = -1,
     name = '% de pessoas usando carro como transporte principal',
     na.value = 'grey90',
@@ -3063,11 +3305,26 @@ ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(
+    data = metro_linhas,
+    color = 'grey10',
+    linewidth = 1.5,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = metro_linhas,
+    aes(color = cores),
+    linewidth = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_identity() +
   coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
   theme_void() +
   theme(
     legend.position = 'bottom',
     legend.title = element_text(face = 'bold', vjust = 1),
     legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
   )
