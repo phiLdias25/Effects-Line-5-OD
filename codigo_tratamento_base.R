@@ -38,7 +38,7 @@ od_2023 <- import('Bases de dados OD/Banco2023_divulgacao_190225.dbf')
 #        SE_ESTUD, # 1 - Não; 2 - Creche/Pré-Escola; 3 - Ensino Básico/Fundamental/Médio; 4 - Outros
 #        GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado; 2 - Pré-Escola; 3 - Fundamental Incompleto; 4 - Fundamental Completo; 5 - Médio Incompleto; 6 - Médio Completo; 7 - Superior Incompleto; 8 - Superior Completo
 #        CD_ATIVI, # Condição de atividade: 1 - Trabalho Regular; 2 - Bico; 3 - Licença Médica; 4 - Desempregado; 5 - Aposentado/Pensionista; 6 - Nunca trabalhou; 7 - Dona de Casa; 8 - Estudante
-#        VL_REN_I, # Renda Individual
+#        RENDA_FA, # Renda Familiar
 #        ZONATRA1, # Zona de Trabalho 1
 #        MUNITRA1, # Município de Trabalho 1
 #        SET_ATIV, # Setor do Trabalho 1
@@ -95,7 +95,7 @@ od_2007_filtrada <- od_2007 |>
         ESTUDA, # 1 - Não; 2 - Creche/Pré-Escola; 3 - Ensino Fundamental; 4 - Ensino Médio; 6 - Ensino Superior; 7 - Outros
         GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado/ Fund 1 Incompleto ; 2 - Fund 1 Completo/Fund 2 Incompleto; 3 - Fund 2 Completo/ Médio Incompleto; 4 - Médio Completo/ Superior Incompleto; 5 - Superior Completo
         CD_ATIVI, # Condição de atividade: 1 - Trabalho Regular; 2 - Bico; 3 - Licença Médica; 4 - Aposentado/Pensionista; 5 - Desempregado; 6 - Nunca trabalhou; 7 - Dona de Casa; 8 - Estudante
-        VL_REN_I, # Renda Individual
+        RENDA_FA, # Renda Familiar
         ZONATRA1, # Zona de Trabalho 1
         MUNITRA1, # Município de Trabalho 1
         CO_TR1_X, # Coordenada X do Trabalho 1
@@ -120,7 +120,7 @@ od_2007_filtrada <- od_2007 |>
     ) |>
     mutate(
         ano = 2007,
-        VL_REN_I = as.numeric(VL_REN_I),
+        RENDA_FA = as.numeric(RENDA_FA),
         CRITERIOBR = case_when(
             CRITERIOBR %in% c(1, 2) ~ 1,
             CRITERIOBR == 3 ~ 2,
@@ -167,7 +167,7 @@ od_2017_filtrada <- od_2017 |>
         ESTUDA, # 1 - Não; 2 - Creche/Pré-Escola; 3 - Ensino Fundamental; 4 - Ensino Médio; 6 - Ensino Superior; 7 - Outros
         GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado/ Fund 1 Incompleto ; 2 - Fund 1 Completo/Fund 2 Incompleto; 3 - Fund 2 Completo/ Médio Incompleto; 4 - Médio Completo/ Superior Incompleto; 5 - Superior Completo
         CD_ATIVI, # Condição de atividade: 1 - Trabalho Regular; 2 - Bico; 3 - Licença Médica; 4 - Aposentado/Pensionista; 5 - Desempregado; 6 - Nunca trabalhou; 7 - Dona de Casa; 8 - Estudante
-        VL_REN_I, # Renda Individual
+        RENDA_FA, # Renda Familiar
         ZONATRA1, # Zona de Trabalho 1
         MUNITRA1, # Município de Trabalho 1
         CO_TR1_X, # Coordenada X do Trabalho 1
@@ -224,7 +224,7 @@ od_2023_filtrada <- od_2023 |>
         ESTUDA, # 1 - Não; 2 - Creche/Pré-Escola; 3 - Ensino Fundamental; 4 - Ensino Médio; 6 - Ensino Superior; 7 - Outros
         GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado/ Fund 1 Incompleto ; 2 - Fund 1 Completo/Fund 2 Incompleto; 3 - Fund 2 Completo/ Médio Incompleto; 4 - Médio Completo/ Superior Incompleto; 5 - Superior Completo
         CD_ATIVI, # Condição de atividade: 1 - Trabalho Regular; 2 - Bico; 3 - Licença Médica; 4 - Aposentado/Pensionista; 5 - Desempregado; 6 - Nunca trabalhou; 7 - Dona de Casa; 8 - Estudante
-        VL_REN_I, # Renda Individual
+        RENDA_FA, # Renda Familiar
         ZONATRA1, # Zona de Trabalho 1
         MUNITRA1, # Município de Trabalho 1
         CO_TR1_X, # Coordenada X do Trabalho 1
@@ -250,7 +250,7 @@ od_2023_filtrada <- od_2023 |>
     mutate(
         ano = 2023,
         ID_PESS = as.character(ID_PESS),
-        VL_REN_I = as.numeric(VL_REN_I),
+        RENDA_FA = as.numeric(RENDA_FA),
         CO_O_X_SIRGAS = CO_O_X,
         CO_O_Y_SIRGAS = CO_O_Y,
         CO_D_X_SIRGAS = CO_D_X,
@@ -890,10 +890,10 @@ od_grupos <- od_grupos |>
             ano == 2023 ~ '09/2023',
             TRUE ~ NA_character_
         ),
-        VL_REN_I_DEF = ifelse(
-            !is.na(VL_REN_I) & !is.na(data_original),
+        RENDA_FA_DEF = ifelse(
+            !is.na(RENDA_FA) & !is.na(data_original),
             deflate(
-                nominal_values = VL_REN_I,
+                nominal_values = RENDA_FA,
                 nominal_dates = as.Date(
                     paste0('01/', data_original),
                     format = '%d/%m/%Y'
@@ -901,7 +901,7 @@ od_grupos <- od_grupos |>
                 real_date = '11/2025',
                 index = 'ipca'
             ),
-            VL_REN_I
+            RENDA_FA
         )
     )
 

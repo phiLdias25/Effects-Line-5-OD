@@ -204,8 +204,9 @@ mapa_controle_cptm <- criar_mapa_zmc_urbano(base_cptm) +
   ) +
   geom_sf(
     data = cptm_linhas,
-    aes(color = cores, linetype = "CPTM (Atual)"),
-    linewidth = 1.3
+    color = 'black',
+    aes(linetype = "CPTM (Atual)"),
+    linewidth = 1
   ) +
   scale_color_identity() +
   scale_linetype_manual(

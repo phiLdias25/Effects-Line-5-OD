@@ -37,7 +37,7 @@ metro_linhas <- st_read(
 
 ##### Estatísticas Descritivas #####
 
-#### Variáveis relevantes para serem analisadas: CRITERIOBR, IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I, VINC1, TOT_VIAG, DURACAO, MODOPRIN ####
+#### Variáveis relevantes para serem analisadas: CRITERIOBR, IDADE, SEXO, GRAU_INS, CD_ATIVI, RENDA_FA_D, VINC1, TOT_VIAG, DURACAO, MODOPRIN ####
 
 #### Tabela com descritivas sociais - Idade, sexo e grau de instrução ####
 
@@ -168,7 +168,7 @@ tabela_latex_critbr <- tabela_critbr |>
 #### Tabela com descritivas econômicas - Renda, condição empregatícia e vínculo empregatício ####
 
 od_estat_econo <- od_completa |>
-  select(ano, VL_REN_I_D, CD_ATIVI, VINC1) |>
+  select(ano, RENDA_FA_D, CD_ATIVI, VINC1) |>
   mutate(
     CD_ATIVI = case_when(
       CD_ATIVI == 1 ~ 'Trabalho Regular',
@@ -197,17 +197,17 @@ od_estat_econo <- od_completa |>
 
 renda_anual <- od_estat_econo |>
   group_by(ano) |>
-  filter(!is.na(VL_REN_I_D)) |>
+  filter(!is.na(RENDA_FA_D)) |>
   summarise(
-    Valor = mean(VL_REN_I_D, na.rm = TRUE),
-    Variavel = 'Renda Individual Média (R$)'
+    Valor = mean(RENDA_FA_D, na.rm = TRUE),
+    Variavel = 'Renda Familiar Média (R$)'
   ) |>
   ungroup() |>
   mutate(Valor = round(Valor, 2)) |>
   select(ano, Variavel, Valor)
 
 categorias_econo_anual <- od_estat_econo |>
-  select(-VL_REN_I_D) |>
+  select(-RENDA_FA_D) |>
   pivot_longer(
     cols = c(CD_ATIVI, VINC1),
     names_to = 'origem',
@@ -231,7 +231,7 @@ tabela_descrit_econo <- bind_rows(renda_anual, categorias_econo_anual) |>
   arrange(factor(
     Variavel,
     levels = c(
-      'Renda Individual Média (R$)',
+      'Renda Familiar Média (R$)',
       'Trabalho Regular',
       'Bico',
       'Licença Médica',
@@ -415,7 +415,7 @@ mun_07 <- mun_07[mun_07$name_metro == "RM São Paulo", ]
 
 renda_media_2007 <- localiz_2007 |>
   select(
-    VL_REN_I_D,
+    RENDA_FA_D,
     Zona07,
     NomeZona07,
     Municipio,
@@ -426,7 +426,7 @@ renda_media_2007 <- localiz_2007 |>
   st_drop_geometry() |>
   group_by(Zona07) |>
   summarise(
-    Renda_Media = mean(VL_REN_I_D, na.rm = TRUE),
+    Renda_Media = mean(RENDA_FA_D, na.rm = TRUE),
     n_zona = n()
   )
 
@@ -481,7 +481,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = 'Renda Real (R$)',
+    name = 'Renda Familiar Real (R$)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -554,7 +554,7 @@ mun_17 <- mun_17[mun_17$name_metro == "RM São Paulo", ]
 
 renda_media_2017 <- localiz_2017 |>
   select(
-    VL_REN_I_D,
+    RENDA_FA_D,
     NumeroZona,
     NomeZona,
     NumeroMuni,
@@ -565,7 +565,7 @@ renda_media_2017 <- localiz_2017 |>
   st_drop_geometry() |>
   group_by(NumeroZona) |>
   summarise(
-    Renda_Media = mean(VL_REN_I_D, na.rm = TRUE),
+    Renda_Media = mean(RENDA_FA_D, na.rm = TRUE),
     n_zona = n()
   )
 
@@ -615,7 +615,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = 'Renda Real (R$)',
+    name = 'Renda Familiar Real (R$)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -688,7 +688,7 @@ mun_23 <- mun_23[mun_23$name_metro == "RM São Paulo", ]
 
 renda_media_2023 <- localiz_2023 |>
   select(
-    VL_REN_I_D,
+    RENDA_FA_D,
     NumeroZona,
     NomeZona,
     NumeroMuni,
@@ -699,7 +699,7 @@ renda_media_2023 <- localiz_2023 |>
   st_drop_geometry() |>
   group_by(NumeroZona) |>
   summarise(
-    Renda_Media = mean(VL_REN_I_D, na.rm = TRUE),
+    Renda_Media = mean(RENDA_FA_D, na.rm = TRUE),
     n_zona = n()
   )
 
@@ -749,7 +749,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = 'Renda Real (R$)',
+    name = 'Renda Familiar Real (R$)',
     na.value = 'grey90',
     na.translate = FALSE,
 
