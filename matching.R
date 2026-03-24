@@ -49,7 +49,7 @@ od_matching <- od_completa |>
     SEXO,
     GRAU_INS,
     CD_ATIVI,
-    VL_REN_I_D,
+    RENDA_FA_D,
     TIPVG,
     ano,
     indic_dest,
@@ -107,7 +107,7 @@ match <- matchit(
     SEXO +
     GRAU_INS +
     CD_ATIVI +
-    VL_REN_I_D +
+    RENDA_FA_D +
     VIAGEM_TRANS_PUBL,
   data = od_matching,
   method = "nearest"
@@ -139,7 +139,7 @@ od_linhas_futuras <- od_completa |>
     SEXO,
     GRAU_INS,
     CD_ATIVI,
-    VL_REN_I_D,
+    RENDA_FA_D,
     TIPVG,
     ano,
     indic_dest,
@@ -213,7 +213,7 @@ od_cptm <- od_completa |>
     SEXO,
     GRAU_INS,
     CD_ATIVI,
-    VL_REN_I_D,
+    RENDA_FA_D,
     TIPVG,
     ano,
     indic_dest,
@@ -270,6 +270,53 @@ tabela_comparativa <- bal.tab(match, un = TRUE, thresholds = c(m = .1))
 
 print(tabela_comparativa)
 
+nomes_variaveis <- c(
+  "distance" = "Distância das Médias Absolutas",
+  "IDADE" = "Idade Média",
+  "SEXO_Feminino" = "Sexo: Feminino",
+  "SEXO_Masculino" = "Sexo: Masculino",
+  "GRAU_INS_Não alfabetizado/ Fund 1 incompleto" = "Escolaridade: Não alfabetizado/Fund 1 inc.",
+  "GRAU_INS_Fund 1 completo/ Fund 2 incompleto" = "Escolaridade: Fund 1 comp./Fund 2 inc.",
+  "GRAU_INS_Fund 2 completo/ Médio incompleto" = "Escolaridade: Fund 2 comp./Médio inc.",
+  "GRAU_INS_Médio completo/ Superior incompleto" = "Escolaridade: Médio comp./Superior inc.",
+  "GRAU_INS_Superior completo" = "Escolaridade: Superior completo",
+  "CD_ATIVI_Trabalho Regular" = "Atividade: Trabalho Regular",
+  "CD_ATIVI_Bico" = "Atividade: Bico",
+  "CD_ATIVI_Desempregado" = "Atividade: Desempregado",
+  "CD_ATIVI_Aposentado/Pensionista" = "Atividade: Aposentado/Pensionista",
+  "CD_ATIVI_Estudante" = "Atividade: Estudante",
+  "CD_ATIVI_Dona de Casa" = "Atividade: Dona de Casa",
+  "CD_ATIVI_Licença Médica" = "Atividade: Licença Médica",
+  "CD_ATIVI_Nunca Trabalhou" = "Atividade: Nunca Trabalhou",
+  "RENDA_FA_D" = "Renda Familiar (R$)",
+  "VIAGEM_TRANS_PUBL" = "Uso de Transporte Público"
+)
+
+ordem_vars <- c(
+  "Distância das Médias Absolutas",
+  "Idade Média",
+  "Renda Familiar (R$)",
+  "Uso de Transporte Público",
+
+  "Sexo: Masculino",
+  "Sexo: Feminino",
+
+  "Escolaridade: Não alfabetizado/Fund 1 inc.",
+  "Escolaridade: Fund 1 comp./Fund 2 inc.",
+  "Escolaridade: Fund 2 comp./Médio inc.",
+  "Escolaridade: Médio comp./Superior inc.",
+  "Escolaridade: Superior completo",
+
+  "Atividade: Trabalho Regular",
+  "Atividade: Estudante",
+  "Atividade: Desempregado",
+  "Atividade: Bico",
+  "Atividade: Licença Médica",
+  "Atividade: Aposentado/Pensionista",
+  "Atividade: Nunca Trabalhou",
+  "Atividade: Dona de Casa"
+)
+
 plot_comparativo <- love.plot(
   match,
   binary = 'std',
@@ -278,18 +325,89 @@ plot_comparativo <- love.plot(
   var.order = 'unadjusted',
   shapes = c('circle', 'triangle'),
   colors = c('red', 'blue'),
-  sample.names = c('Antes do Pareamento', 'Depois do Pareamento')
-)
+  title = 'Balanceamento das Variáveis Pareadas',
+  sample.names = c('Antes do Pareamento', 'Depois do Pareamento'),
+  var.names = nomes_variaveis
+) +
+  scale_y_discrete(limits = rev(ordem_vars)) +
+  labs(
+    x = "Diferenças Médias Padronizadas Absolutas",
+    color = "Tipos de Amostra",
+    shape = "Tipos de Amostra"
+  )
+
 
 print(plot_comparativo)
 
 ##### Analisando estatísticas descritivas dos grupos de controle criados, tanto os paramétricos quanto o por pareamento #####
 
+#### Criando função de simplificação das variáveis para as tabelas descritivas ####
+
+simplificar_categorias <- function(df) {
+  df |>
+    mutate(
+      # Recodificando Escolaridade
+      GRAU_INS = case_when(
+        GRAU_INS %in%
+          c(
+            "Não alfabetizado/ Fund 1 incompleto",
+            "Fund 1 completo/ Fund 2 incompleto",
+            "Fund 2 completo/ Médio incompleto",
+            1,
+            2,
+            3
+          ) ~ "Médio incompleto",
+        GRAU_INS %in%
+          c("Médio completo/ Superior incompleto", 4) ~ "Médio completo",
+        GRAU_INS %in% c("Superior completo", 5) ~ "Superior completo",
+        TRUE ~ as.character(GRAU_INS)
+      ),
+      # Recodificando Atividade
+      CD_ATIVI = case_when(
+        CD_ATIVI %in% c("Trabalho Regular", "Bico", 1, 2) ~ "Ocupado",
+        CD_ATIVI %in%
+          c(
+            "Licença Médica",
+            "Aposentado/Pensionista",
+            "Desempregado",
+            "Nunca Trabalhou",
+            "Dona de Casa",
+            3,
+            4,
+            5,
+            6,
+            7
+          ) ~ "Sem Ocupação",
+        CD_ATIVI %in% c("Estudante", 8) ~ "Estudante",
+        TRUE ~ as.character(CD_ATIVI)
+      ),
+      # Recodificando Transporte
+      TIPVG = case_when(
+        TIPVG %in% c("Coletivo", 1) ~ "Coletivo",
+        TIPVG %in% c("Particular", 2) ~ "Particular",
+        TIPVG %in% c("A pé", "Bicicleta", 3, 4) ~ "Ativo",
+        TRUE ~ as.character(TIPVG)
+      )
+    ) |>
+    # Transformando de volta em Fator com as ordenações corretas
+    mutate(
+      GRAU_INS = factor(
+        GRAU_INS,
+        levels = c("Médio incompleto", "Médio completo", "Superior completo")
+      ),
+      CD_ATIVI = factor(
+        CD_ATIVI,
+        levels = c("Ocupado", "Sem Ocupação", "Estudante")
+      ),
+      TIPVG = factor(TIPVG, levels = c("Coletivo", "Particular", "Ativo"))
+    )
+}
+
 #### Grupo de controle 1 - Linhas Futuras ####
 
 od_estat_linhas <- od_completa |>
   filter(tipo_grupo == 'Controle_Linhas_Futuras') |>
-  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG) |>
+  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, RENDA_FA_D, TIPVG) |>
   mutate(
     SEXO = case_when(
       SEXO == 1 ~ 'Masculino',
@@ -328,6 +446,9 @@ od_estat_linhas <- od_completa |>
     TIPVG = as.factor(TIPVG)
   ) |>
   drop_na()
+
+od_estat_linhas <- od_estat_linhas |>
+  simplificar_categorias()
 
 idade_anual_linhas <- od_estat_linhas |>
   summarise(
@@ -356,16 +477,22 @@ categorias_anual_linhas <- od_estat_linhas |>
   select(Variavel = categoria, Valor)
 
 renda_anual_linhas <- od_estat_linhas |>
-  filter(!is.na(VL_REN_I_D)) |>
+  filter(!is.na(RENDA_FA_D)) |>
   summarise(
-    Valor = mean(VL_REN_I_D, na.rm = TRUE),
-    Variavel = 'Renda Individual Média (R$)'
+    Valor = mean(RENDA_FA_D, na.rm = TRUE),
+    Variavel = 'Renda Familiar Média (R$)'
   ) |>
   ungroup() |>
   mutate(Valor = round(Valor, 2)) |>
   select(Variavel, Valor)
 
+n_obs_linhas <- data.frame(
+  Valor = nrow(od_estat_linhas),
+  Variavel = 'Número de Observações'
+)
+
 tabela_descrit_linhas <- bind_rows(
+  n_obs_linhas,
   idade_anual_linhas,
   renda_anual_linhas,
   categorias_anual_linhas
@@ -374,26 +501,23 @@ tabela_descrit_linhas <- bind_rows(
     Variavel,
     levels = c(
       'Idade Média (Anos)',
-      'Renda Individual Média (R$)',
+      'Renda Familiar Média (R$)',
       'Masculino',
       'Feminino',
-      'Não alfabetizado/ Fund 1 incompleto',
-      'Fund 1 completo/ Fund 2 incompleto',
-      'Fund 2 completo/ Médio incompleto',
-      'Médio completo/ Superior incompleto',
+
+      'Médio incompleto',
+      'Médio completo',
       'Superior completo',
-      'Trabalho Regular',
-      'Bico',
-      'Licença Médica',
-      'Aposentado/Pensionista',
-      'Desempregado',
-      'Nunca Trabalhou',
-      'Dona de Casa',
+
+      'Ocupado',
+      'Sem Ocupação',
       'Estudante',
+
       'Coletivo',
       'Particular',
-      'A pé',
-      'Bicicleta'
+      'Ativo',
+
+      'Número de Observações'
     )
   ))
 
@@ -412,7 +536,7 @@ tabela_latex_linhas <- tabela_descrit_linhas |>
 
 od_estat_cptm <- od_completa |>
   filter(tipo_grupo == 'Controle_CPTM') |>
-  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG) |>
+  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, RENDA_FA_D, TIPVG) |>
   mutate(
     SEXO = case_when(
       SEXO == 1 ~ 'Masculino',
@@ -452,6 +576,9 @@ od_estat_cptm <- od_completa |>
   ) |>
   drop_na()
 
+od_estat_cptm <- od_estat_cptm |>
+  simplificar_categorias()
+
 idade_anual_cptm <- od_estat_cptm |>
   summarise(
     Valor = mean(IDADE, na.rm = TRUE),
@@ -479,16 +606,22 @@ categorias_anual_cptm <- od_estat_cptm |>
   select(Variavel = categoria, Valor)
 
 renda_anual_cptm <- od_estat_cptm |>
-  filter(!is.na(VL_REN_I_D)) |>
+  filter(!is.na(RENDA_FA_D)) |>
   summarise(
-    Valor = mean(VL_REN_I_D, na.rm = TRUE),
-    Variavel = 'Renda Individual Média (R$)'
+    Valor = mean(RENDA_FA_D, na.rm = TRUE),
+    Variavel = 'Renda Familiar Média (R$)'
   ) |>
   ungroup() |>
   mutate(Valor = round(Valor, 2)) |>
   select(Variavel, Valor)
 
+n_obs_cptm <- data.frame(
+  Valor = nrow(od_estat_cptm),
+  Variavel = 'Número de Observações'
+)
+
 tabela_descrit_cptm <- bind_rows(
+  n_obs_cptm,
   idade_anual_cptm,
   renda_anual_cptm,
   categorias_anual_cptm
@@ -497,26 +630,23 @@ tabela_descrit_cptm <- bind_rows(
     Variavel,
     levels = c(
       'Idade Média (Anos)',
-      'Renda Individual Média (R$)',
+      'Renda Familiar Média (R$)',
       'Masculino',
       'Feminino',
-      'Não alfabetizado/ Fund 1 incompleto',
-      'Fund 1 completo/ Fund 2 incompleto',
-      'Fund 2 completo/ Médio incompleto',
-      'Médio completo/ Superior incompleto',
+
+      'Médio incompleto',
+      'Médio completo',
       'Superior completo',
-      'Trabalho Regular',
-      'Bico',
-      'Licença Médica',
-      'Aposentado/Pensionista',
-      'Desempregado',
-      'Nunca Trabalhou',
-      'Dona de Casa',
+
+      'Ocupado',
+      'Sem Ocupação',
       'Estudante',
+
       'Coletivo',
       'Particular',
-      'A pé',
-      'Bicicleta'
+      'Ativo',
+
+      'Número de Observações'
     )
   ))
 
@@ -538,7 +668,7 @@ od_pareada <- match.data(match) |>
     categoria = ifelse(tratamento_binario == 1, 'Tratados', 'Controle Pareado')
   ) |>
   filter(categoria == 'Controle Pareado') |>
-  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG) |>
+  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, RENDA_FA_D, TIPVG) |>
   mutate(
     TIPVG = case_when(
       TIPVG == 1 ~ 'Coletivo',
@@ -550,6 +680,9 @@ od_pareada <- match.data(match) |>
     TIPVG = as.factor(TIPVG)
   ) |>
   drop_na()
+
+od_pareada <- od_pareada |>
+  simplificar_categorias()
 
 idade_anual_match <- od_pareada |>
   summarise(
@@ -578,16 +711,22 @@ categorias_anual_match <- od_pareada |>
   select(Variavel = categoria, Valor)
 
 renda_anual_match <- od_pareada |>
-  filter(!is.na(VL_REN_I_D)) |>
+  filter(!is.na(RENDA_FA_D)) |>
   summarise(
-    Valor = mean(VL_REN_I_D, na.rm = TRUE),
-    Variavel = 'Renda Individual Média (R$)'
+    Valor = mean(RENDA_FA_D, na.rm = TRUE),
+    Variavel = 'Renda Familiar Média (R$)'
   ) |>
   ungroup() |>
   mutate(Valor = round(Valor, 2)) |>
   select(Variavel, Valor)
 
+n_obs_match <- data.frame(
+  Valor = nrow(od_pareada),
+  Variavel = 'Número de Observações'
+)
+
 tabela_descrit_match <- bind_rows(
+  n_obs_match,
   idade_anual_match,
   renda_anual_match,
   categorias_anual_match
@@ -596,26 +735,23 @@ tabela_descrit_match <- bind_rows(
     Variavel,
     levels = c(
       'Idade Média (Anos)',
-      'Renda Individual Média (R$)',
+      'Renda Familiar Média (R$)',
       'Masculino',
       'Feminino',
-      'Não alfabetizado/ Fund 1 incompleto',
-      'Fund 1 completo/ Fund 2 incompleto',
-      'Fund 2 completo/ Médio incompleto',
-      'Médio completo/ Superior incompleto',
+
+      'Médio incompleto',
+      'Médio completo',
       'Superior completo',
-      'Trabalho Regular',
-      'Bico',
-      'Licença Médica',
-      'Aposentado/Pensionista',
-      'Desempregado',
-      'Nunca Trabalhou',
-      'Dona de Casa',
+
+      'Ocupado',
+      'Sem Ocupação',
       'Estudante',
+
       'Coletivo',
       'Particular',
-      'A pé',
-      'Bicicleta'
+      'Ativo',
+
+      'Número de Observações'
     )
   ))
 
@@ -637,7 +773,7 @@ od_tratado <- match.data(match) |>
     categoria = ifelse(tratamento_binario == 1, 'Tratados', 'Controle Pareado')
   ) |>
   filter(categoria == 'Tratados') |>
-  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG) |>
+  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, RENDA_FA_D, TIPVG) |>
   mutate(
     TIPVG = case_when(
       TIPVG == 1 ~ 'Coletivo',
@@ -649,6 +785,9 @@ od_tratado <- match.data(match) |>
     TIPVG = as.factor(TIPVG)
   ) |>
   drop_na()
+
+od_tratado <- od_tratado |>
+  simplificar_categorias()
 
 idade_anual_tratado <- od_tratado |>
   summarise(
@@ -677,16 +816,22 @@ categorias_anual_tratado <- od_tratado |>
   select(Variavel = categoria, Valor)
 
 renda_anual_tratado <- od_tratado |>
-  filter(!is.na(VL_REN_I_D)) |>
+  filter(!is.na(RENDA_FA_D)) |>
   summarise(
-    Valor = mean(VL_REN_I_D, na.rm = TRUE),
-    Variavel = 'Renda Individual Média (R$)'
+    Valor = mean(RENDA_FA_D, na.rm = TRUE),
+    Variavel = 'Renda Familiar Média (R$)'
   ) |>
   ungroup() |>
   mutate(Valor = round(Valor, 2)) |>
   select(Variavel, Valor)
 
+n_obs_tratado <- data.frame(
+  Valor = nrow(od_tratado),
+  Variavel = 'Número de Observações'
+)
+
 tabela_descrit_tratado <- bind_rows(
+  n_obs_tratado,
   idade_anual_tratado,
   renda_anual_tratado,
   categorias_anual_tratado
@@ -695,26 +840,23 @@ tabela_descrit_tratado <- bind_rows(
     Variavel,
     levels = c(
       'Idade Média (Anos)',
-      'Renda Individual Média (R$)',
+      'Renda Familiar Média (R$)',
       'Masculino',
       'Feminino',
-      'Não alfabetizado/ Fund 1 incompleto',
-      'Fund 1 completo/ Fund 2 incompleto',
-      'Fund 2 completo/ Médio incompleto',
-      'Médio completo/ Superior incompleto',
+
+      'Médio incompleto',
+      'Médio completo',
       'Superior completo',
-      'Trabalho Regular',
-      'Bico',
-      'Licença Médica',
-      'Aposentado/Pensionista',
-      'Desempregado',
-      'Nunca Trabalhou',
-      'Dona de Casa',
+
+      'Ocupado',
+      'Sem Ocupação',
       'Estudante',
+
       'Coletivo',
       'Particular',
-      'A pé',
-      'Bicicleta'
+      'Ativo',
+
+      'Número de Observações'
     )
   ))
 
@@ -738,15 +880,15 @@ od_estat_tratado <- od_tratado |>
     CD_ATIVI = as.character(CD_ATIVI),
     TIPVG = as.character(TIPVG)
   ) |>
-  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG)
+  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, RENDA_FA_D, TIPVG)
 
-vars_smd <- c("IDADE", "SEXO", "GRAU_INS", "CD_ATIVI", "VL_REN_I_D", "TIPVG")
+vars_smd <- c("IDADE", "SEXO", "GRAU_INS", "CD_ATIVI", "RENDA_FA_D", "TIPVG")
 
 ### Tratado x Pareado ###
 
 od_estat_pareado <- od_pareada |>
   mutate(across(c(SEXO, GRAU_INS, CD_ATIVI, TIPVG), as.character)) |>
-  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, VL_REN_I_D, TIPVG)
+  select(IDADE, SEXO, GRAU_INS, CD_ATIVI, RENDA_FA_D, TIPVG)
 
 comp_pareado <- bind_rows(
   od_estat_tratado |> mutate(trat = 1),
