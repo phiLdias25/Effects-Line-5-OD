@@ -919,6 +919,11 @@ od_grupos <- od_grupos |>
             indic_destino_centro_exp == 1 & MODOPRIN %in% c(9, 10),
             1,
             0
+        ),
+        onibus = ifelse(
+            indic_destino_centro_exp == 1 & MODOPRIN %in% c(4, 6),
+            1,
+            0
         )
     )
 

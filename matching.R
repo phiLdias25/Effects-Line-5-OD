@@ -64,6 +64,9 @@ od_matching <- od_completa |>
     lazcompsa,
     lazcomp,
     trabeduc,
+    metro,
+    carro,
+    onibus,
     ZONA_O
   ) |>
   mutate(
@@ -156,6 +159,7 @@ od_linhas_futuras <- od_completa |>
     trabeduc,
     metro,
     carro,
+    onibus,
     ZONA_O
   ) |>
   mutate(
@@ -228,6 +232,9 @@ od_cptm <- od_completa |>
     lazcompsa,
     lazcomp,
     trabeduc,
+    metro,
+    carro,
+    onibus,
     ZONA_O
   ) |>
   mutate(
