@@ -618,6 +618,7 @@ tabela_result_es_linhas <- etable(
   title = 'Resultados - Event Study - Grupo de Controle Linhas Futuras'
 )
 
+
 tabela_result_es_linhas_latex <- etable(
   lista_event_study_linhas,
   tex = TRUE,
@@ -625,6 +626,90 @@ tabela_result_es_linhas_latex <- etable(
   headers = 'auto',
   title = 'Resultados - Event Study - Grupo de Controle Linhas Futuras'
 )
+
+#### Obtendo os resultados pré tratamento e os efeitos relativos para cada Event Study ####
+
+func_y_medio_pre <- function(variavel) {
+  media_pre <- base_reg_linhas |>
+    filter(tratamento == 1 & ano < 2018) |>
+    summarise(media_pre = round(mean({{ variavel }}, na.rm = TRUE), 4))
+
+  return(media_pre)
+}
+
+y_medio_pre_indic <- func_y_medio_pre(indic_dest)
+y_medio_pre_trab <- func_y_medio_pre(trab_cen)
+y_medio_pre_educ <- func_y_medio_pre(educ_cen)
+y_medio_pre_emp <- func_y_medio_pre(emp_cen)
+y_medio_pre_trabeducem <- func_y_medio_pre(trabeducem)
+y_medio_pre_lazcompsa <- func_y_medio_pre(lazcompsa)
+
+func_efeito_relativo <- function(estimacao, media_pre) {
+  y_pre <- media_pre |>
+    pull(media_pre)
+
+  coef_estimacao <- round(coef(estimacao)['ano::2023:tratamento'], 4)
+
+  efeito_relativo <- round((coef_estimacao / y_pre) * 100, 2)
+
+  return(efeito_relativo)
+}
+
+ef_relat_indic <- func_efeito_relativo(
+  event_study_linhas_dest,
+  y_medio_pre_indic
+)
+ef_relat_trab <- func_efeito_relativo(event_study_linhas_trab, y_medio_pre_trab)
+ef_relat_educ <- func_efeito_relativo(event_study_linhas_educ, y_medio_pre_educ)
+ef_relat_emp <- func_efeito_relativo(event_study_linhas_emp, y_medio_pre_emp)
+ef_relat_trabeducem <- func_efeito_relativo(
+  event_study_linhas_trabeducem,
+  y_medio_pre_trabeducem
+)
+ef_relat_lazcompsa <- func_efeito_relativo(
+  event_study_linhas_lazcompsa,
+  y_medio_pre_lazcompsa
+)
+
+linhas_completa <- list(
+  'Destino Centro Expandido' = event_study_linhas_dest,
+  'Trabalho Centro Expandido' = event_study_linhas_trab,
+  'Educação Centro Expandido' = event_study_linhas_educ,
+  'Buscar Emprego Centro Expandido' = event_study_linhas_emp,
+  'Trabalho ou Educação ou Buscar Emprego Centro Expandido' = event_study_linhas_trabeducem,
+  'Lazer ou Compras ou Saúde Centro Expandido' = event_study_linhas_lazcompsa,
+  'Média Pré-Tratamento' = c(
+    y_medio_pre_indic$media_pre,
+    y_medio_pre_trab$media_pre,
+    y_medio_pre_educ$media_pre,
+    NA,
+    NA,
+    NA,
+    y_medio_pre_emp$media_pre,
+    y_medio_pre_trabeducem$media_pre,
+    NA,
+    NA,
+    y_medio_pre_lazcompsa$media_pre,
+    NA
+  ),
+  'Efeito Relativo (%)' = c(
+    ef_relat_indic,
+    ef_relat_trab,
+    ef_relat_educ,
+    NA,
+    NA,
+    NA,
+    ef_relat_emp,
+    ef_relat_trabeducem,
+    NA,
+    NA,
+    ef_relat_lazcompsa,
+    NA
+  )
+)
+
+saveRDS(linhas_completa, "lista_modelos_originais.rds")
+
 
 ##### Criando as variáveis de pré e pós e realizando a estimação com o grupo de controle 2 - CPTM #####
 
