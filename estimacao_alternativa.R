@@ -181,39 +181,39 @@ event_study_matching_onibus <- feols(
 ### Obtendo os resultados pré-tratamento para os controles ###
 
 y_medio_pre_match_metro <- base_reg_matching |>
-  filter(tratamento == 1 & ano < 2018) |>
+  filter(tratamento == 1 & ano == 2017) |>
   summarise(media_pre = round(mean(metro, na.rm = TRUE), 4))
 
 y_medio_pre_match_onibus <- base_reg_matching |>
-  filter(tratamento == 1 & ano < 2018) |>
+  filter(tratamento == 1 & ano == 2017) |>
   summarise(media_pre = round(mean(onibus, na.rm = TRUE), 4))
 
 y_medio_pre_match_carro <- base_reg_matching |>
-  filter(tratamento == 1 & ano < 2018) |>
+  filter(tratamento == 1 & ano == 2017) |>
   summarise(media_pre = round(mean(carro, na.rm = TRUE), 4))
 
 y_medio_pre_cptm_metro <- base_reg_cptm |>
-  filter(tratamento == 1 & ano < 2018) |>
+  filter(tratamento == 1 & ano == 2017) |>
   summarise(media_pre = round(mean(metro, na.rm = TRUE), 4))
 
 y_medio_pre_cptm_onibus <- base_reg_cptm |>
-  filter(tratamento == 1 & ano < 2018) |>
+  filter(tratamento == 1 & ano == 2017) |>
   summarise(media_pre = round(mean(onibus, na.rm = TRUE), 4))
 
 y_medio_pre_cptm_carro <- base_reg_cptm |>
-  filter(tratamento == 1 & ano < 2018) |>
+  filter(tratamento == 1 & ano == 2017) |>
   summarise(media_pre = round(mean(carro, na.rm = TRUE), 4))
 
 y_medio_pre_linhas_metro <- base_reg_linhas |>
-  filter(tratamento == 1 & ano < 2018) |>
+  filter(tratamento == 1 & ano == 2017) |>
   summarise(media_pre = round(mean(metro, na.rm = TRUE), 4))
 
 y_medio_pre_linhas_onibus <- base_reg_linhas |>
-  filter(tratamento == 1 & ano < 2018) |>
+  filter(tratamento == 1 & ano == 2017) |>
   summarise(media_pre = round(mean(onibus, na.rm = TRUE), 4))
 
 y_medio_pre_linhas_carro <- base_reg_linhas |>
-  filter(tratamento == 1 & ano < 2018) |>
+  filter(tratamento == 1 & ano == 2017) |>
   summarise(media_pre = round(mean(carro, na.rm = TRUE), 4))
 
 ### Obtendo os efeitos relativos das estimações ###

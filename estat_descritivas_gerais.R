@@ -118,57 +118,10 @@ tabela_descrit_sociais_latex <- tabela_descrit_sociais |>
     position = 'center'
   )
 
-#### Tabela com o Critério Brasil ao longo do tempo ####
-
-od_criteriobr <- od_completa |>
-  select(ano, CRITERIOBR) |>
-  mutate(
-    CRITERIOBR = case_when(
-      CRITERIOBR == 1 ~ 'A',
-      CRITERIOBR == 2 ~ 'B1',
-      CRITERIOBR == 3 ~ 'B2',
-      CRITERIOBR == 4 ~ 'C1',
-      CRITERIOBR == 5 ~ 'C2',
-      CRITERIOBR == 6 ~ 'D e E',
-      TRUE ~ NA_character_
-    )
-  )
-
-tabela_critbr <- od_criteriobr |>
-  filter(!is.na(CRITERIOBR)) |>
-  count(ano, CRITERIOBR) |>
-  group_by(ano) |>
-  mutate(
-    prob = n / sum(n),
-    Valor = round(prob, 3)
-  ) |>
-  ungroup() |>
-  select(ano, Variavel = CRITERIOBR, Valor) |>
-  pivot_wider(
-    names_from = ano,
-    values_from = Valor
-  ) |>
-  arrange(factor(
-    Variavel,
-    levels = c('A', 'B1', 'B2', 'C1', 'C2', 'D e E')
-  ))
-
-tabela_latex_critbr <- tabela_critbr |>
-  kbl(
-    format = 'latex',
-    booktabs = TRUE,
-    label = 'tab:descritivas_criteriobr',
-    align = 'lrrr'
-  ) |>
-  kable_styling(
-    latex_options = c('striped', 'hold_position'),
-    position = 'center'
-  )
-
-#### Tabela com descritivas econômicas - Renda, condição empregatícia e vínculo empregatício ####
+#### Tabela com descritivas econômicas - Renda e condição empregatícia ####
 
 od_estat_econo <- od_completa |>
-  select(ano, RENDA_FA_D, CD_ATIVI, VINC1) |>
+  select(ano, ln_renda_f, CD_ATIVI) |>
   mutate(
     CD_ATIVI = case_when(
       CD_ATIVI == 1 ~ 'Trabalho Regular',
@@ -181,35 +134,23 @@ od_estat_econo <- od_completa |>
       CD_ATIVI == 8 ~ 'Estudante',
       TRUE ~ NA_character_
     ),
-    VINC1 = case_when(
-      VINC1 == 1 ~ 'Assalariado com carteira',
-      VINC1 == 2 ~ 'Assalariado sem carteira',
-      VINC1 == 3 ~ 'Funcionário Público',
-      VINC1 == 4 ~ 'Autônomo',
-      VINC1 == 5 ~ 'Empregador',
-      VINC1 == 6 ~ 'Profissional Liberal',
-      VINC1 == 7 ~ 'Dono de Negócio Familiar',
-      VINC1 == 8 ~ 'Trabalhador Familiar',
-      TRUE ~ NA_character_
-    ),
     ano = as.factor(ano)
   )
 
 renda_anual <- od_estat_econo |>
   group_by(ano) |>
-  filter(!is.na(RENDA_FA_D)) |>
   summarise(
-    Valor = mean(RENDA_FA_D, na.rm = TRUE),
-    Variavel = 'Renda Familiar Média (R$)'
+    Valor = mean(ln_renda_f, na.rm = TRUE),
+    Variavel = 'ln da Renda Familiar Média per capita (R$)'
   ) |>
   ungroup() |>
   mutate(Valor = round(Valor, 2)) |>
   select(ano, Variavel, Valor)
 
 categorias_econo_anual <- od_estat_econo |>
-  select(-RENDA_FA_D) |>
+  select(-ln_renda_f) |>
   pivot_longer(
-    cols = c(CD_ATIVI, VINC1),
+    cols = c(CD_ATIVI),
     names_to = 'origem',
     values_to = 'categoria'
   ) |>
@@ -231,7 +172,7 @@ tabela_descrit_econo <- bind_rows(renda_anual, categorias_econo_anual) |>
   arrange(factor(
     Variavel,
     levels = c(
-      'Renda Familiar Média (R$)',
+      'ln da Renda Familiar Média per capita (R$)',
       'Trabalho Regular',
       'Bico',
       'Licença Médica',
@@ -239,15 +180,7 @@ tabela_descrit_econo <- bind_rows(renda_anual, categorias_econo_anual) |>
       'Desempregado',
       'Nunca Trabalhou',
       'Dona de Casa',
-      'Estudante',
-      'Assalariado com carteira',
-      'Assalariado sem carteira',
-      'Funcionário Público',
-      'Autônomo',
-      'Empregador',
-      'Profissional Liberal',
-      'Dono de Negócio Familiar',
-      'Trabalhador Familiar'
+      'Estudante'
     )
   ))
 
@@ -267,7 +200,7 @@ tabela_latex_econo <- tabela_descrit_econo |>
 #### Tabela com descritivas de viagem - Total de viagens médio, duração média e modo principal ####
 
 od_estat_viagens <- od_completa |>
-  select(ano, TOT_VIAG, DURACAO, MODOPRIN) |>
+  select(ano, viaja, DURACAO, MODOPRIN) |>
   mutate(
     MODOPRIN = case_when(
       MODOPRIN == 1 ~ 'Metrô',
@@ -291,9 +224,9 @@ od_estat_viagens <- od_completa |>
 
 totviag_anual <- od_estat_viagens |>
   group_by(ano) |>
-  filter(!is.na(TOT_VIAG)) |>
+  filter(!is.na(viaja)) |>
   summarise(
-    Valor = mean(TOT_VIAG, na.rm = TRUE),
+    Valor = mean(viaja, na.rm = TRUE),
     Variavel = 'Média de Total de Viagens'
   ) |>
   ungroup() |>
@@ -312,7 +245,7 @@ duracao_anual <- od_estat_viagens |>
   select(ano, Variavel, Valor)
 
 modo_viagem_anual <- od_estat_viagens |>
-  select(-TOT_VIAG, DURACAO) |>
+  select(-viaja, -DURACAO) |>
   pivot_longer(
     cols = MODOPRIN,
     names_to = 'origem',
@@ -415,7 +348,7 @@ mun_07 <- mun_07[mun_07$name_metro == "RM São Paulo", ]
 
 renda_media_2007 <- localiz_2007 |>
   select(
-    RENDA_FA_D,
+    ln_renda_f,
     Zona07,
     NomeZona07,
     Municipio,
@@ -426,26 +359,28 @@ renda_media_2007 <- localiz_2007 |>
   st_drop_geometry() |>
   group_by(Zona07) |>
   summarise(
-    Renda_Media = mean(RENDA_FA_D, na.rm = TRUE),
+    Renda_Media = mean(ln_renda_f, na.rm = TRUE),
     n_zona = n()
   )
 
 mapa_renda_2007 <- zonas_2007 |>
   left_join(renda_media_2007, by = 'Zona07')
 
+summary(mapa_renda_2007$Renda_Media)
+
 quartis_renda_2007 <- c(
   0,
-  1000,
-  3000,
-  6000,
+  7.2,
+  7.6,
+  7.8,
   max(mapa_renda_2007$Renda_Media, na.rm = TRUE)
 )
 
 labels_quartis_renda <- c(
-  'R$ 0 - R$ 1.000',
-  'R$ 1.000 - R$ 3.000',
-  'R$ 3.000 - R$ 6.000',
-  paste0('Mais de R$ 6.000')
+  'R$ 7,2 - R$ 7,6',
+  'R$ 7,6 - R$ 7,8',
+  'R$ 7,8 - R$ 8,0',
+  paste0('Mais de R$ 8,0')
 )
 
 mapa_renda_2007_final <- mapa_renda_2007 |>
@@ -481,7 +416,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = 'Renda Familiar Real (R$)',
+    name = 'ln da Renda Familiar Real per capita (R$)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -554,7 +489,7 @@ mun_17 <- mun_17[mun_17$name_metro == "RM São Paulo", ]
 
 renda_media_2017 <- localiz_2017 |>
   select(
-    RENDA_FA_D,
+    ln_renda_f,
     NumeroZona,
     NomeZona,
     NumeroMuni,
@@ -565,7 +500,7 @@ renda_media_2017 <- localiz_2017 |>
   st_drop_geometry() |>
   group_by(NumeroZona) |>
   summarise(
-    Renda_Media = mean(RENDA_FA_D, na.rm = TRUE),
+    Renda_Media = mean(ln_renda_f, na.rm = TRUE),
     n_zona = n()
   )
 
@@ -574,17 +509,17 @@ mapa_renda_2017 <- zonas_2017 |>
 
 quartis_renda_2017 <- c(
   0,
-  1000,
-  3000,
-  6000,
+  7.2,
+  7.6,
+  7.8,
   max(mapa_renda_2017$Renda_Media, na.rm = TRUE)
 )
 
 labels_quartis_renda <- c(
-  'R$ 0 - R$ 1.000',
-  'R$ 1.000 - R$ 3.000',
-  'R$ 3.000 - R$ 6.000',
-  paste0('Mais de R$ 6.000')
+  'R$ 7,2 - R$ 7,6',
+  'R$ 7,6 - R$ 7,8',
+  'R$ 7,8 - R$ 8,0',
+  paste0('Mais de R$ 8,0')
 )
 
 mapa_renda_2017_final <- mapa_renda_2017 |>
@@ -615,7 +550,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = 'Renda Familiar Real (R$)',
+    name = 'ln da Renda Familiar Real per capita (R$)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -688,7 +623,7 @@ mun_23 <- mun_23[mun_23$name_metro == "RM São Paulo", ]
 
 renda_media_2023 <- localiz_2023 |>
   select(
-    RENDA_FA_D,
+    ln_renda_f,
     NumeroZona,
     NomeZona,
     NumeroMuni,
@@ -699,7 +634,7 @@ renda_media_2023 <- localiz_2023 |>
   st_drop_geometry() |>
   group_by(NumeroZona) |>
   summarise(
-    Renda_Media = mean(RENDA_FA_D, na.rm = TRUE),
+    Renda_Media = mean(ln_renda_f, na.rm = TRUE),
     n_zona = n()
   )
 
@@ -708,17 +643,17 @@ mapa_renda_2023 <- zonas_2023 |>
 
 quartis_renda_2023 <- c(
   0,
-  1000,
-  3000,
-  6000,
+  7.2,
+  7.6,
+  7.8,
   max(mapa_renda_2023$Renda_Media, na.rm = TRUE)
 )
 
 labels_quartis_renda <- c(
-  'R$ 0 - R$ 1.000',
-  'R$ 1.000 - R$ 3.000',
-  'R$ 3.000 - R$ 6.000',
-  paste0('Mais de R$ 6.000')
+  'R$ 7,2 - R$ 7,6',
+  'R$ 7,6 - R$ 7,8',
+  'R$ 7,8 - R$ 8,0',
+  paste0('Mais de R$ 8,0')
 )
 
 mapa_renda_2023_final <- mapa_renda_2023 |>
@@ -749,7 +684,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = 'Renda Familiar Real (R$)',
+    name = 'ln da Renda Familiar Real per capita (R$)',
     na.value = 'grey90',
     na.translate = FALSE,
 
@@ -1705,660 +1640,6 @@ ggplot() +
     palette = 'bamako',
     direction = -1,
     name = '% de pessoas desempregadas',
-    na.value = 'grey90',
-    breaks = function(x) na.omit(x),
-
-    guide = guide_legend(
-      title.position = "top",
-      title.hjust = 0.5,
-      nrow = 1
-    )
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    color = 'grey10',
-    linewidth = 1.5,
-    show.legend = FALSE
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    aes(color = cores),
-    linewidth = 1,
-    show.legend = FALSE
-  ) +
-  scale_color_identity() +
-  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
-  theme_void() +
-  theme(
-    legend.position = 'bottom',
-    legend.title = element_text(face = 'bold', vjust = 1),
-    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
-  )
-
-### Frequência de indivíduos em trabalho com carteira assinada e autônomos por ano ###
-
-indicadores_vinc <- od_completa |>
-  select(ano, CO_DOM_X_S, CO_DOM_Y_S, VINC1) |>
-  mutate(
-    carteira = ifelse(VINC1 == 1, 1, 0),
-    autonomo = ifelse(VINC1 == 4, 1, 0)
-  )
-
-## 2007 ##
-
-pontos_2007_vinc <- indicadores_vinc |>
-  filter(ano == 2007) |>
-  mutate(
-    CO_DOM_X_S = as.numeric(CO_DOM_X_S),
-    CO_DOM_Y_S = as.numeric(CO_DOM_Y_S)
-  ) |>
-  filter(
-    !is.na(CO_DOM_X_S),
-    !is.na(CO_DOM_Y_S),
-    is.finite(CO_DOM_X_S),
-    is.finite(CO_DOM_Y_S),
-    !is.na(carteira),
-    !is.na(autonomo)
-  ) |>
-  st_as_sf(coords = c('CO_DOM_X_S', 'CO_DOM_Y_S'), crs = 31983) |>
-  st_zm(drop = TRUE, what = "ZM")
-
-any(st_is_empty(pontos_2007_vinc))
-
-localiz_2007_vinc <- st_join(pontos_2007_vinc, zonas_2007)
-
-carteira_2007 <- localiz_2007_vinc |>
-  select(
-    carteira,
-    Zona07,
-    NomeZona07,
-    Municipio,
-    NomeMunici,
-    Area_ha,
-    geometry
-  ) |>
-  st_drop_geometry() |>
-  filter(!is.na(carteira)) |>
-  group_by(Zona07) |>
-  summarise(
-    freq_carteira = mean(carteira, na.rm = TRUE)
-  )
-
-autonomo_2007 <- localiz_2007_vinc |>
-  select(
-    autonomo,
-    Zona07,
-    NomeZona07,
-    Municipio,
-    NomeMunici,
-    Area_ha,
-    geometry
-  ) |>
-  st_drop_geometry() |>
-  filter(!is.na(autonomo)) |>
-  group_by(Zona07) |>
-  summarise(
-    freq_autonomo = mean(autonomo, na.rm = TRUE)
-  )
-
-mapa_carteira_2007 <- zonas_2007 |>
-  left_join(carteira_2007, by = 'Zona07')
-
-quartis_carteira_2007 <- c(
-  0,
-  0.25,
-  0.50,
-  0.75,
-  max(mapa_carteira_2007$freq_carteira, na.rm = TRUE)
-)
-
-labels_quartis_carteira <- c(
-  '0 - 25%',
-  '25% - 50%',
-  '50% - 75%',
-  paste0('Mais de 75%')
-)
-
-mapa_carteira_2007_final <- mapa_carteira_2007 |>
-  mutate(
-    categoria = cut(
-      freq_carteira,
-      breaks = quartis_carteira_2007,
-      labels = labels_quartis_carteira,
-      include.lowest = TRUE
-    )
-  ) |>
-  st_make_valid(mapa_carteira_2007_final)
-
-mapa_carteira_2007_final_2 <- st_intersection(
-  st_make_valid(mapa_carteira_2007_final),
-  st_make_valid(mancha_urbana_sp_07)
-)
-
-ggplot() +
-  geom_sf(
-    data = mapa_carteira_2007_final_2,
-    aes(fill = categoria),
-    color = 'grey',
-    size = 0.1
-  ) +
-  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
-  scale_fill_scico_d(
-    palette = 'bamako',
-    direction = -1,
-    name = '% de pessoas trabalhando com carteira assinada',
-    na.value = 'grey90',
-    breaks = function(x) na.omit(x),
-
-    guide = guide_legend(
-      title.position = "top",
-      title.hjust = 0.5,
-      nrow = 1
-    )
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    color = 'grey10',
-    linewidth = 1.5,
-    show.legend = FALSE
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    aes(color = cores),
-    linewidth = 1,
-    show.legend = FALSE
-  ) +
-  scale_color_identity() +
-  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
-  theme_void() +
-  theme(
-    legend.position = 'bottom',
-    legend.title = element_text(face = 'bold', vjust = 1),
-    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
-  )
-
-mapa_autonomo_2007 <- zonas_2007 |>
-  left_join(autonomo_2007, by = 'Zona07')
-
-quartis_autonomo_2007 <- c(
-  0,
-  0.10,
-  0.25,
-  0.35,
-  max(mapa_carteira_2007$freq_carteira, na.rm = TRUE)
-)
-
-labels_quartis_autonomo <- c(
-  '0 - 10%',
-  '10% - 25%',
-  '25% - 35%',
-  paste0('Mais de 35%')
-)
-
-mapa_autonomo_2007_final <- mapa_autonomo_2007 |>
-  mutate(
-    categoria = cut(
-      freq_autonomo,
-      breaks = quartis_autonomo_2007,
-      labels = labels_quartis_autonomo,
-      include.lowest = TRUE
-    )
-  ) |>
-  st_make_valid(mapa_autonomo_2007_final)
-
-mapa_autonomo_2007_final_2 <- st_intersection(
-  st_make_valid(mapa_autonomo_2007_final),
-  st_make_valid(mancha_urbana_sp_07)
-)
-
-ggplot() +
-  geom_sf(
-    data = mapa_autonomo_2007_final_2,
-    aes(fill = categoria),
-    color = 'grey',
-    size = 0.1
-  ) +
-  geom_sf(data = mun_07, fill = NA, color = 'grey10', size = 1) +
-  scale_fill_scico_d(
-    palette = 'bamako',
-    direction = -1,
-    name = '% de pessoas em trabalho autônomo',
-    na.value = 'grey90',
-    breaks = function(x) na.omit(x),
-
-    guide = guide_legend(
-      title.position = "top",
-      title.hjust = 0.5,
-      nrow = 1
-    )
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    color = 'grey10',
-    linewidth = 1.5,
-    show.legend = FALSE
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    aes(color = cores),
-    linewidth = 1,
-    show.legend = FALSE
-  ) +
-  scale_color_identity() +
-  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
-  theme_void() +
-  theme(
-    legend.position = 'bottom',
-    legend.title = element_text(face = 'bold', vjust = 1),
-    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
-  )
-
-## 2017 ##
-
-pontos_2017_vinc <- indicadores_vinc |>
-  filter(ano == 2017) |>
-  mutate(
-    CO_DOM_X_S = as.numeric(CO_DOM_X_S),
-    CO_DOM_Y_S = as.numeric(CO_DOM_Y_S)
-  ) |>
-  filter(
-    !is.na(CO_DOM_X_S),
-    !is.na(CO_DOM_Y_S),
-    is.finite(CO_DOM_X_S),
-    is.finite(CO_DOM_Y_S),
-    !is.na(carteira),
-    !is.na(autonomo)
-  ) |>
-  st_as_sf(coords = c('CO_DOM_X_S', 'CO_DOM_Y_S'), crs = 31983) |>
-  st_zm(drop = TRUE, what = "ZM")
-
-any(st_is_empty(pontos_2017_vinc))
-
-localiz_2017_vinc <- st_join(pontos_2017_vinc, zonas_2017)
-
-carteira_2017 <- localiz_2017_vinc |>
-  select(
-    carteira,
-    NumeroZona,
-    NomeZona,
-    NumeroMuni,
-    NomeMunici,
-    Area_ha_2,
-    geometry
-  ) |>
-  st_drop_geometry() |>
-  filter(!is.na(carteira)) |>
-  group_by(NumeroZona) |>
-  summarise(
-    freq_carteira = mean(carteira, na.rm = TRUE)
-  )
-
-autonomo_2017 <- localiz_2017_vinc |>
-  select(
-    autonomo,
-    NumeroZona,
-    NomeZona,
-    NumeroMuni,
-    NomeMunici,
-    Area_ha_2,
-    geometry
-  ) |>
-  st_drop_geometry() |>
-  filter(!is.na(autonomo)) |>
-  group_by(NumeroZona) |>
-  summarise(
-    freq_autonomo = mean(autonomo, na.rm = TRUE)
-  )
-
-mapa_carteira_2017 <- zonas_2017 |>
-  left_join(carteira_2017, by = 'NumeroZona')
-
-quartis_carteira_2017 <- c(
-  0,
-  0.25,
-  0.50,
-  0.75,
-  max(mapa_carteira_2017$freq_carteira, na.rm = TRUE)
-)
-
-labels_quartis_carteira <- c(
-  '0 - 25%',
-  '25% - 50%',
-  '50% - 75%',
-  paste0('Mais de 75%')
-)
-
-mapa_carteira_2017_final <- mapa_carteira_2017 |>
-  mutate(
-    categoria = cut(
-      freq_carteira,
-      breaks = quartis_carteira_2017,
-      labels = labels_quartis_carteira,
-      include.lowest = TRUE
-    )
-  ) |>
-  st_make_valid(mapa_carteira_2017_final)
-
-mapa_carteira_2017_final_2 <- st_intersection(
-  st_make_valid(mapa_carteira_2017_final),
-  st_make_valid(mancha_urbana_sp_17)
-)
-
-ggplot() +
-  geom_sf(
-    data = mapa_carteira_2017_final_2,
-    aes(fill = categoria),
-    color = 'grey',
-    size = 0.1
-  ) +
-  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
-  scale_fill_scico_d(
-    palette = 'bamako',
-    direction = -1,
-    name = '% de pessoas trabalhando com carteira assinada',
-    na.value = 'grey90',
-    breaks = function(x) na.omit(x),
-
-    guide = guide_legend(
-      title.position = "top",
-      title.hjust = 0.5,
-      nrow = 1
-    )
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    color = 'grey10',
-    linewidth = 1.5,
-    show.legend = FALSE
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    aes(color = cores),
-    linewidth = 1,
-    show.legend = FALSE
-  ) +
-  scale_color_identity() +
-  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
-  theme_void() +
-  theme(
-    legend.position = 'bottom',
-    legend.title = element_text(face = 'bold', vjust = 1),
-    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
-  )
-
-mapa_autonomo_2017 <- zonas_2017 |>
-  left_join(autonomo_2017, by = 'NumeroZona')
-
-quartis_autonomo_2017 <- c(
-  0,
-  0.10,
-  0.25,
-  0.35,
-  max(mapa_carteira_2017$freq_carteira, na.rm = TRUE)
-)
-
-labels_quartis_autonomo <- c(
-  '0 - 10%',
-  '10% - 25%',
-  '25% - 35%',
-  paste0('Mais de 35%')
-)
-
-mapa_autonomo_2017_final <- mapa_autonomo_2017 |>
-  mutate(
-    categoria = cut(
-      freq_autonomo,
-      breaks = quartis_autonomo_2017,
-      labels = labels_quartis_autonomo,
-      include.lowest = TRUE
-    )
-  ) |>
-  st_make_valid(mapa_autonomo_2017_final)
-
-mapa_autonomo_2017_final_2 <- st_intersection(
-  st_make_valid(mapa_autonomo_2017_final),
-  st_make_valid(mancha_urbana_sp_17)
-)
-
-ggplot() +
-  geom_sf(
-    data = mapa_autonomo_2017_final_2,
-    aes(fill = categoria),
-    color = 'grey',
-    size = 0.1
-  ) +
-  geom_sf(data = mun_17, fill = NA, color = 'grey10', size = 1) +
-  scale_fill_scico_d(
-    palette = 'bamako',
-    direction = -1,
-    name = '% de pessoas em trabalho autônomo',
-    na.value = 'grey90',
-    breaks = function(x) na.omit(x),
-
-    guide = guide_legend(
-      title.position = "top",
-      title.hjust = 0.5,
-      nrow = 1
-    )
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    color = 'grey10',
-    linewidth = 1.5,
-    show.legend = FALSE
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    aes(color = cores),
-    linewidth = 1,
-    show.legend = FALSE
-  ) +
-  scale_color_identity() +
-  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
-  theme_void() +
-  theme(
-    legend.position = 'bottom',
-    legend.title = element_text(face = 'bold', vjust = 1),
-    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
-  )
-
-## 2023 ##
-
-pontos_2023_vinc <- indicadores_vinc |>
-  filter(ano == 2023) |>
-  mutate(
-    CO_DOM_X_S = as.numeric(CO_DOM_X_S),
-    CO_DOM_Y_S = as.numeric(CO_DOM_Y_S)
-  ) |>
-  filter(
-    !is.na(CO_DOM_X_S),
-    !is.na(CO_DOM_Y_S),
-    is.finite(CO_DOM_X_S),
-    is.finite(CO_DOM_Y_S),
-    !is.na(carteira),
-    !is.na(autonomo)
-  ) |>
-  st_as_sf(coords = c('CO_DOM_X_S', 'CO_DOM_Y_S'), crs = 31983) |>
-  st_zm(drop = TRUE, what = "ZM")
-
-any(st_is_empty(pontos_2023_vinc))
-
-localiz_2023_vinc <- st_join(pontos_2023_vinc, zonas_2023)
-
-carteira_2023 <- localiz_2023_vinc |>
-  select(
-    carteira,
-    NumeroZona,
-    NomeZona,
-    NumeroMuni,
-    NomeMunici,
-    Area_ha_2,
-    geometry
-  ) |>
-  st_drop_geometry() |>
-  filter(!is.na(carteira)) |>
-  group_by(NumeroZona) |>
-  summarise(
-    freq_carteira = mean(carteira, na.rm = TRUE)
-  )
-
-autonomo_2023 <- localiz_2023_vinc |>
-  select(
-    autonomo,
-    NumeroZona,
-    NomeZona,
-    NumeroMuni,
-    NomeMunici,
-    Area_ha_2,
-    geometry
-  ) |>
-  st_drop_geometry() |>
-  filter(!is.na(autonomo)) |>
-  group_by(NumeroZona) |>
-  summarise(
-    freq_autonomo = mean(autonomo, na.rm = TRUE)
-  )
-
-mapa_carteira_2023 <- zonas_2023 |>
-  left_join(carteira_2017, by = 'NumeroZona')
-
-quartis_carteira_2023 <- c(
-  0,
-  0.25,
-  0.50,
-  0.75,
-  max(mapa_carteira_2023$freq_carteira, na.rm = TRUE)
-)
-
-labels_quartis_carteira <- c(
-  '0 - 25%',
-  '25% - 50%',
-  '50% - 75%',
-  paste0('Mais de 75%')
-)
-
-mapa_carteira_2023_final <- mapa_carteira_2023 |>
-  mutate(
-    categoria = cut(
-      freq_carteira,
-      breaks = quartis_carteira_2023,
-      labels = labels_quartis_carteira,
-      include.lowest = TRUE
-    )
-  ) |>
-  st_make_valid(mapa_carteira_2023_final)
-
-mapa_carteira_2023_final_2 <- st_intersection(
-  st_make_valid(mapa_carteira_2023_final),
-  st_make_valid(mancha_urbana_sp_23)
-)
-
-ggplot() +
-  geom_sf(
-    data = mapa_carteira_2023_final_2,
-    aes(fill = categoria),
-    color = 'grey',
-    size = 0.1
-  ) +
-  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
-  scale_fill_scico_d(
-    palette = 'bamako',
-    direction = -1,
-    name = '% de pessoas trabalhando com carteira assinada',
-    na.value = 'grey90',
-    breaks = function(x) na.omit(x),
-
-    guide = guide_legend(
-      title.position = "top",
-      title.hjust = 0.5,
-      nrow = 1
-    )
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    color = 'grey10',
-    linewidth = 1.5,
-    show.legend = FALSE
-  ) +
-  geom_sf(
-    data = metro_linhas,
-    aes(color = cores),
-    linewidth = 1,
-    show.legend = FALSE
-  ) +
-  scale_color_identity() +
-  coord_sf(xlim = xlim, ylim = ylim, expand = FALSE) +
-  theme_void() +
-  theme(
-    legend.position = 'bottom',
-    legend.title = element_text(face = 'bold', vjust = 1),
-    legend.text = element_text(size = 9, margin = margin(r = 1, unit = "cm")),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-    plot.margin = margin(t = 3, r = 3, b = 3, l = 3, unit = "mm")
-  )
-
-mapa_autonomo_2023 <- zonas_2023 |>
-  left_join(autonomo_2023, by = 'NumeroZona')
-
-quartis_autonomo_2023 <- c(
-  0,
-  0.10,
-  0.25,
-  0.35,
-  max(mapa_carteira_2023$freq_carteira, na.rm = TRUE)
-)
-
-labels_quartis_autonomo <- c(
-  '0 - 10%',
-  '10% - 25%',
-  '25% - 35%',
-  paste0('Mais de 35%')
-)
-
-mapa_autonomo_2023_final <- mapa_autonomo_2023 |>
-  mutate(
-    categoria = cut(
-      freq_autonomo,
-      breaks = quartis_autonomo_2023,
-      labels = labels_quartis_autonomo,
-      include.lowest = TRUE
-    )
-  ) |>
-  st_make_valid(mapa_autonomo_2023_final)
-
-mapa_autonomo_2023_final_2 <- st_intersection(
-  st_make_valid(mapa_autonomo_2023_final),
-  st_make_valid(mancha_urbana_sp_23)
-)
-
-ggplot() +
-  geom_sf(
-    data = mapa_autonomo_2023_final_2,
-    aes(fill = categoria),
-    color = 'grey',
-    size = 0.1
-  ) +
-  geom_sf(data = mun_23, fill = NA, color = 'grey10', size = 1) +
-  scale_fill_scico_d(
-    palette = 'bamako',
-    direction = -1,
-    name = '% de pessoas em trabalho autônomo',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 

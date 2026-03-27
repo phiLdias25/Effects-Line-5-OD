@@ -23,88 +23,20 @@ od_2023 <- import('Bases de dados OD/Banco2023_divulgacao_190225.dbf')
 
 ##### Filtrando as variáveis importantes de cada base #####
 
-#od_1997_filtrada <- od_1997 |>
-#    select(
-#        ZONA, # Zona do domicílio
-#        MUNI_DOM, # Município do domicílio
-#        ID_DOM, # Identificação do domicílio
-#        TIPO_DOM, # Tipo do domicílio: 1 - Particular; 2 - Coletivo; 3 - Favela
-#        CONDMORA, # Condição de moradia: 1 - Alugada; 2 - Própria; 3 - Cedida, 4 - Outros; 5 - Não respondeu
-#        ABIPEME, # Critério de Classificação Econômica Brasil (antiga, chamada de ABIPEME)
-#        ID_PESS, # Identificação da pessoa
-#        SIT_FAM, # Situação Familiar: 1 - Responsável; 2 - Cônjuge/companheiro(a); 3 - Filho(a)/Enteado(a); 4 - Outro Parente; 5 - Empregado Residente; 6 - Visitante não residente
-#        IDADE,
-#       SEXO,
-#        SE_ESTUD, # 1 - Não; 2 - Creche/Pré-Escola; 3 - Ensino Básico/Fundamental/Médio; 4 - Outros
-#        GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado; 2 - Pré-Escola; 3 - Fundamental Incompleto; 4 - Fundamental Completo; 5 - Médio Incompleto; 6 - Médio Completo; 7 - Superior Incompleto; 8 - Superior Completo
-#        CD_ATIVI, # Condição de atividade: 1 - Trabalho Regular; 2 - Bico; 3 - Licença Médica; 4 - Desempregado; 5 - Aposentado/Pensionista; 6 - Nunca trabalhou; 7 - Dona de Casa; 8 - Estudante
-#        RENDA_FA, # Renda Familiar
-#        ZONATRA1, # Zona de Trabalho 1
-#        MUNITRA1, # Município de Trabalho 1
-#        SET_ATIV, # Setor do Trabalho 1
-#        OCUP_PRI, # Vínculo do Trabalho 1
-#        MODO1, # Modo de Transporte da Viagem 1
-#        DURACAO, # Duração da Viagem (MINUTOS)
-#        MODOPRIN, # Modo Principal da Viagem
-#        ZONA_O, # Zona de Origem da Viagem
-#        ZONA_D, # Zona de Destino da Viagem
-#        MOTIVO_O, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Outros
-#        MOTIVO_D # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Outros
-#    ) |>
-#    mutate(
-#        ano = 1997,
-#        TOT_VIAG = NA,
-#       CO_DOM_X = NA,
-#       CO_DOM_Y = NA,
-#        CO_TR1_X = NA,
-#        CO_TR1_Y = NA,
-#       DISTANCIA = NA,
-#        CO_O_X = NA,
-#        CO_O_Y = NA,
-#        CO_D_X = NA,
-#        CO_D_Y = NA,
-#        ID_DOM = as.character(ID_DOM)
-#    )
-
-# Problemas: 1997 não possui coordenadas, critério econômico antigo, grau de instrução limitado, sem total de viagens, ocupação do trabalho 1 e setor do trabalho 1 diferentes
-
-## Trocando nomes diferentes da base de 1997
-
-#od_1997_filtrada <- od_1997_filtrada |>
-#    rename(
-#        CRITERIOBR = ABIPEME,
-#        ESTUDA = SE_ESTUD,
-#       VINC1 = OCUP_PRI,
-#       SETOR1 = SET_ATIV
-#    )
-
 od_2007_filtrada <- od_2007 |>
     select(
         ZONA, # Zona do domicílio
-        MUNI_DOM, # Município do domicílio
         CO_DOM_X, # Coordenada X do domicílio
         CO_DOM_Y, # Coordenada Y do domicílio
-        ID_DOM, # Identificação do domicílio
-        TIPO_DOM, # Tipo do domicílio: 1 - Particular; 2 - Coletivo, 3 - Favela
-        CONDMORA, # Condição de moradia: 1 - Alugada; 2 - Própria; 3 - Cedida, 4 - Outros; 5 - Não respondeu
-        CRITERIOBR, # Critério de Classificação Econômica Brasil
         ID_PESS, # Identificação da pessoa
-        SIT_FAM, # Situação Familiar: 1 - Responsável; 2 - Cônjuge/companheiro(a); 3 - Filho(a)/Enteado(a); 4 - Outro Parente; 5 - Agregado; 6 - Empregado Residente; 7 - Parente do Empregado
         IDADE,
         SEXO,
-        ESTUDA, # 1 - Não; 2 - Creche/Pré-Escola; 3 - Ensino Fundamental; 4 - Ensino Médio; 6 - Ensino Superior; 7 - Outros
+        NO_MORAF, # Número de moradores da família
+        VL_REN_I, # Renda Individual
         GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado/ Fund 1 Incompleto ; 2 - Fund 1 Completo/Fund 2 Incompleto; 3 - Fund 2 Completo/ Médio Incompleto; 4 - Médio Completo/ Superior Incompleto; 5 - Superior Completo
         CD_ATIVI, # Condição de atividade: 1 - Trabalho Regular; 2 - Bico; 3 - Licença Médica; 4 - Aposentado/Pensionista; 5 - Desempregado; 6 - Nunca trabalhou; 7 - Dona de Casa; 8 - Estudante
         RENDA_FA, # Renda Familiar
-        ZONATRA1, # Zona de Trabalho 1
-        MUNITRA1, # Município de Trabalho 1
-        CO_TR1_X, # Coordenada X do Trabalho 1
-        CO_TR1_Y, # Coordenada Y do Trabalho 1
-        OCUP1, # Ocupação do Trabalho 1
-        SETOR1, # Setor do Trabalho 1
-        VINC1, # Vínculo do Trabalho 1
         TOT_VIAG, # Total de Viagens do Indivíduo
-        MODO1, # Modo de Transporte da Viagem 1
         DURACAO, # Duração da Viagem (MINUTOS)
         MODOPRIN, # Modo Principal da Viagem
         DISTANCIA, # Distância da Viagem (Linha reta entre a coord de origem e coord de destino)
@@ -115,25 +47,13 @@ od_2007_filtrada <- od_2007 |>
         CO_D_X, # Coordenada X do Destino da Viagem
         CO_D_Y, # Coordenada Y do Destino da Viagem
         MOTIVO_O, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
-        MOTIVO_D, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais,
+        MOTIVO_D, # Motivo da Viagem de Origem: 1 - Trabalho/Indústria; 2 - Trabalho/Comércio; 3 - Trabalho/Serviços; 4 - Educação; 5 - Compras; 6 - Saúde; 7 - Lazer; 8 - Residência; 9 - Procurar Emprego; 10 - Assuntos Pessoais
         TIPVG # Tipo de Viagem: 1 - Coletivo; 2 - Individual; 3 - A pé; 4 - Bicicleta
     ) |>
     mutate(
         ano = 2007,
         RENDA_FA = as.numeric(RENDA_FA),
-        CRITERIOBR = case_when(
-            CRITERIOBR %in% c(1, 2) ~ 1,
-            CRITERIOBR == 3 ~ 2,
-            CRITERIOBR == 4 ~ 3,
-            CRITERIOBR == 5 ~ 4,
-            CRITERIOBR == 6 ~ 5,
-            CRITERIOBR %in% c(7, 8) ~ 6
-        ),
-        ESTUDA = case_when(
-            ESTUDA == 6 ~ 5,
-            ESTUDA == 7 ~ 6,
-            TRUE ~ ESTUDA
-        ),
+        VL_REN_I = as.numeric(VL_REN_I),
         MODOPRIN = case_when(
             MODOPRIN %in% c(1, 9) ~ 4,
             MODOPRIN %in% c(2, 10) ~ 5,
@@ -147,36 +67,29 @@ od_2007_filtrada <- od_2007 |>
             MODOPRIN == 13 ~ 2,
             MODOPRIN == 14 ~ 13,
             TRUE ~ MODOPRIN
-        )
-    )
+        ),
+        declarou_renda = ifelse(!is.na(VL_REN_I) & VL_REN_I > 0, 1, 0)
+    ) |>
+    # Filtrando as viagens para: Viagens que começam em casa (MOTIVO_O == 8) e as pessoas que NÃO VIAJARAM (MOTIVO_O == NA)
+    filter(MOTIVO_O == 8 | is.na(MOTIVO_O)) |>
+    # Filtrando as pessoas com menos de 14 anos
+    filter(IDADE >= 14)
+
 
 od_2017_filtrada <- od_2017 |>
     select(
         ZONA, # Zona do domicílio
-        MUNI_DOM, # Município do domicílio
         CO_DOM_X, # Coordenada X do domicílio
         CO_DOM_Y, # Coordenada Y do domicílio
-        ID_DOM, # Identificação do domicílio
-        TIPO_DOM, # Tipo do domicílio: 1 - Particular; 2 - Coletivo
-        CONDMORA, # Condição de moradia: 1 - Alugada; 2 - Própria; 3 - Cedida, 4 - Outros; 5 - Não respondeu
-        CRITERIOBR, # Critério de Classificação Econômica Brasil
         ID_PESS, # Identificação da pessoa
-        SIT_FAM, # Situação Familiar: 1 - Responsável; 2 - Cônjuge/companheiro(a); 3 - Filho(a)/Enteado(a); 4 - Outro Parente; 5 - Agregado; 6 - Empregado Residente; 7 - Parente do Empregado
         IDADE,
         SEXO,
-        ESTUDA, # 1 - Não; 2 - Creche/Pré-Escola; 3 - Ensino Fundamental; 4 - Ensino Médio; 6 - Ensino Superior; 7 - Outros
+        NO_MORAF, # Número de moradores da família
+        VL_REN_I, # Renda Individual
         GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado/ Fund 1 Incompleto ; 2 - Fund 1 Completo/Fund 2 Incompleto; 3 - Fund 2 Completo/ Médio Incompleto; 4 - Médio Completo/ Superior Incompleto; 5 - Superior Completo
         CD_ATIVI, # Condição de atividade: 1 - Trabalho Regular; 2 - Bico; 3 - Licença Médica; 4 - Aposentado/Pensionista; 5 - Desempregado; 6 - Nunca trabalhou; 7 - Dona de Casa; 8 - Estudante
         RENDA_FA, # Renda Familiar
-        ZONATRA1, # Zona de Trabalho 1
-        MUNITRA1, # Município de Trabalho 1
-        CO_TR1_X, # Coordenada X do Trabalho 1
-        CO_TR1_Y, # Coordenada Y do Trabalho 1
-        OCUP1, # Ocupação do Trabalho 1
-        SETOR1, # Setor do Trabalho 1
-        VINC1, # Vínculo do Trabalho 1
         TOT_VIAG, # Total de Viagens do Indivíduo
-        MODO1, # Modo de Transporte da Viagem 1
         DURACAO, # Duração da Viagem (MINUTOS)
         MODOPRIN, # Modo Principal da Viagem
         DISTANCIA, # Distância da Viagem (Linha reta entre a coord de origem e coord de destino)
@@ -192,6 +105,7 @@ od_2017_filtrada <- od_2017 |>
     ) |>
     mutate(
         ano = 2017,
+        VL_REN_I = as.numeric(VL_REN_I),
         CO_O_X_SIRGAS = CO_O_X,
         CO_O_Y_SIRGAS = CO_O_Y,
         CO_D_X_SIRGAS = CO_D_X,
@@ -203,37 +117,29 @@ od_2017_filtrada <- od_2017 |>
             MODOPRIN == 12 ~ 11,
             MODOPRIN == 14 ~ 13,
             TRUE ~ MODOPRIN
-        )
-    )
+        ),
+        declarou_renda = ifelse(!is.na(VL_REN_I) & VL_REN_I > 0, 1, 0)
+    ) |>
+    # Filtrando as viagens para: Viagens que começam em casa (MOTIVO_O == 8) e as pessoas que NÃO VIAJARAM (MOTIVO_O == NA)
+    filter(MOTIVO_O == 8 | is.na(MOTIVO_O)) |>
+    # Filtrando as pessoas com menos de 14 anos
+    filter(IDADE >= 14)
 
 
 od_2023_filtrada <- od_2023 |>
     select(
         ZONA, # Zona do domicílio
-        MUNI_DOM, # Município do domicílio
         CO_DOM_X, # Coordenada X do domicílio
         CO_DOM_Y, # Coordenada Y do domicílio
-        ID_DOM, # Identificação do domicílio
-        TIPO_DOM, # Tipo do domicílio: 1 - Particular; 2 - Coletivo
-        CONDMORA, # Condição de moradia: 1 - Alugada; 2 - Própria; 3 - Cedida, 4 - Outros; 5 - Não respondeu
-        CRITERIOBR, # Critério de Classificação Econômica Brasil
         ID_PESS, # Identificação da pessoa
-        SIT_FAM, # Situação Familiar: 1 - Responsável; 2 - Cônjuge/companheiro(a); 3 - Filho(a)/Enteado(a); 4 - Outro Parente; 5 - Agregado; 6 - Empregado Residente; 7 - Parente do Empregado
         IDADE,
         SEXO,
-        ESTUDA, # 1 - Não; 2 - Creche/Pré-Escola; 3 - Ensino Fundamental; 4 - Ensino Médio; 6 - Ensino Superior; 7 - Outros
+        NO_MORAF, # Número de moradores da família
+        VL_REN_I, # Renda Individual
         GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado/ Fund 1 Incompleto ; 2 - Fund 1 Completo/Fund 2 Incompleto; 3 - Fund 2 Completo/ Médio Incompleto; 4 - Médio Completo/ Superior Incompleto; 5 - Superior Completo
         CD_ATIVI, # Condição de atividade: 1 - Trabalho Regular; 2 - Bico; 3 - Licença Médica; 4 - Aposentado/Pensionista; 5 - Desempregado; 6 - Nunca trabalhou; 7 - Dona de Casa; 8 - Estudante
         RENDA_FA, # Renda Familiar
-        ZONATRA1, # Zona de Trabalho 1
-        MUNITRA1, # Município de Trabalho 1
-        CO_TR1_X, # Coordenada X do Trabalho 1
-        CO_TR1_Y, # Coordenada Y do Trabalho 1
-        DS_OCUP_TR, # Ocupação do Trabalho 1
-        SETOR1, # Setor do Trabalho 1
-        VINC1, # Vínculo do Trabalho 1
         TOT_VIAG, # Total de Viagens do Indivíduo
-        MODO1, # Modo de Transporte da Viagem 1
         DURACAO, # Duração da Viagem (MINUTOS)
         MODOPRIN, # Modo Principal da Viagem
         DISTANCIA, # Distância da Viagem (Linha reta entre a coord de origem e coord de destino)
@@ -251,20 +157,13 @@ od_2023_filtrada <- od_2023 |>
         ano = 2023,
         ID_PESS = as.character(ID_PESS),
         RENDA_FA = as.numeric(RENDA_FA),
+        VL_REN_I = as.numeric(VL_REN_I),
         CO_O_X_SIRGAS = CO_O_X,
         CO_O_Y_SIRGAS = CO_O_Y,
         CO_D_X_SIRGAS = CO_D_X,
         CO_D_Y_SIRGAS = CO_D_Y,
         CO_DOM_X_SIRGAS = CO_DOM_X,
         CO_DOM_Y_SIRGAS = CO_DOM_Y,
-        VINC1 = case_when(
-            VINC1 %in% c(5, 6) ~ 4,
-            VINC1 == 4 ~ 6,
-            VINC1 == 7 ~ 5,
-            VINC1 == 8 ~ 7,
-            VINC1 == 9 ~ 8,
-            TRUE ~ VINC1
-        ),
         MODOPRIN = case_when(
             MODOPRIN == 3 ~ 17,
             MODOPRIN == 12 ~ 11,
@@ -274,37 +173,13 @@ od_2023_filtrada <- od_2023 |>
             MODOPRIN == 17 ~ 16,
             MODOPRIN == 18 ~ 17,
             TRUE ~ MODOPRIN
-        )
-    )
-
-##### Arrumando diferenças entre as pesquisas de cada base #####
-
-### Em 1997 e 2007, a variável de tipo de domicílio engloba favelas como um tipo diferente, enquanto as outras não fazem a separação. Vamos separá-las como domicílios particulares ###
-
-#od_1997_filtrada <- od_1997_filtrada |>
-#    mutate(
-#        TIPO_DOM = ifelse(TIPO_DOM == 3, 1, TIPO_DOM)
-#    )
-
-od_2007_filtrada <- od_2007_filtrada |>
-    mutate(
-        TIPO_DOM = ifelse(TIPO_DOM == 3, 1, TIPO_DOM)
-    )
-
-### Em 1997, o grau de instrução estava mais detalhado. Vamos adequá-lo às outras pesquisas ###
-
-#od_1997_filtrada <- od_1997_filtrada |>
-#    mutate(
-#        GRAU_INS_ANTIGO = GRAU_INS,
-#       GRAU_INS = case_when(
-#           GRAU_INS %in% c(1L, 2L, 3L) ~ 1L, # não alfabetizado / pré-escola / fund. incompleto
-#           GRAU_INS == 4L ~ 2L, # fund. completo
-#           GRAU_INS == 5L ~ 3L, # médio incompleto
-#           GRAU_INS %in% c(6L, 7L) ~ 4L, # médio completo / superior incompleto
-#           GRAU_INS == 8L ~ 5L, # superior completo
-#           TRUE ~ NA_integer_
-#      )
-#   )
+        ),
+        declarou_renda = ifelse(!is.na(VL_REN_I) & VL_REN_I > 0, 1, 0)
+    ) |>
+    # Filtrando as viagens para: Viagens que começam em casa (MOTIVO_O == 8) e as pessoas que NÃO VIAJARAM (MOTIVO_O == NA)
+    filter(MOTIVO_O == 8 | is.na(MOTIVO_O)) |>
+    # Filtrandoa as pessoas com menos de 14 anos
+    filter(IDADE >= 14)
 
 ##### Fazendo uma variável indicadora se a viagem dos indivíduos foi realizada ao centro expandido de SP #####
 
@@ -715,7 +590,7 @@ estacoes_futuras <- tribble(
 
     # Linha 6 - Laranja
     "Laranja" , "Brasilândia"      , -23.4673 , -46.6946 ,
-    "Laranja" , "Vila Cardoso"     , -23.4764 , -46.6976 , # Antiga Maristela
+    "Laranja" , "Vila Cardoso"     , -23.4764 , -46.6976 ,
     "Laranja" , "Itaberaba"        , -23.4839 , -46.7011 ,
     "Laranja" , "João Paulo I"     , -23.4962 , -46.7029 ,
     "Laranja" , "Freguesia do Ó"   , -23.4884 , -46.7032 ,
@@ -754,10 +629,10 @@ estacoes_futuras <- tribble(
     "Violeta" , "Oscar Freire"     , -23.5605 , -46.6716 ,
     "Violeta" , "Nove de Julho"    , -23.5668 , -46.6622 ,
     "Violeta" , "Jardim Paulista"  , -23.5714 , -46.6558 ,
-    "Violeta" , "Ibirapuera"       , -23.5768 , -46.6514 , # Pq Ibirapuera
+    "Violeta" , "Ibirapuera"       , -23.5768 , -46.6514 ,
     "Violeta" , "Ana Rosa"         , -23.5816 , -46.6384 ,
     "Violeta" , "Aclimação"        , -23.5721 , -46.6242 ,
-    "Violeta" , "Independência"    , -23.5804 , -46.6115 , # Pq Independencia
+    "Violeta" , "Independência"    , -23.5804 , -46.6115 ,
     "Violeta" , "São Carlos"       , -23.5683 , -46.6025 ,
     "Violeta" , "Paes de Barros"   , -23.5635 , -46.5886 ,
     "Violeta" , "Vila Bertioga"    , -23.5612 , -46.5784 ,
@@ -770,7 +645,7 @@ estacoes_futuras <- tribble(
     "Marrom"  , "Cotia Centro"     , -23.6033 , -46.9192 ,
     "Marrom"  , "Santo Antônio"    , -23.5992 , -46.8854 ,
     "Marrom"  , "Sabiá"            , -23.5965 , -46.8643 ,
-    "Marrom"  , "Mesopotâmia"      , -23.5942 , -46.8456 , # Pq Alexandra/Embu
+    "Marrom"  , "Mesopotâmia"      , -23.5942 , -46.8456 ,
     "Marrom"  , "Granja Viana"     , -23.5935 , -46.8335 ,
     "Marrom"  , "Santa Maria"      , -23.5898 , -46.8152 ,
     "Marrom"  , "Victor Civita"    , -23.5864 , -46.7956 ,
@@ -857,13 +732,59 @@ indica_centro <- st_intersects(
     sparse = FALSE
 )
 
+##### Colapsando a base por indivíduo, já que a base original está por viagens #####
+
+od_grupos_sf <- od_grupos_sf |>
+    mutate(
+        dist_m_futuro = as.numeric(dist_futuro),
+        dist_m_cptm = as.numeric(dist_cptm),
+        mora_centro_exp = ifelse(indica_centro[, 1] == TRUE, 1, 0)
+    ) |>
+    st_drop_geometry() |>
+    group_by(ID_PESS, ano, ZONA, ZMC) |>
+    summarise(
+        IDADE = first(IDADE),
+        SEXO = first(SEXO),
+        VL_REN_I = first(VL_REN_I),
+        NO_MORAF = first(NO_MORAF),
+        declarou_renda = first(declarou_renda),
+        GRAU_INS = first(GRAU_INS),
+        CD_ATIVI = first(CD_ATIVI),
+        RENDA_FA = first(RENDA_FA),
+        TIPVG = first(TIPVG),
+        ZONA_O = first(ZONA_O),
+        viaja = ifelse(sum(TOT_VIAG, na.rm = TRUE) > 0, 1, 0),
+        indic_destino_centro_exp = max(indic_destino_centro_exp),
+        trab_centro = max(trab_centro),
+        educ_centro = max(educ_centro),
+        saude_centro = max(saude_centro),
+        lazer_centro = max(lazer_centro),
+        compras_centro = max(compras_centro),
+        emp_centro = max(emp_centro),
+        trab_educ_emp_centro = max(trab_educ_emp_centro),
+        trab_emp_centro = max(trab_emp_centro),
+        lazer_comp_saude_centro = max(lazer_comp_saude_centro),
+        lazer_comp_centro = max(lazer_comp_centro),
+        trab_educ_centro = max(trab_educ_centro),
+        MODOPRIN = max(MODOPRIN),
+        DURACAO = if (all(is.na(MODOPRIN))) 0 else DURACAO[which.max(MODOPRIN)],
+        DISTANCIA = if (all(is.na(MODOPRIN))) {
+            0
+        } else {
+            DISTANCIA[which.max(MODOPRIN)]
+        },
+        CO_DOM_X_SIRGAS = first(CO_DOM_X_SIRGAS),
+        CO_DOM_Y_SIRGAS = first(CO_DOM_Y_SIRGAS),
+        dist_m_futuro = first(dist_m_futuro),
+        dist_m_cptm = first(dist_m_cptm),
+        mora_centro_exp = first(mora_centro_exp)
+    ) |>
+    ungroup()
+
 #### Criando a base final com as dummies que definem cada grupo ####
 
 od_grupos <- od_grupos_sf |>
     mutate(
-        dist_m_futuro = as.numeric(dist_futuro),
-        dist_m_cptm = as.numeric(dist_cptm),
-        mora_centro_exp = ifelse(indica_centro[, 1] == TRUE, 1, 0),
         is_tratamento = ifelse(ZMC %in% zmcs_tratadas, TRUE, FALSE),
         tipo_grupo = case_when(
             is_tratamento ~ 'Tratamento',
@@ -877,10 +798,9 @@ od_grupos <- od_grupos_sf |>
             TRUE ~ 'Candidatos_Controle_MatchIt'
         )
     ) |>
-    select(-is_tratamento) |>
-    st_drop_geometry()
+    select(-is_tratamento)
 
-##### Deflacionando a renda individual #####
+##### Deflacionando a renda familiar e individual #####
 
 od_grupos <- od_grupos |>
     mutate(
@@ -902,13 +822,29 @@ od_grupos <- od_grupos |>
                 index = 'ipca'
             ),
             RENDA_FA
+        ),
+        VL_REN_I_DEF = ifelse(
+            !is.na(VL_REN_I) & !is.na(data_original),
+            deflate(
+                nominal_values = VL_REN_I,
+                nominal_dates = as.Date(
+                    paste0('01/', data_original),
+                    format = '%d/%m/%Y'
+                ),
+                real_date = '11/2025',
+                index = 'ipca'
+            ),
+            VL_REN_I
         )
     )
 
-##### Filtrando os indivíduos que possuem como motivo da origem da viagem somente residência #####
+##### Transformando a renda familiar em ln da renda familiar per capita #####
 
 od_grupos <- od_grupos |>
-    filter(MOTIVO_O == 8)
+    mutate(
+        renda_fa_per_capita = RENDA_FA_DEF / NO_MORAF,
+        ln_renda_fam_capita = log(renda_fa_per_capita + 1)
+    )
 
 ##### Decompondo a variável indicadora de viagem com destino ao centro (indic_dest) em viagens realizadas de metrô e de carro #####
 
@@ -929,6 +865,11 @@ od_grupos <- od_grupos |>
 
 ##### Salvando a base final e os polígonos das ZMC's #####
 
-export(od_grupos, 'od_base_completa.dbf')
+od_grupos_dbf <- od_grupos |>
+    mutate(across(where(is.list), as.character)) |>
+    mutate(across(where(~ inherits(.x, "units")), as.numeric)) |>
+    as.data.frame()
+
+export(od_grupos_dbf, 'od_base_completa.dbf')
 
 st_write(zmc_polygons, 'zmc_polygons.gpkg', append = FALSE)
