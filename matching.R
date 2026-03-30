@@ -50,6 +50,7 @@ od_matching <- od_completa |>
     GRAU_INS,
     CD_ATIVI,
     ln_renda_f,
+    declarou_r,
     viaja,
     TIPVG,
     ano,
@@ -67,8 +68,7 @@ od_matching <- od_completa |>
     trabeduc,
     metro,
     carro,
-    onibus,
-    ZONA_O
+    onibus
   ) |>
   mutate(
     SEXO = case_when(
@@ -99,7 +99,10 @@ od_matching <- od_completa |>
     ),
     CD_ATIVI = as.factor(CD_ATIVI)
   ) |>
-  mutate(VIAGEM_TRANS_PUBL = ifelse(TIPVG == 1, 1, 0)) |>
+  mutate(
+    TIPVG = ifelse(is.na(TIPVG), 0, TIPVG),
+    VIAGEM_TRANS_PUBL = ifelse(TIPVG == 1, 1, 0)
+  ) |>
   drop_na()
 
 ##### Fazendo o pareamento #####
@@ -144,6 +147,7 @@ od_linhas_futuras <- od_completa |>
     GRAU_INS,
     CD_ATIVI,
     ln_renda_f,
+    declarou_r,
     viaja,
     TIPVG,
     ano,
@@ -161,8 +165,7 @@ od_linhas_futuras <- od_completa |>
     trabeduc,
     metro,
     carro,
-    onibus,
-    ZONA_O
+    onibus
   ) |>
   mutate(
     SEXO = case_when(
@@ -193,7 +196,10 @@ od_linhas_futuras <- od_completa |>
     ),
     CD_ATIVI = as.factor(CD_ATIVI)
   ) |>
-  mutate(VIAGEM_TRANS_PUBL = ifelse(TIPVG == 1, 1, 0)) |>
+  mutate(
+    TIPVG = ifelse(is.na(TIPVG), 0, TIPVG),
+    VIAGEM_TRANS_PUBL = ifelse(TIPVG == 1, 1, 0)
+  ) |>
   drop_na()
 
 base_controle_linhas_futuras <- export(
@@ -220,6 +226,7 @@ od_cptm <- od_completa |>
     GRAU_INS,
     CD_ATIVI,
     ln_renda_f,
+    declarou_r,
     viaja,
     TIPVG,
     ano,
@@ -237,8 +244,7 @@ od_cptm <- od_completa |>
     trabeduc,
     metro,
     carro,
-    onibus,
-    ZONA_O
+    onibus
   ) |>
   mutate(
     SEXO = case_when(
@@ -269,7 +275,10 @@ od_cptm <- od_completa |>
     ),
     CD_ATIVI = as.factor(CD_ATIVI)
   ) |>
-  mutate(VIAGEM_TRANS_PUBL = ifelse(TIPVG == 1, 1, 0)) |>
+  mutate(
+    TIPVG = ifelse(is.na(TIPVG), 0, TIPVG),
+    VIAGEM_TRANS_PUBL = ifelse(TIPVG == 1, 1, 0)
+  ) |>
   drop_na()
 
 base_controle_cptm <- export(od_cptm, 'base_cptm.dbf')
@@ -281,50 +290,50 @@ tabela_comparativa <- bal.tab(match, un = TRUE, thresholds = c(m = .1))
 print(tabela_comparativa)
 
 nomes_variaveis <- c(
-  "distance" = "Distância das Médias Absolutas",
-  "IDADE" = "Idade Média",
-  "SEXO_Feminino" = "Sexo: Feminino",
-  "SEXO_Masculino" = "Sexo: Masculino",
-  "GRAU_INS_Não alfabetizado/ Fund 1 incompleto" = "Escolaridade: Não alfabetizado/Fund 1 inc.",
-  "GRAU_INS_Fund 1 completo/ Fund 2 incompleto" = "Escolaridade: Fund 1 comp./Fund 2 inc.",
-  "GRAU_INS_Fund 2 completo/ Médio incompleto" = "Escolaridade: Fund 2 comp./Médio inc.",
-  "GRAU_INS_Médio completo/ Superior incompleto" = "Escolaridade: Médio comp./Superior inc.",
-  "GRAU_INS_Superior completo" = "Escolaridade: Superior completo",
-  "CD_ATIVI_Trabalho Regular" = "Atividade: Trabalho Regular",
-  "CD_ATIVI_Bico" = "Atividade: Bico",
-  "CD_ATIVI_Desempregado" = "Atividade: Desempregado",
-  "CD_ATIVI_Aposentado/Pensionista" = "Atividade: Aposentado/Pensionista",
-  "CD_ATIVI_Estudante" = "Atividade: Estudante",
-  "CD_ATIVI_Dona de Casa" = "Atividade: Dona de Casa",
-  "CD_ATIVI_Licença Médica" = "Atividade: Licença Médica",
-  "CD_ATIVI_Nunca Trabalhou" = "Atividade: Nunca Trabalhou",
-  "ln_renda_f" = "ln da Renda Familiar per capita (R$)",
-  "VIAGEM_TRANS_PUBL" = "Uso de Transporte Público"
+  "distance" = "Propensity Score",
+  "IDADE" = "Mean Age",
+  "SEXO_Feminino" = "Gender: Female",
+  "SEXO_Masculino" = "Gender: Male",
+  "GRAU_INS_Não alfabetizado/ Fund 1 incompleto" = "Education: Illiterate/Inc. Elementary",
+  "GRAU_INS_Fund 1 completo/ Fund 2 incompleto" = "Education: Comp. Elementary/Inc. Middle",
+  "GRAU_INS_Fund 2 completo/ Médio incompleto" = "Education: Comp. Middle/Inc. High School",
+  "GRAU_INS_Médio completo/ Superior incompleto" = "Education: Comp. High School/Inc. College",
+  "GRAU_INS_Superior completo" = "Education: College Graduate",
+  "CD_ATIVI_Trabalho Regular" = "Status: Regular Employment",
+  "CD_ATIVI_Bico" = "Status: Odd Jobs",
+  "CD_ATIVI_Desempregado" = "Status: Unemployed",
+  "CD_ATIVI_Aposentado/Pensionista" = "Status: Retiree/Pensioner",
+  "CD_ATIVI_Estudante" = "Status: Student",
+  "CD_ATIVI_Dona de Casa" = "Status: Homemaker",
+  "CD_ATIVI_Licença Médica" = "Status: Medical Leave",
+  "CD_ATIVI_Nunca Trabalhou" = "Status: Never Worked",
+  "ln_renda_f" = "Log Per Capita Household Income",
+  "VIAGEM_TRANS_PUBL" = "Public Transit Use"
 )
 
 ordem_vars <- c(
-  "Distância das Médias Absolutas",
-  "Idade Média",
-  "ln da Renda Familiar per capita (R$)",
-  "Uso de Transporte Público",
+  "Propensity Score",
+  "Mean Age",
+  "Log Per Capita Household Income",
+  "Public Transit Use",
 
-  "Sexo: Masculino",
-  "Sexo: Feminino",
+  "Gender: Male",
+  "Gender: Female",
 
-  "Escolaridade: Não alfabetizado/Fund 1 inc.",
-  "Escolaridade: Fund 1 comp./Fund 2 inc.",
-  "Escolaridade: Fund 2 comp./Médio inc.",
-  "Escolaridade: Médio comp./Superior inc.",
-  "Escolaridade: Superior completo",
+  "Education: Illiterate/Inc. Elementary",
+  "Education: Comp. Elementary/Inc. Middle",
+  "Education: Comp. Middle/Inc. High School",
+  "Education: Comp. High School/Inc. College",
+  "Education: College Graduate",
 
-  "Atividade: Trabalho Regular",
-  "Atividade: Estudante",
-  "Atividade: Desempregado",
-  "Atividade: Bico",
-  "Atividade: Licença Médica",
-  "Atividade: Aposentado/Pensionista",
-  "Atividade: Nunca Trabalhou",
-  "Atividade: Dona de Casa"
+  "Status: Regular Employment",
+  "Status: Student",
+  "Status: Unemployed",
+  "Status: Odd Jobs",
+  "Status: Medical Leave",
+  "Status: Retiree/Pensioner",
+  "Status: Never Worked",
+  "Status: Homemaker"
 )
 
 plot_comparativo <- love.plot(
@@ -332,20 +341,22 @@ plot_comparativo <- love.plot(
   binary = 'std',
   thresholds = c(m = .1),
   abs = TRUE,
-  var.order = 'unadjusted',
   shapes = c('circle', 'triangle'),
   colors = c('red', 'blue'),
-  title = 'Balanceamento das Variáveis Pareadas',
-  sample.names = c('Antes do Pareamento', 'Depois do Pareamento'),
+  title = NULL,
+  sample.names = c('Before Matching', 'After Matching'),
   var.names = nomes_variaveis
 ) +
-  scale_y_discrete(limits = rev(ordem_vars)) +
   labs(
-    x = "Diferenças Médias Padronizadas Absolutas",
-    color = "Tipos de Amostra",
-    shape = "Tipos de Amostra"
+    x = "Absolute Standardized Mean Differences",
+    color = "Sample Types",
+    shape = "Sample Types"
   )
 
+plot_comparativo$data$var <- factor(
+  plot_comparativo$data$var,
+  levels = rev(ordem_vars)
+)
 
 print(plot_comparativo)
 

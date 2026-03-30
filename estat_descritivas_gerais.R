@@ -304,6 +304,11 @@ tabela_latex_viagens <- tabela_descrit_viagens |>
     position = 'center'
   )
 
+print(tabela_descrit_sociais_latex)
+
+print(tabela_latex_econo)
+
+print(tabela_latex_viagens)
 
 #### Mapas de calor de renda média e duração média das viagens por zonas e ano ####
 
@@ -377,10 +382,10 @@ quartis_renda_2007 <- c(
 )
 
 labels_quartis_renda <- c(
-  'R$ 7,2 - R$ 7,6',
-  'R$ 7,6 - R$ 7,8',
-  'R$ 7,8 - R$ 8,0',
-  paste0('Mais de R$ 8,0')
+  'R$ 7.2 - R$ 7.6',
+  'R$ 7.6 - R$ 7.8',
+  'R$ 7.8 - R$ 8.0',
+  '> R$ 8.0'
 )
 
 mapa_renda_2007_final <- mapa_renda_2007 |>
@@ -416,7 +421,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = 'ln da Renda Familiar Real per capita (R$)',
+    name = 'Log(Household Income)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -516,10 +521,10 @@ quartis_renda_2017 <- c(
 )
 
 labels_quartis_renda <- c(
-  'R$ 7,2 - R$ 7,6',
-  'R$ 7,6 - R$ 7,8',
-  'R$ 7,8 - R$ 8,0',
-  paste0('Mais de R$ 8,0')
+  'R$ 7.2 - R$ 7.6',
+  'R$ 7.6 - R$ 7.8',
+  'R$ 7.8 - R$ 8.0',
+  '> R$ 8.0'
 )
 
 mapa_renda_2017_final <- mapa_renda_2017 |>
@@ -550,7 +555,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = 'ln da Renda Familiar Real per capita (R$)',
+    name = 'Log(Household Income)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -650,10 +655,10 @@ quartis_renda_2023 <- c(
 )
 
 labels_quartis_renda <- c(
-  'R$ 7,2 - R$ 7,6',
-  'R$ 7,6 - R$ 7,8',
-  'R$ 7,8 - R$ 8,0',
-  paste0('Mais de R$ 8,0')
+  'R$ 7.2 - R$ 7.6',
+  'R$ 7.6 - R$ 7.8',
+  'R$ 7.8 - R$ 8.0',
+  '> R$ 8.0'
 )
 
 mapa_renda_2023_final <- mapa_renda_2023 |>
@@ -684,7 +689,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = 'ln da Renda Familiar Real per capita (R$)',
+    name = 'Log(Household Income)',
     na.value = 'grey90',
     na.translate = FALSE,
 
@@ -751,10 +756,10 @@ quartis_duracao_2007 <- c(
 )
 
 labels_quartis_duracao <- c(
-  '0 - 15 minutos',
-  '15 - 30 minutos',
-  '30 - 45 minutos',
-  paste0('Mais de 45 minutos')
+  '0 - 15 minutes',
+  '15 - 30 minutes',
+  '30 - 45 minutes',
+  '> 45 minutes'
 )
 
 mapa_duracao_2007_final <- mapa_duracao_2007 |>
@@ -785,7 +790,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'managua',
     direction = -1,
-    name = 'Tempo Médio de Viagem (Minutos)',
+    name = 'Average Travel Time (Minutes)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -850,10 +855,10 @@ quartis_duracao_2017 <- c(
 )
 
 labels_quartis_duracao <- c(
-  '0 - 15 minutos',
-  '15 - 30 minutos',
-  '30 - 45 minutos',
-  paste0('Mais de 45 minutos')
+  '0 - 15 minutes',
+  '15 - 30 minutes',
+  '30 - 45 minutes',
+  '> 45 minutes'
 )
 
 mapa_duracao_2017_final <- mapa_duracao_2017 |>
@@ -884,7 +889,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'managua',
     direction = -1,
-    name = 'Tempo Médio de Viagem (Minutos)',
+    name = 'Average Travel Time (Minutes)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -949,10 +954,10 @@ quartis_duracao_2023 <- c(
 )
 
 labels_quartis_duracao <- c(
-  '0 - 15 minutos',
-  '15 - 30 minutos',
-  '30 - 45 minutos',
-  paste0('Mais de 45 minutos')
+  '0 - 15 minutes',
+  '15 - 30 minutes',
+  '30 - 45 minutes',
+  '> 45 minutes'
 )
 
 mapa_duracao_2023_final <- mapa_duracao_2023 |>
@@ -983,7 +988,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'managua',
     direction = -1,
-    name = 'Tempo Médio de Viagem (Minutos)',
+    name = 'Average Travel Time (Minutes)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -1100,7 +1105,7 @@ labels_quartis_trabreg <- c(
   '0 - 25%',
   '25% - 50%',
   '50% - 75%',
-  paste0('Mais de 75%')
+  '> 75%'
 )
 
 mapa_trabreg_2007_final <- mapa_trabreg_2007 |>
@@ -1130,7 +1135,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = '% de pessoas em trabalho regular',
+    name = 'Share of Regular Employment (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -1179,7 +1184,7 @@ labels_quartis_desemp <- c(
   '0 - 3%',
   '3% - 6%',
   '6% - 9%',
-  paste0('Mais de 9%')
+  '> 9%'
 )
 
 mapa_desemp_2007_final <- mapa_desemp_2007 |>
@@ -1209,7 +1214,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = '% de pessoas desempregadas',
+    name = 'Share of Unemployed (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -1315,7 +1320,7 @@ labels_quartis_trabreg <- c(
   '0 - 25%',
   '25% - 50%',
   '50% - 75%',
-  paste0('Mais de 75%')
+  '> 75%'
 )
 
 mapa_trabreg_2017_final <- mapa_trabreg_2017 |>
@@ -1345,7 +1350,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = '% de pessoas em trabalho regular',
+    name = 'Share of Regular Employment (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -1394,7 +1399,7 @@ labels_quartis_desemp <- c(
   '0 - 3%',
   '3% - 6%',
   '6% - 9%',
-  paste0('Mais de 9%')
+  '> 9%'
 )
 
 mapa_desemp_2017_final <- mapa_desemp_2017 |>
@@ -1424,7 +1429,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = '% de pessoas desempregadas',
+    name = 'Share of Unemployed (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -1530,7 +1535,7 @@ labels_quartis_trabreg <- c(
   '0 - 25%',
   '25% - 50%',
   '50% - 75%',
-  paste0('Mais de 75%')
+  '> 75%'
 )
 
 mapa_trabreg_2023_final <- mapa_trabreg_2023 |>
@@ -1560,7 +1565,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = '% de pessoas em trabalho regular',
+    name = 'Share of Regular Employment (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -1609,7 +1614,7 @@ labels_quartis_desemp <- c(
   '0 - 3%',
   '3% - 6%',
   '6% - 9%',
-  paste0('Mais de 9%')
+  '> 9%'
 )
 
 mapa_desemp_2023_final <- mapa_desemp_2023 |>
@@ -1639,7 +1644,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'bamako',
     direction = -1,
-    name = '% de pessoas desempregadas',
+    name = 'Share of Unemployed (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -1770,7 +1775,7 @@ labels_quartis_metro <- c(
   '0 - 5%',
   '5% - 10%',
   '10% - 20%',
-  paste0('Mais de 20%')
+  '> 20%'
 )
 
 mapa_metro_2007_final <- mapa_metro_2007 |>
@@ -1800,7 +1805,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'turku',
     direction = -1,
-    name = '% de pessoas usando metrô como transporte principal',
+    name = 'Subway Modal Share (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -1839,17 +1844,17 @@ mapa_onibus_2007 <- zonas_2007 |>
 
 quartis_onibus_2007 <- c(
   0,
-  0.03,
-  0.06,
-  0.10,
+  0.04,
+  0.08,
+  0.12,
   max(mapa_onibus_2007$freq_onibus, na.rm = TRUE)
 )
 
 labels_quartis_onibus <- c(
-  '0 - 3%',
-  '3% - 6%',
-  '6% - 10%',
-  paste0('Mais de 10%')
+  '0 - 4%',
+  '4% - 8%',
+  '8% - 12%',
+  '> 12%'
 )
 
 mapa_onibus_2007_final <- mapa_onibus_2007 |>
@@ -1879,7 +1884,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'turku',
     direction = -1,
-    name = '% de pessoas usando ônibus como transporte principal',
+    name = 'Bus Modal Share (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -1918,17 +1923,17 @@ mapa_carro_2007 <- zonas_2007 |>
 
 quartis_carro_2007 <- c(
   0,
-  0.05,
   0.10,
+  0.15,
   0.20,
   max(mapa_carro_2007$freq_carro, na.rm = TRUE)
 )
 
 labels_quartis_carro <- c(
-  '0 - 5%',
-  '5% - 10%',
-  '10% - 20%',
-  paste0('Mais de 20%')
+  '0 - 10%',
+  '10% - 15%',
+  '15% - 20%',
+  '> 20%'
 )
 
 mapa_carro_2007_final <- mapa_carro_2007 |>
@@ -1958,7 +1963,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'turku',
     direction = -1,
-    name = '% de pessoas usando carro como transporte principal',
+    name = 'Car Modal Share (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -2079,7 +2084,7 @@ labels_quartis_metro <- c(
   '0 - 5%',
   '5% - 10%',
   '10% - 20%',
-  paste0('Mais de 20%')
+  '> 20%'
 )
 
 mapa_metro_2017_final <- mapa_metro_2017 |>
@@ -2109,7 +2114,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'turku',
     direction = -1,
-    name = '% de pessoas usando metrô como transporte principal',
+    name = 'Subway Modal Share (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -2148,17 +2153,17 @@ mapa_onibus_2017 <- zonas_2017 |>
 
 quartis_onibus_2017 <- c(
   0,
-  0.03,
-  0.06,
-  0.10,
+  0.04,
+  0.08,
+  0.12,
   max(mapa_onibus_2017$freq_onibus, na.rm = TRUE)
 )
 
 labels_quartis_onibus <- c(
-  '0 - 3%',
-  '3% - 6%',
-  '6% - 10%',
-  paste0('Mais de 10%')
+  '0 - 4%',
+  '4% - 8%',
+  '8% - 12%',
+  '> 12%'
 )
 
 mapa_onibus_2017_final <- mapa_onibus_2017 |>
@@ -2188,7 +2193,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'turku',
     direction = -1,
-    name = '% de pessoas usando ônibus como transporte principal',
+    name = 'Bus Modal Share (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -2227,17 +2232,17 @@ mapa_carro_2017 <- zonas_2017 |>
 
 quartis_carro_2017 <- c(
   0,
-  0.05,
   0.10,
+  0.15,
   0.20,
   max(mapa_carro_2017$freq_carro, na.rm = TRUE)
 )
 
 labels_quartis_carro <- c(
-  '0 - 5%',
-  '5% - 10%',
-  '10% - 20%',
-  paste0('Mais de 20%')
+  '0 - 10%',
+  '10% - 15%',
+  '15% - 20%',
+  '> 20%'
 )
 
 mapa_carro_2017_final <- mapa_carro_2017 |>
@@ -2267,7 +2272,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'turku',
     direction = -1,
-    name = '% de pessoas usando carro como transporte principal',
+    name = 'Car Modal Share (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -2418,7 +2423,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'turku',
     direction = -1,
-    name = '% de pessoas usando metrô como transporte principal',
+    name = 'Subway Modal Share (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -2457,17 +2462,17 @@ mapa_onibus_2023 <- zonas_2023 |>
 
 quartis_onibus_2023 <- c(
   0,
-  0.03,
-  0.06,
-  0.10,
+  0.04,
+  0.08,
+  0.12,
   max(mapa_onibus_2023$freq_onibus, na.rm = TRUE)
 )
 
 labels_quartis_onibus <- c(
-  '0 - 3%',
-  '3% - 6%',
-  '6% - 10%',
-  paste0('Mais de 10%')
+  '0 - 4%',
+  '4% - 8%',
+  '8% - 12%',
+  '> 12%'
 )
 
 mapa_onibus_2023_final <- mapa_onibus_2023 |>
@@ -2497,7 +2502,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'turku',
     direction = -1,
-    name = '% de pessoas usando ônibus como transporte principal',
+    name = 'Bus Modal Share (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 
@@ -2536,17 +2541,17 @@ mapa_carro_2023 <- zonas_2023 |>
 
 quartis_carro_2023 <- c(
   0,
-  0.05,
   0.10,
+  0.15,
   0.20,
   max(mapa_carro_2023$freq_carro, na.rm = TRUE)
 )
 
 labels_quartis_carro <- c(
-  '0 - 5%',
-  '5% - 10%',
-  '10% - 20%',
-  paste0('Mais de 20%')
+  '0 - 10%',
+  '10% - 15%',
+  '15% - 20%',
+  '> 20%'
 )
 
 mapa_carro_2023_final <- mapa_carro_2023 |>
@@ -2576,7 +2581,7 @@ ggplot() +
   scale_fill_scico_d(
     palette = 'turku',
     direction = -1,
-    name = '% de pessoas usando carro como transporte principal',
+    name = 'Car Modal Share (%)',
     na.value = 'grey90',
     breaks = function(x) na.omit(x),
 

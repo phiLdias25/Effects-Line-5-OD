@@ -101,10 +101,10 @@ criar_mapa_zmc_urbano <- function(base_dados) {
     ) |>
     mutate(
       grupo_mapa = case_when(
-        zona_tratada & zona_controle ~ "Ambos",
-        zona_tratada & !zona_controle ~ "Tratamento",
-        !zona_tratada & zona_controle ~ "Controle",
-        TRUE ~ "Nenhum"
+        zona_tratada & zona_controle ~ "Both",
+        zona_tratada & !zona_controle ~ "Treatment",
+        !zona_tratada & zona_controle ~ "Control",
+        TRUE ~ "None"
       )
     )
 
@@ -117,7 +117,7 @@ criar_mapa_zmc_urbano <- function(base_dados) {
   )
 
   zonas_relevantes <- join_class_zonas_urb |>
-    filter(grupo_mapa %in% c("Tratamento", "Controle", "Ambos"))
+    filter(grupo_mapa %in% c("Treatment", "Control", "Both"))
 
   mapa <- ggplot() +
     geom_sf(
@@ -130,11 +130,11 @@ criar_mapa_zmc_urbano <- function(base_dados) {
     geom_sf(data = rmsp, fill = NA, color = "grey50", linewidth = 0.3) +
     scale_fill_manual(
       values = c(
-        "Tratamento" = "#FF6B6B",
-        "Controle" = "#4ECDC4",
-        "Ambos" = "#FFD93D"
+        "Treatment" = "#FF6B6B",
+        "Control" = "#4ECDC4",
+        "Both" = "#FFD93D"
       ),
-      name = "Grupos",
+      name = "Group",
       na.value = "grey90",
       breaks = function(x) na.omit(x),
       guide = guide_legend(title.position = 'top', title.hjust = 0.5)
@@ -163,21 +163,21 @@ mapa_linhas_futuras <- criar_mapa_zmc_urbano(base_linhas_futuras) +
   ) +
   geom_sf(
     data = metro_linhas,
-    aes(color = cores, linetype = "Metrô (Atual)"),
+    aes(color = cores, linetype = "Subway (Existing)"),
     linewidth = 1,
     show.legend = "line"
   ) +
   geom_sf(
     data = metro_linhas_proj,
-    aes(color = cores, linetype = "Metrô (Projetado até 2036)"),
+    aes(color = cores, linetype = "Subway (Planned by 2036)"),
     linewidth = 1
   ) +
   scale_color_identity() +
   scale_linetype_manual(
-    name = "Linhas",
+    name = "Lines",
     values = c(
-      "Metrô (Atual)" = "solid",
-      "Metrô (Projetado até 2036)" = "twodash"
+      "Subway (Existing)" = "solid",
+      "Subway (Planned by 2036)" = "twodash"
     ),
     guide = guide_legend(
       title.position = 'top',
@@ -196,20 +196,23 @@ mapa_controle_cptm <- criar_mapa_zmc_urbano(base_cptm) +
   ) +
   geom_sf(
     data = metro_linhas,
-    aes(color = cores, linetype = "Metrô (Atual)"),
+    aes(color = cores, linetype = "Subway (Existing)"),
     linewidth = 1,
     show.legend = "line"
   ) +
   geom_sf(
     data = cptm_linhas,
     color = 'black',
-    aes(linetype = "CPTM (Atual)"),
+    aes(linetype = "Commuter Rail (Existing)"),
     linewidth = 1
   ) +
   scale_color_identity() +
   scale_linetype_manual(
-    name = "Linhas",
-    values = c("Metrô (Atual)" = "solid", "CPTM (Atual)" = "dotted"),
+    name = "Lines",
+    values = c(
+      "Subway (Existing)" = "solid",
+      "Commuter Rail (Existing)" = "dotted"
+    ),
     guide = guide_legend(
       title.position = 'top',
       title.hjust = 0.5
@@ -227,14 +230,14 @@ mapa_controle_match <- criar_mapa_zmc_urbano(base_matching) +
   ) +
   geom_sf(
     data = metro_linhas,
-    aes(color = cores, linetype = "Metrô (Atual)"),
+    aes(color = cores, linetype = "Subway (Existing)"),
     linewidth = 1,
     show.legend = "line"
   ) +
   scale_color_identity() +
   scale_linetype_manual(
-    name = "Linhas",
-    values = c("Metrô (Atual)" = "solid"),
+    name = "Lines",
+    values = c("Subway (Existing)" = "solid"),
     guide = guide_legend(
       title.position = 'top',
       title.hjust = 0.5
@@ -404,6 +407,20 @@ event_study_linhas_dest <- feols(
 )
 
 etable(event_study_linhas_dest)
+
+event_study_linhas_viaja <- feols(
+  viaja ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_reg_linhas,
+
+  cluster = ~ZMC
+)
+
+etable(event_study_linhas_viaja)
 
 event_study_linhas_trab <- feols(
   trab_cen ~ i(ano, tratamento, ref = 2017) +
@@ -597,6 +614,7 @@ tabela_result_did_linhas_latex <- etable(
 
 lista_event_study_linhas <- list(
   'Destino Centro Expandido' = event_study_linhas_dest,
+  'Viagem Geral' = event_study_linhas_viaja,
   'Trabalho Centro Expandido' = event_study_linhas_trab,
   'Educação Centro Expandido' = event_study_linhas_educ,
   'Saúde Centro Expandido' = event_study_linhas_saude,
@@ -638,6 +656,7 @@ func_y_medio_pre <- function(variavel) {
 }
 
 y_medio_pre_indic <- func_y_medio_pre(indic_dest)
+y_medio_pre_viaja <- func_y_medio_pre(viaja)
 y_medio_pre_trab <- func_y_medio_pre(trab_cen)
 y_medio_pre_educ <- func_y_medio_pre(educ_cen)
 y_medio_pre_emp <- func_y_medio_pre(emp_cen)
@@ -660,6 +679,10 @@ ef_relat_indic <- func_efeito_relativo(
   y_medio_pre_indic
 )
 ef_relat_trab <- func_efeito_relativo(event_study_linhas_trab, y_medio_pre_trab)
+ef_relat_viaja <- func_efeito_relativo(
+  event_study_linhas_viaja,
+  y_medio_pre_viaja
+)
 ef_relat_educ <- func_efeito_relativo(event_study_linhas_educ, y_medio_pre_educ)
 ef_relat_emp <- func_efeito_relativo(event_study_linhas_emp, y_medio_pre_emp)
 ef_relat_trabeducem <- func_efeito_relativo(
@@ -673,6 +696,7 @@ ef_relat_lazcompsa <- func_efeito_relativo(
 
 linhas_completa <- list(
   'Destino Centro Expandido' = event_study_linhas_dest,
+  'Viagem Geral' = event_study_linhas_viaja,
   'Trabalho Centro Expandido' = event_study_linhas_trab,
   'Educação Centro Expandido' = event_study_linhas_educ,
   'Buscar Emprego Centro Expandido' = event_study_linhas_emp,
@@ -680,6 +704,7 @@ linhas_completa <- list(
   'Lazer ou Compras ou Saúde Centro Expandido' = event_study_linhas_lazcompsa,
   'Média Pré-Tratamento' = c(
     y_medio_pre_indic$media_pre,
+    y_medio_pre_viaja$media_pre,
     y_medio_pre_trab$media_pre,
     y_medio_pre_educ$media_pre,
     NA,
@@ -694,6 +719,7 @@ linhas_completa <- list(
   ),
   'Efeito Relativo (%)' = c(
     ef_relat_indic,
+    ef_relat_viaja,
     ef_relat_trab,
     ef_relat_educ,
     NA,

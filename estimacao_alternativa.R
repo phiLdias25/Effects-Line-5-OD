@@ -385,6 +385,7 @@ lista_original <- readRDS("lista_modelos_originais.rds")
 
 lista_completa_linhas <- list(
   'Indicador Destino' = lista_original$`Destino Centro Expandido`,
+  'Viagem Geral' = lista_original$`Viagem Geral`,
   'Trabalho' = lista_original$`Trabalho Centro Expandido`,
   'Educação' = lista_original$`Educação Centro Expandido`,
   'Buscar Emprego' = lista_original$`Buscar Emprego Centro Expandido`,
@@ -392,8 +393,8 @@ lista_completa_linhas <- list(
   'Laz/Comp/Saúde' = lista_original$`Lazer ou Compras ou Saúde Centro Expandido`,
 
   'Metrô' = event_study_linhas_metro,
-  'Carro' = event_study_linhas_carro,
-  'Ônibus' = event_study_linhas_onibus
+  'Ônibus' = event_study_linhas_onibus,
+  'Carro' = event_study_linhas_carro
 )
 
 
@@ -402,15 +403,16 @@ lista_extra_completa <- list(
     lista_original$`Média Pré-Tratamento`[1],
     lista_original$`Média Pré-Tratamento`[2],
     lista_original$`Média Pré-Tratamento`[3],
-    lista_original$`Média Pré-Tratamento`[7],
+    lista_original$`Média Pré-Tratamento`[4],
     lista_original$`Média Pré-Tratamento`[8],
-    lista_original$`Média Pré-Tratamento`[11],
+    lista_original$`Média Pré-Tratamento`[9],
+    lista_original$`Média Pré-Tratamento`[12],
     y_medio_pre_linhas_metro$media_pre,
     y_medio_pre_linhas_onibus$media_pre,
     y_medio_pre_linhas_carro$media_pre
   ),
   "Efeito relativo (%)" = c(
-    lista_original[[8]][c(1, 2, 3, 7, 8, 11)],
+    lista_original[[9]][c(1, 2, 3, 4, 8, 9, 12)],
     efeito_relativo_linhas_metro,
     efeito_relativo_linhas_onibus,
     efeito_relativo_linhas_carro
@@ -436,252 +438,3 @@ tabela_result_es_latex <- etable(
 )
 
 print(tabela_result_es_latex)
-
-##### Realizando estimações somente com indivíduos ocupados (CD_ATIVI = Trabalho Regular e CD_ATIVI = BICO) #####
-
-#### Filtrando as bases com controles sem pareamento ####
-
-base_reg_cptm_ocupados <- base_reg_cptm |>
-  filter(CD_ATIVI %in% c('Trabalho Regular', 'Bico'))
-
-base_reg_linhas_ocupados <- base_reg_linhas |>
-  filter(CD_ATIVI %in% c('Trabalho Regular', 'Bico'))
-
-#### Fazendo as estimações ####
-
-event_study_linhas_dest_ocup <- feols(
-  indic_dest ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_dest_ocup)
-
-event_study_linhas_trab_ocup <- feols(
-  trab_cen ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-etable(event_study_linhas_trab_ocup)
-
-event_study_linhas_educ_ocup <- feols(
-  educ_cen ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_educ_ocup)
-
-event_study_linhas_saude_ocup <- feols(
-  saude_cen ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_saude_ocup)
-
-event_study_linhas_lazer_ocup <- feols(
-  lazer_cen ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_lazer_ocup)
-
-event_study_linhas_comp_ocup <- feols(
-  comp_cen ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_comp_ocup)
-
-event_study_linhas_emp_ocup <- feols(
-  emp_cen ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_emp_ocup)
-
-event_study_linhas_trabeducem_ocup <- feols(
-  trabeducem ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_trabeducem_ocup)
-
-event_study_linhas_trabemp_ocup <- feols(
-  trabemp ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_trabemp_ocup)
-
-event_study_linhas_trabeduc_ocup <- feols(
-  trabeduc ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_trabeduc_ocup)
-
-event_study_linhas_lazcompsa_ocup <- feols(
-  lazcompsa ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_lazcompsa_ocup)
-
-event_study_linhas_lazcomp_ocup <- feols(
-  lazcomp ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-etable(event_study_linhas_lazcomp_ocup)
-
-event_study_linhas_metro_ocup <- feols(
-  metro ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-event_study_linhas_carro_ocup <- feols(
-  carro ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-event_study_linhas_onibus_ocup <- feols(
-  onibus ~ i(ano, tratamento, ref = 2017) +
-    IDADE +
-    SEXO +
-    GRAU_INS +
-    CD_ATIVI |
-    ZMC + ano,
-  data = base_reg_linhas_ocupados,
-
-  cluster = ~ZMC
-)
-
-lista_event_study_linhas_ocup <- list(
-  'Destino Centro Expandido' = event_study_linhas_dest_ocup,
-  'Metrô' = event_study_linhas_metro_ocup,
-  'Carro' = event_study_linhas_carro_ocup,
-  'Ônibus' = event_study_linhas_onibus_ocup,
-  'Trabalho Centro Expandido' = event_study_linhas_trab_ocup,
-  'Educação Centro Expandido' = event_study_linhas_educ_ocup,
-  'Saúde Centro Expandido' = event_study_linhas_saude_ocup,
-  'Lazer Centro Expandido' = event_study_linhas_lazer_ocup,
-  'Compras Centro Expandido' = event_study_linhas_comp_ocup,
-  'Buscar Emprego Centro Expandido' = event_study_linhas_emp_ocup,
-  'Trabalho ou Educação ou Buscar Emprego Centro Expandido' = event_study_linhas_trabeducem_ocup,
-  'Trabalho ou Educação Centro Expandido' = event_study_linhas_trabeduc_ocup,
-  'Trabalho ou Buscar Emprego Centro Expandido' = event_study_linhas_trabemp_ocup,
-  'Lazer ou Compras ou Saúde Centro Expandido' = event_study_linhas_lazcompsa_ocup,
-  'Lazer ou Compras Centro Expandido' = event_study_linhas_lazcomp_ocup
-)
-
-tabela_result_es_linhas_ocup <- etable(
-  lista_event_study_linhas_ocup,
-  tex = FALSE,
-  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
-  headers = 'auto',
-  title = 'Resultados - Event Study - Grupo de Controle Linhas Futuras'
-)
-
-tabela_result_es_linhas_ocup_latex <- etable(
-  lista_event_study_linhas_ocup,
-  tex = TRUE,
-  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
-  headers = 'auto',
-  title = 'Resultados - Event Study - Grupo de Controle Linhas Futuras'
-)

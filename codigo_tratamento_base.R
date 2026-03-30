@@ -31,6 +31,7 @@ od_2007_filtrada <- od_2007 |>
         ID_PESS, # Identificação da pessoa
         IDADE,
         SEXO,
+        FE_PESS, # Fator de expansão da pessoa
         NO_MORAF, # Número de moradores da família
         VL_REN_I, # Renda Individual
         GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado/ Fund 1 Incompleto ; 2 - Fund 1 Completo/Fund 2 Incompleto; 3 - Fund 2 Completo/ Médio Incompleto; 4 - Médio Completo/ Superior Incompleto; 5 - Superior Completo
@@ -84,6 +85,7 @@ od_2017_filtrada <- od_2017 |>
         ID_PESS, # Identificação da pessoa
         IDADE,
         SEXO,
+        FE_PESS, # Fator de expansão da pessoa
         NO_MORAF, # Número de moradores da família
         VL_REN_I, # Renda Individual
         GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado/ Fund 1 Incompleto ; 2 - Fund 1 Completo/Fund 2 Incompleto; 3 - Fund 2 Completo/ Médio Incompleto; 4 - Médio Completo/ Superior Incompleto; 5 - Superior Completo
@@ -134,6 +136,7 @@ od_2023_filtrada <- od_2023 |>
         ID_PESS, # Identificação da pessoa
         IDADE,
         SEXO,
+        FE_PESS, # Fator de expansão da pessoa
         NO_MORAF, # Número de moradores da família
         VL_REN_I, # Renda Individual
         GRAU_INS, # Grau de Instrução: 1 - Não Alfabetizado/ Fund 1 Incompleto ; 2 - Fund 1 Completo/Fund 2 Incompleto; 3 - Fund 2 Completo/ Médio Incompleto; 4 - Médio Completo/ Superior Incompleto; 5 - Superior Completo
@@ -751,9 +754,10 @@ od_grupos_sf <- od_grupos_sf |>
         GRAU_INS = first(GRAU_INS),
         CD_ATIVI = first(CD_ATIVI),
         RENDA_FA = first(RENDA_FA),
+        FE_PESS = first(FE_PESS),
         TIPVG = first(TIPVG),
         ZONA_O = first(ZONA_O),
-        viaja = ifelse(sum(TOT_VIAG, na.rm = TRUE) > 0, 1, 0),
+        viaja = ifelse(all(is.na(MODOPRIN)), 0, 1),
         indic_destino_centro_exp = max(indic_destino_centro_exp),
         trab_centro = max(trab_centro),
         educ_centro = max(educ_centro),
