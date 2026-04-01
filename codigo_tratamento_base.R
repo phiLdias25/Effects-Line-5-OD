@@ -31,6 +31,8 @@ od_2007_filtrada <- od_2007 |>
         ID_PESS, # Identificação da pessoa
         IDADE,
         SEXO,
+        QT_AUTO, # Quantidade de automóveis na família
+        QT_MOTO, # Quantidade de motos na família
         FE_PESS, # Fator de expansão da pessoa
         NO_MORAF, # Número de moradores da família
         VL_REN_I, # Renda Individual
@@ -85,6 +87,8 @@ od_2017_filtrada <- od_2017 |>
         ID_PESS, # Identificação da pessoa
         IDADE,
         SEXO,
+        QT_AUTO, # Quantidade de automóveis na família
+        QT_MOTO, # Quantidade de motos na família
         FE_PESS, # Fator de expansão da pessoa
         NO_MORAF, # Número de moradores da família
         VL_REN_I, # Renda Individual
@@ -136,6 +140,8 @@ od_2023_filtrada <- od_2023 |>
         ID_PESS, # Identificação da pessoa
         IDADE,
         SEXO,
+        QT_AUTO, # Quantidade de automóveis na família
+        QT_MOTO, # Quantidade de motos na família
         FE_PESS, # Fator de expansão da pessoa
         NO_MORAF, # Número de moradores da família
         VL_REN_I, # Renda Individual
@@ -755,6 +761,8 @@ od_grupos_sf <- od_grupos_sf |>
         CD_ATIVI = first(CD_ATIVI),
         RENDA_FA = first(RENDA_FA),
         FE_PESS = first(FE_PESS),
+        QT_AUTO = first(QT_AUTO),
+        QT_MOTO = first(QT_MOTO),
         TIPVG = first(TIPVG),
         ZONA_O = first(ZONA_O),
         viaja = ifelse(all(is.na(MODOPRIN)), 0, 1),

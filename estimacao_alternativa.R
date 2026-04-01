@@ -519,6 +519,11 @@ base_robustez_linhas <- od_completa |>
     GRAU_INS,
     CD_ATIVI,
     ln_renda_f,
+    renda_fa_p,
+    RENDA_FA_D,
+    NO_MORAF,
+    QT_AUTO,
+    QT_MOTO,
     declarou_r,
     FE_PESS,
     viaja,
@@ -883,6 +888,11 @@ etable(event_study_linhas_metro_robust_8)
 
 ### Obtendo tanto o y médio pré-tratamento faltante quanto os efeitos relativos para as novas estimações ###
 
+y_pre_linhas_metro_2 <- base_robustez_linhas |>
+  filter(tratamento2 == 1 & ano == 2017) |>
+  summarise(media_pre = round(mean(metro, na.rm = TRUE), 4)) |>
+  pull(media_pre)
+
 efeitos_relativos_1 <- function(estimacao, y_pre) {
   coef <- round(coef(estimacao)['ano::2023:tratamento'], 4)
 
@@ -992,5 +1002,267 @@ tabela_result_es_robustez_latex <- etable(
   extralines = lista_extra_completa_robustez
 )
 
-
 print(tabela_result_es_robustez_latex)
+
+##### Fazendo Estimações de Heterogeneidade #####
+
+#### Heterogeneidade por sexo ####
+
+base_robustez_linhas_fem <- base_robustez_linhas |>
+  filter(SEXO == "Feminino")
+
+base_robustez_linhas_masc <- base_robustez_linhas |>
+  filter(SEXO == "Masculino")
+
+event_study_linhas_metro_fem <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_robustez_linhas_fem,
+  cluster = ~ZMC,
+)
+
+etable(event_study_linhas_metro_fem)
+
+event_study_linhas_metro_masc <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_robustez_linhas_masc,
+  cluster = ~ZMC,
+)
+
+etable(event_study_linhas_metro_masc)
+
+#### Heterogeneidade por renda ####
+
+base_robustez_linhas_renda <- base_robustez_linhas |>
+  mutate(
+    mediana_renda = median(renda_fa_p, na.rm = TRUE)
+  ) |>
+  filter(renda_fa_p <= mediana_renda)
+
+event_study_linhas_metro_renda <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_robustez_linhas_renda,
+  cluster = ~ZMC,
+)
+
+etable(event_study_linhas_metro_renda)
+
+#### Heterogeneidade por idade ####
+
+base_robustez_linhas_jovem <- base_robustez_linhas |>
+  filter(IDADE <= 24)
+
+base_robustez_linhas_adulto <- base_robustez_linhas |>
+  filter(IDADE > 24 & IDADE <= 59)
+
+event_study_linhas_metro_jovem <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_robustez_linhas_jovem,
+  cluster = ~ZMC,
+)
+
+etable(event_study_linhas_metro_jovem)
+
+event_study_linhas_metro_adulto <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_robustez_linhas_adulto,
+  cluster = ~ZMC,
+)
+
+etable(event_study_linhas_metro_adulto)
+
+#### Heterogeneidade por ocupação ####
+
+base_robustez_linhas_estudante <- base_robustez_linhas |>
+  filter(CD_ATIVI == 'Estudante')
+
+base_robustez_linhas_trabalhador <- base_robustez_linhas |>
+  filter(declarou_r == 1)
+
+event_study_linhas_metro_estudante <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_robustez_linhas_estudante,
+  cluster = ~ZMC,
+)
+
+etable(event_study_linhas_metro_estudante)
+
+event_study_linhas_metro_trabalhador <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_robustez_linhas_trabalhador,
+  cluster = ~ZMC,
+)
+
+etable(event_study_linhas_metro_trabalhador)
+
+#### Heterogeneidade por veículos ####
+
+base_robustez_linhas_sem_veic <- base_robustez_linhas |>
+  filter(QT_AUTO == 0 & QT_MOTO == 0)
+
+base_robustez_linhas_com_veic <- base_robustez_linhas |>
+  filter(QT_AUTO > 0 | QT_MOTO > 0)
+
+event_study_linhas_metro_sem_veic <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_robustez_linhas_sem_veic,
+  cluster = ~ZMC,
+)
+
+etable(event_study_linhas_metro_sem_veic)
+
+event_study_linhas_metro_com_veic <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_robustez_linhas_com_veic,
+  cluster = ~ZMC,
+)
+
+etable(event_study_linhas_metro_com_veic)
+
+#### Organizando os resultados de heterogeneidade ####
+
+efeito_relativo_linhas_metro_fem <- efeitos_relativos_1(
+  event_study_linhas_metro_fem,
+  y_pre_linhas_metro
+)
+
+efeito_relativo_linhas_metro_masc <- efeitos_relativos_1(
+  event_study_linhas_metro_masc,
+  y_pre_linhas_metro
+)
+
+efeito_relativo_linhas_metro_renda <- efeitos_relativos_1(
+  event_study_linhas_metro_renda,
+  y_pre_linhas_metro
+)
+
+efeito_relativo_linhas_metro_jovem <- efeitos_relativos_1(
+  event_study_linhas_metro_jovem,
+  y_pre_linhas_metro
+)
+
+efeito_relativo_linhas_metro_adulto <- efeitos_relativos_1(
+  event_study_linhas_metro_adulto,
+  y_pre_linhas_metro
+)
+
+efeito_relativo_linhas_metro_estudante <- efeitos_relativos_1(
+  event_study_linhas_metro_estudante,
+  y_pre_linhas_metro
+)
+
+efeito_relativo_linhas_metro_trabalhador <- efeitos_relativos_1(
+  event_study_linhas_metro_trabalhador,
+  y_pre_linhas_metro
+)
+
+efeito_relativo_linhas_metro_sem_veic <- efeitos_relativos_1(
+  event_study_linhas_metro_sem_veic,
+  y_pre_linhas_metro
+)
+
+efeito_relativo_linhas_metro_com_veic <- efeitos_relativos_1(
+  event_study_linhas_metro_com_veic,
+  y_pre_linhas_metro
+)
+
+lista_heterogeneidade <- list(
+  'Sexo - Feminino' = event_study_linhas_metro_fem,
+  'Sexo - Masculino' = event_study_linhas_metro_masc,
+  'Renda - Abaixo da Mediana' = event_study_linhas_metro_renda,
+  'Idade - Jovem (<=24 anos)' = event_study_linhas_metro_jovem,
+  'Idade - Adulto (25-59 anos)' = event_study_linhas_metro_adulto,
+  'Ocupação - Estudante' = event_study_linhas_metro_estudante,
+  'Ocupação - Trabalhador' = event_study_linhas_metro_trabalhador,
+  'Veículos - Sem Veículos' = event_study_linhas_metro_sem_veic,
+  'Veículos - Com Veículos' = event_study_linhas_metro_com_veic
+)
+
+lista_extra_heterogeneidade <- list(
+  "Média Pré-Tratamento sobre Tratados" = c(
+    y_pre_linhas_metro,
+    y_pre_linhas_metro,
+    y_pre_linhas_metro,
+    y_pre_linhas_metro,
+    y_pre_linhas_metro,
+    y_pre_linhas_metro,
+    y_pre_linhas_metro,
+    y_pre_linhas_metro,
+    y_pre_linhas_metro
+  ),
+  "Efeito relativo (%)" = c(
+    efeito_relativo_linhas_metro_fem,
+    efeito_relativo_linhas_metro_masc,
+    efeito_relativo_linhas_metro_renda,
+    efeito_relativo_linhas_metro_jovem,
+    efeito_relativo_linhas_metro_adulto,
+    efeito_relativo_linhas_metro_estudante,
+    efeito_relativo_linhas_metro_trabalhador,
+    efeito_relativo_linhas_metro_sem_veic,
+    efeito_relativo_linhas_metro_com_veic
+  )
+)
+
+tabela_result_es_heterogeneidade <- etable(
+  lista_heterogeneidade,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados para a utilização do Metrô - Event Study - Grupo de Controle Linhas Futuras',
+  extralines = lista_extra_heterogeneidade
+)
+
+tabela_result_es_heterogeneidade_latex <- etable(
+  lista_heterogeneidade,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados para a utilização do Metrô - Event Study - Grupo de Controle Linhas Futuras',
+  extralines = lista_extra_heterogeneidade
+)
+
+print(tabela_result_es_heterogeneidade_latex)

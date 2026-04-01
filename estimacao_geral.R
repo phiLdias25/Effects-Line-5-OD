@@ -649,7 +649,7 @@ tabela_result_es_linhas_latex <- etable(
 
 func_y_medio_pre <- function(variavel) {
   media_pre <- base_reg_linhas |>
-    filter(tratamento == 1 & ano < 2018) |>
+    filter(tratamento == 1 & ano == 2017) |>
     summarise(media_pre = round(mean({{ variavel }}, na.rm = TRUE), 4))
 
   return(media_pre)
