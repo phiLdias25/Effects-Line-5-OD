@@ -384,17 +384,16 @@ print(tabela_result_es_inicial_latex)
 
 ##### Criando tabela completa dos resultados para o grupo de controle Linhas Futuras #####
 
-lista_original <- readRDS("lista_modelos_originais.rds")
+lista_original_linhas <- readRDS("lista_modelos_originais.rds")
 
 lista_completa_linhas <- list(
-  'Indicador Destino' = lista_original$`Destino Centro Expandido`,
-  'Viagem Geral' = lista_original$`Viagem Geral`,
-  'Trabalho' = lista_original$`Trabalho Centro Expandido`,
-  'Educação' = lista_original$`Educação Centro Expandido`,
-  'Buscar Emprego' = lista_original$`Buscar Emprego Centro Expandido`,
-  'Trab/Educ/Emp' = lista_original$`Trabalho ou Educação ou Buscar Emprego Centro Expandido`,
-  'Laz/Comp/Saúde' = lista_original$`Lazer ou Compras ou Saúde Centro Expandido`,
-
+  'Indicador Destino' = lista_original_linhas$`Destino Centro Expandido`,
+  'Viagem Geral' = lista_original_linhas$`Viagem Geral`,
+  'Trabalho' = lista_original_linhas$`Trabalho Centro Expandido`,
+  'Educação' = lista_original_linhas$`Educação Centro Expandido`,
+  'Buscar Emprego' = lista_original_linhas$`Buscar Emprego Centro Expandido`,
+  'Trab/Educ/Emp' = lista_original_linhas$`Trabalho ou Educação ou Buscar Emprego Centro Expandido`,
+  'Laz/Comp/Saúde' = lista_original_linhas$`Lazer ou Compras ou Saúde Centro Expandido`,
   'Metrô' = event_study_linhas_metro,
   'Ônibus' = event_study_linhas_onibus,
   'Carro' = event_study_linhas_carro
@@ -403,19 +402,19 @@ lista_completa_linhas <- list(
 
 lista_extra_completa <- list(
   "Média Pré-Tratamento sobre Tratados" = c(
-    lista_original$`Média Pré-Tratamento`[1],
-    lista_original$`Média Pré-Tratamento`[2],
-    lista_original$`Média Pré-Tratamento`[3],
-    lista_original$`Média Pré-Tratamento`[4],
-    lista_original$`Média Pré-Tratamento`[8],
-    lista_original$`Média Pré-Tratamento`[9],
-    lista_original$`Média Pré-Tratamento`[12],
+    lista_original_linhas$`Média Pré-Tratamento`[1],
+    lista_original_linhas$`Média Pré-Tratamento`[2],
+    lista_original_linhas$`Média Pré-Tratamento`[3],
+    lista_original_linhas$`Média Pré-Tratamento`[4],
+    lista_original_linhas$`Média Pré-Tratamento`[8],
+    lista_original_linhas$`Média Pré-Tratamento`[9],
+    lista_original_linhas$`Média Pré-Tratamento`[12],
     y_medio_pre_linhas_metro$media_pre,
     y_medio_pre_linhas_onibus$media_pre,
     y_medio_pre_linhas_carro$media_pre
   ),
   "Efeito relativo (%)" = c(
-    lista_original[[9]][c(1, 2, 3, 4, 8, 9, 12)],
+    lista_original_linhas[[9]][c(1, 2, 3, 4, 8, 9, 12)],
     efeito_relativo_linhas_metro,
     efeito_relativo_linhas_onibus,
     efeito_relativo_linhas_carro
@@ -441,6 +440,124 @@ tabela_result_es_latex <- etable(
 )
 
 print(tabela_result_es_latex)
+
+##### Criando tabela completa dos resultados para o grupo de controle CPTM #####
+
+lista_original_cptm <- readRDS("lista_modelos_originais_cptm.rds")
+
+lista_completa_cptm <- list(
+  'Indicador Destino' = lista_original_cptm$`Destino Centro Expandido`,
+  'Viagem Geral' = lista_original_cptm$`Viagem Geral`,
+  'Trabalho' = lista_original_cptm$`Trabalho Centro Expandido`,
+  'Educação' = lista_original_cptm$`Educação Centro Expandido`,
+  'Buscar Emprego' = lista_original_cptm$`Buscar Emprego Centro Expandido`,
+  'Trab/Educ/Emp' = lista_original_cptm$`Trabalho ou Educação ou Buscar Emprego Centro Expandido`,
+  'Laz/Comp/Saúde' = lista_original_cptm$`Lazer ou Compras ou Saúde Centro Expandido`,
+  'Metrô' = event_study_cptm_metro,
+  'Ônibus' = event_study_cptm_onibus,
+  'Carro' = event_study_cptm_carro
+)
+
+
+lista_extra_completa <- list(
+  "Média Pré-Tratamento sobre Tratados" = c(
+    lista_original_cptm$`Média Pré-Tratamento`[1],
+    lista_original_cptm$`Média Pré-Tratamento`[2],
+    lista_original_cptm$`Média Pré-Tratamento`[3],
+    lista_original_cptm$`Média Pré-Tratamento`[4],
+    lista_original_cptm$`Média Pré-Tratamento`[8],
+    lista_original_cptm$`Média Pré-Tratamento`[9],
+    lista_original_cptm$`Média Pré-Tratamento`[12],
+    y_medio_pre_cptm_metro$media_pre,
+    y_medio_pre_cptm_onibus$media_pre,
+    y_medio_pre_cptm_carro$media_pre
+  ),
+  "Efeito relativo (%)" = c(
+    lista_original_cptm[[9]][c(1, 2, 3, 4, 8, 9, 12)],
+    efeito_relativo_cptm_metro,
+    efeito_relativo_cptm_onibus,
+    efeito_relativo_cptm_carro
+  )
+)
+
+tabela_result_es_cptm <- etable(
+  lista_completa_cptm,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados para a utilização do Metrô - Event Study - Grupo de Controle CPTM',
+  extralines = lista_extra_completa
+)
+
+tabela_result_es_cptm_latex <- etable(
+  lista_completa_cptm,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados para a utilização do Metrô - Event Study - Grupo de Controle CPTM',
+  extralines = lista_extra_completa
+)
+
+print(tabela_result_es_cptm_latex)
+
+##### Criando tabela completa dos resultados para o grupo de controle pareado #####
+
+lista_original_match <- readRDS("lista_modelos_originais_match.rds")
+
+lista_completa_match <- list(
+  'Indicador Destino' = lista_original_match$`Destino Centro Expandido`,
+  'Viagem Geral' = lista_original_match$`Viagem Geral`,
+  'Trabalho' = lista_original_match$`Trabalho Centro Expandido`,
+  'Educação' = lista_original_match$`Educação Centro Expandido`,
+  'Buscar Emprego' = lista_original_match$`Buscar Emprego Centro Expandido`,
+  'Trab/Educ/Emp' = lista_original_match$`Trabalho ou Educação ou Buscar Emprego Centro Expandido`,
+  'Laz/Comp/Saúde' = lista_original_match$`Lazer ou Compras ou Saúde Centro Expandido`,
+  'Metrô' = event_study_matching_metro,
+  'Ônibus' = event_study_matching_onibus,
+  'Carro' = event_study_matching_carro
+)
+
+
+lista_extra_completa <- list(
+  "Média Pré-Tratamento sobre Tratados" = c(
+    lista_original_match$`Média Pré-Tratamento`[1],
+    lista_original_match$`Média Pré-Tratamento`[2],
+    lista_original_match$`Média Pré-Tratamento`[3],
+    lista_original_match$`Média Pré-Tratamento`[4],
+    lista_original_match$`Média Pré-Tratamento`[8],
+    lista_original_match$`Média Pré-Tratamento`[9],
+    lista_original_match$`Média Pré-Tratamento`[12],
+    y_medio_pre_match_metro$media_pre,
+    y_medio_pre_match_onibus$media_pre,
+    y_medio_pre_match_carro$media_pre
+  ),
+  "Efeito relativo (%)" = c(
+    lista_original_match[[9]][c(1, 2, 3, 4, 8, 9, 12)],
+    efeito_relativo_match_metro,
+    efeito_relativo_match_onibus,
+    efeito_relativo_match_carro
+  )
+)
+
+tabela_result_es_match <- etable(
+  lista_completa_match,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados para a utilização do Metrô - Event Study - Grupo de Controle Pareado',
+  extralines = lista_extra_completa
+)
+
+tabela_result_es_match_latex <- etable(
+  lista_completa_match,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados para a utilização do Metrô - Event Study - Grupo de Controle Pareado',
+  extralines = lista_extra_completa
+)
+
+print(tabela_result_es_match_latex)
 
 ###### ANÁLISES DE ROBUSTEZ ######
 
@@ -1004,7 +1121,7 @@ tabela_result_es_robustez_latex <- etable(
 
 print(tabela_result_es_robustez_latex)
 
-##### Fazendo Estimações de Heterogeneidade #####
+##### Fazendo Estimações de Heterogeneidade - Linhas Futuras #####
 
 #### Heterogeneidade por sexo ####
 
@@ -1266,3 +1383,523 @@ tabela_result_es_heterogeneidade_latex <- etable(
 )
 
 print(tabela_result_es_heterogeneidade_latex)
+
+##### Fazendo Estimações de Heterogeneidade - CPTM #####
+
+#### Heterogeneidade por sexo ####
+
+base_cptm_fem <- base_cptm |>
+  filter(SEXO == "Feminino")
+
+base_cptm_masc <- base_cptm |>
+  filter(SEXO == "Masculino")
+
+event_study_cptm_metro_fem <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_cptm_fem,
+  cluster = ~ZMC,
+)
+
+etable(event_study_cptm_metro_fem)
+
+event_study_cptm_metro_masc <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_cptm_masc,
+  cluster = ~ZMC,
+)
+
+etable(event_study_cptm_metro_masc)
+
+#### Heterogeneidade por renda ####
+
+base_cptm_renda <- base_cptm |>
+  mutate(
+    mediana_renda = median(renda_fa_p, na.rm = TRUE)
+  ) |>
+  filter(renda_fa_p <= mediana_renda)
+
+event_study_cptm_metro_renda <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_cptm_renda,
+  cluster = ~ZMC,
+)
+
+etable(event_study_cptm_metro_renda)
+
+#### Heterogeneidade por idade ####
+
+base_cptm_jovem <- base_cptm |>
+  filter(IDADE <= 24)
+
+base_cptm_adulto <- base_cptm |>
+  filter(IDADE > 24 & IDADE <= 59)
+
+event_study_cptm_metro_jovem <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_cptm_jovem,
+  cluster = ~ZMC,
+)
+
+etable(event_study_cptm_metro_jovem)
+
+event_study_cptm_metro_adulto <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_cptm_adulto,
+  cluster = ~ZMC,
+)
+
+etable(event_study_cptm_metro_adulto)
+
+#### Heterogeneidade por ocupação ####
+
+base_cptm_estudante <- base_cptm |>
+  filter(CD_ATIVI == 'Estudante')
+
+base_cptm_trabalhador <- base_cptm |>
+  filter(declarou_r == 1)
+
+event_study_cptm_metro_estudante <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS |
+    ZMC + ano,
+  data = base_cptm_estudante,
+  cluster = ~ZMC,
+)
+
+etable(event_study_cptm_metro_estudante)
+
+event_study_cptm_metro_trabalhador <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_cptm_trabalhador,
+  cluster = ~ZMC,
+)
+
+etable(event_study_cptm_metro_trabalhador)
+
+#### Heterogeneidade por veículos ####
+
+base_cptm_sem_veic <- base_cptm |>
+  filter(QT_AUTO == 0 & QT_MOTO == 0)
+
+base_cptm_com_veic <- base_cptm |>
+  filter(QT_AUTO > 0 | QT_MOTO > 0)
+
+event_study_cptm_metro_sem_veic <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_cptm_sem_veic,
+  cluster = ~ZMC,
+)
+
+etable(event_study_cptm_metro_sem_veic)
+
+event_study_cptm_metro_com_veic <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_cptm_com_veic,
+  cluster = ~ZMC,
+)
+
+etable(event_study_cptm_metro_com_veic)
+
+#### Organizando os resultados de heterogeneidade ####
+
+efeito_relativo_cptm_metro_fem <- efeitos_relativos_1(
+  event_study_cptm_metro_fem,
+  y_pre_cptm_metro
+)
+
+efeito_relativo_cptm_metro_masc <- efeitos_relativos_1(
+  event_study_cptm_metro_masc,
+  y_pre_cptm_metro
+)
+
+efeito_relativo_cptm_metro_renda <- efeitos_relativos_1(
+  event_study_cptm_metro_renda,
+  y_pre_cptm_metro
+)
+
+efeito_relativo_cptm_metro_jovem <- efeitos_relativos_1(
+  event_study_cptm_metro_jovem,
+  y_pre_cptm_metro
+)
+
+efeito_relativo_cptm_metro_adulto <- efeitos_relativos_1(
+  event_study_cptm_metro_adulto,
+  y_pre_cptm_metro
+)
+
+efeito_relativo_cptm_metro_estudante <- efeitos_relativos_1(
+  event_study_cptm_metro_estudante,
+  y_pre_cptm_metro
+)
+
+efeito_relativo_cptm_metro_trabalhador <- efeitos_relativos_1(
+  event_study_cptm_metro_trabalhador,
+  y_pre_cptm_metro
+)
+
+efeito_relativo_cptm_metro_sem_veic <- efeitos_relativos_1(
+  event_study_cptm_metro_sem_veic,
+  y_pre_cptm_metro
+)
+
+efeito_relativo_cptm_metro_com_veic <- efeitos_relativos_1(
+  event_study_cptm_metro_com_veic,
+  y_pre_cptm_metro
+)
+
+lista_heterogeneidade_cptm <- list(
+  'Sexo - Feminino' = event_study_cptm_metro_fem,
+  'Sexo - Masculino' = event_study_cptm_metro_masc,
+  'Renda - Abaixo da Mediana' = event_study_cptm_metro_renda,
+  'Idade - Jovem (<=24 anos)' = event_study_cptm_metro_jovem,
+  'Idade - Adulto (25-59 anos)' = event_study_cptm_metro_adulto,
+  'Ocupação - Estudante' = event_study_cptm_metro_estudante,
+  'Ocupação - Trabalhador' = event_study_cptm_metro_trabalhador,
+  'Veículos - Sem Veículos' = event_study_cptm_metro_sem_veic,
+  'Veículos - Com Veículos' = event_study_cptm_metro_com_veic
+)
+
+lista_extra_heterogeneidade_cptm <- list(
+  "Média Pré-Tratamento sobre Tratados" = c(
+    y_pre_cptm_metro,
+    y_pre_cptm_metro,
+    y_pre_cptm_metro,
+    y_pre_cptm_metro,
+    y_pre_cptm_metro,
+    y_pre_cptm_metro,
+    y_pre_cptm_metro,
+    y_pre_cptm_metro,
+    y_pre_cptm_metro
+  ),
+  "Efeito relativo (%)" = c(
+    efeito_relativo_cptm_metro_fem,
+    efeito_relativo_cptm_metro_masc,
+    efeito_relativo_cptm_metro_renda,
+    efeito_relativo_cptm_metro_jovem,
+    efeito_relativo_cptm_metro_adulto,
+    efeito_relativo_cptm_metro_estudante,
+    efeito_relativo_cptm_metro_trabalhador,
+    efeito_relativo_cptm_metro_sem_veic,
+    efeito_relativo_cptm_metro_com_veic
+  )
+)
+
+tabela_result_es_cptm_heterogeneidade <- etable(
+  lista_heterogeneidade_cptm,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados para a utilização do Metrô - Event Study - Grupo de Controle CPTM',
+  extralines = lista_extra_heterogeneidade_cptm
+)
+
+tabela_result_es_cptm_heterogeneidade_latex <- etable(
+  lista_heterogeneidade_cptm,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados para a utilização do Metrô - Event Study - Grupo de Controle CPTM',
+  extralines = lista_extra_heterogeneidade_cptm
+)
+
+print(tabela_result_es_cptm_heterogeneidade_latex)
+
+##### Fazendo Estimações de Heterogeneidade - Pareado #####
+
+#### Heterogeneidade por sexo ####
+
+base_match_fem <- base_matching |>
+  filter(SEXO == "Feminino")
+
+base_match_masc <- base_matching |>
+  filter(SEXO == "Masculino")
+
+event_study_match_metro_fem <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_match_fem,
+  cluster = ~ZMC,
+)
+
+etable(event_study_match_metro_fem)
+
+event_study_match_metro_masc <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_match_masc,
+  cluster = ~ZMC,
+)
+
+etable(event_study_match_metro_masc)
+
+#### Heterogeneidade por renda ####
+
+base_match_renda <- base_matching |>
+  mutate(
+    mediana_renda = median(renda_fa_p, na.rm = TRUE)
+  ) |>
+  filter(renda_fa_p <= mediana_renda)
+
+event_study_match_metro_renda <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_match_renda,
+  cluster = ~ZMC,
+)
+
+etable(event_study_match_metro_renda)
+
+#### Heterogeneidade por idade ####
+
+base_match_jovem <- base_matching |>
+  filter(IDADE <= 24)
+
+base_match_adulto <- base_matching |>
+  filter(IDADE > 24 & IDADE <= 59)
+
+event_study_match_metro_jovem <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_match_jovem,
+  cluster = ~ZMC,
+)
+
+etable(event_study_match_metro_jovem)
+
+event_study_match_metro_adulto <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_match_adulto,
+  cluster = ~ZMC,
+)
+
+etable(event_study_match_metro_adulto)
+
+#### Heterogeneidade por ocupação ####
+
+base_match_estudante <- base_matching |>
+  filter(CD_ATIVI == 'Estudante')
+
+base_match_trabalhador <- base_matching |>
+  filter(declarou_r == 1)
+
+event_study_match_metro_estudante <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS |
+    ZMC + ano,
+  data = base_match_estudante,
+  cluster = ~ZMC,
+)
+
+etable(event_study_match_metro_estudante)
+
+event_study_match_metro_trabalhador <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_match_trabalhador,
+  cluster = ~ZMC,
+)
+
+etable(event_study_match_metro_trabalhador)
+
+#### Heterogeneidade por veículos ####
+
+base_match_sem_veic <- base_matching |>
+  filter(QT_AUTO == 0 & QT_MOTO == 0)
+
+base_match_com_veic <- base_matching |>
+  filter(QT_AUTO > 0 | QT_MOTO > 0)
+
+event_study_match_metro_sem_veic <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_match_sem_veic,
+  cluster = ~ZMC,
+)
+
+etable(event_study_match_metro_sem_veic)
+
+event_study_match_metro_com_veic <- feols(
+  metro ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_match_com_veic,
+  cluster = ~ZMC,
+)
+
+etable(event_study_match_metro_com_veic)
+
+#### Organizando os resultados de heterogeneidade ####
+
+efeito_relativo_match_metro_fem <- efeitos_relativos_1(
+  event_study_match_metro_fem,
+  y_pre_match_metro
+)
+
+efeito_relativo_match_metro_masc <- efeitos_relativos_1(
+  event_study_match_metro_masc,
+  y_pre_match_metro
+)
+
+efeito_relativo_match_metro_renda <- efeitos_relativos_1(
+  event_study_match_metro_renda,
+  y_pre_match_metro
+)
+
+efeito_relativo_match_metro_jovem <- efeitos_relativos_1(
+  event_study_match_metro_jovem,
+  y_pre_match_metro
+)
+
+efeito_relativo_match_metro_adulto <- efeitos_relativos_1(
+  event_study_match_metro_adulto,
+  y_pre_match_metro
+)
+
+efeito_relativo_match_metro_estudante <- efeitos_relativos_1(
+  event_study_match_metro_estudante,
+  y_pre_match_metro
+)
+
+efeito_relativo_match_metro_trabalhador <- efeitos_relativos_1(
+  event_study_match_metro_trabalhador,
+  y_pre_match_metro
+)
+
+efeito_relativo_match_metro_sem_veic <- efeitos_relativos_1(
+  event_study_match_metro_sem_veic,
+  y_pre_match_metro
+)
+
+efeito_relativo_match_metro_com_veic <- efeitos_relativos_1(
+  event_study_match_metro_com_veic,
+  y_pre_match_metro
+)
+
+lista_heterogeneidade_match <- list(
+  'Sexo - Feminino' = event_study_match_metro_fem,
+  'Sexo - Masculino' = event_study_match_metro_masc,
+  'Renda - Abaixo da Mediana' = event_study_match_metro_renda,
+  'Idade - Jovem (<=24 anos)' = event_study_match_metro_jovem,
+  'Idade - Adulto (25-59 anos)' = event_study_match_metro_adulto,
+  'Ocupação - Estudante' = event_study_match_metro_estudante,
+  'Ocupação - Trabalhador' = event_study_match_metro_trabalhador,
+  'Veículos - Sem Veículos' = event_study_match_metro_sem_veic,
+  'Veículos - Com Veículos' = event_study_match_metro_com_veic
+)
+
+lista_extra_heterogeneidade_match <- list(
+  "Média Pré-Tratamento sobre Tratados" = c(
+    y_pre_match_metro,
+    y_pre_match_metro,
+    y_pre_match_metro,
+    y_pre_match_metro,
+    y_pre_match_metro,
+    y_pre_match_metro,
+    y_pre_match_metro,
+    y_pre_match_metro,
+    y_pre_match_metro
+  ),
+  "Efeito relativo (%)" = c(
+    efeito_relativo_match_metro_fem,
+    efeito_relativo_match_metro_masc,
+    efeito_relativo_match_metro_renda,
+    efeito_relativo_match_metro_jovem,
+    efeito_relativo_match_metro_adulto,
+    efeito_relativo_match_metro_estudante,
+    efeito_relativo_match_metro_trabalhador,
+    efeito_relativo_match_metro_sem_veic,
+    efeito_relativo_match_metro_com_veic
+  )
+)
+
+tabela_result_es_match_heterogeneidade <- etable(
+  lista_heterogeneidade_match,
+  tex = FALSE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados para a utilização do Metrô - Event Study - Grupo de Controle Pareado',
+  extralines = lista_extra_heterogeneidade_match
+)
+
+tabela_result_es_match_heterogeneidade_latex <- etable(
+  lista_heterogeneidade_match,
+  tex = TRUE,
+  signif.code = c('***' = 0.01, '**' = 0.05, '*' = 0.1),
+  headers = 'auto',
+  title = 'Resultados para a utilização do Metrô - Event Study - Grupo de Controle Pareado',
+  extralines = lista_extra_heterogeneidade_match
+)
+
+print(tabela_result_es_match_heterogeneidade_latex)

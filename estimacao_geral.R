@@ -647,21 +647,21 @@ tabela_result_es_linhas_latex <- etable(
 
 #### Obtendo os resultados pré tratamento e os efeitos relativos para cada Event Study ####
 
-func_y_medio_pre <- function(variavel) {
-  media_pre <- base_reg_linhas |>
+func_y_medio_pre <- function(base, variavel) {
+  media_pre <- base |>
     filter(tratamento == 1 & ano == 2017) |>
     summarise(media_pre = round(mean({{ variavel }}, na.rm = TRUE), 4))
 
   return(media_pre)
 }
 
-y_medio_pre_indic <- func_y_medio_pre(indic_dest)
-y_medio_pre_viaja <- func_y_medio_pre(viaja)
-y_medio_pre_trab <- func_y_medio_pre(trab_cen)
-y_medio_pre_educ <- func_y_medio_pre(educ_cen)
-y_medio_pre_emp <- func_y_medio_pre(emp_cen)
-y_medio_pre_trabeducem <- func_y_medio_pre(trabeducem)
-y_medio_pre_lazcompsa <- func_y_medio_pre(lazcompsa)
+y_medio_pre_indic <- func_y_medio_pre(base_reg_linhas, indic_dest)
+y_medio_pre_viaja <- func_y_medio_pre(base_reg_linhas, viaja)
+y_medio_pre_trab <- func_y_medio_pre(base_reg_linhas, trab_cen)
+y_medio_pre_educ <- func_y_medio_pre(base_reg_linhas, educ_cen)
+y_medio_pre_emp <- func_y_medio_pre(base_reg_linhas, emp_cen)
+y_medio_pre_trabeducem <- func_y_medio_pre(base_reg_linhas, trabeducem)
+y_medio_pre_lazcompsa <- func_y_medio_pre(base_reg_linhas, lazcompsa)
 
 func_efeito_relativo <- function(estimacao, media_pre) {
   y_pre <- media_pre |>
@@ -901,6 +901,20 @@ event_study_cptm_dest <- feols(
 
 etable(event_study_cptm_dest)
 
+event_study_cptm_viaja <- feols(
+  viaja ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_reg_cptm,
+
+  cluster = ~ZMC
+)
+
+etable(event_study_cptm_viaja)
+
 event_study_cptm_trab <- feols(
   trab_cen ~
     i(ano, tratamento, ref = 2017) +
@@ -1104,6 +1118,7 @@ tabela_result_did_cptm_latex <- etable(
 
 lista_event_study_cptm <- list(
   'Destino Centro Expandido' = event_study_cptm_dest,
+  'Viagem Geral' = event_study_cptm_viaja,
   'Trabalho Centro Expandido' = event_study_cptm_trab,
   'Educação Centro Expandido' = event_study_cptm_educ,
   'Saúde Centro Expandido' = event_study_cptm_saude,
@@ -1132,6 +1147,87 @@ tabela_result_es_cptm_latex <- etable(
   headers = 'auto',
   title = 'Resultados - Event Study - Grupo de Controle CPTM'
 )
+
+#### Obtendo os resultados pré tratamento e os efeitos relativos para cada Event Study ####
+
+y_medio_pre_indic_cptm <- func_y_medio_pre(base_reg_cptm, indic_dest)
+y_medio_pre_viaja_cptm <- func_y_medio_pre(base_reg_cptm, viaja)
+y_medio_pre_trab_cptm <- func_y_medio_pre(base_reg_cptm, trab_cen)
+y_medio_pre_educ_cptm <- func_y_medio_pre(base_reg_cptm, educ_cen)
+y_medio_pre_emp_cptm <- func_y_medio_pre(base_reg_cptm, emp_cen)
+y_medio_pre_trabeducem_cptm <- func_y_medio_pre(base_reg_cptm, trabeducem)
+y_medio_pre_lazcompsa_cptm <- func_y_medio_pre(base_reg_cptm, lazcompsa)
+
+ef_relat_indic_cptm <- func_efeito_relativo(
+  event_study_cptm_dest,
+  y_medio_pre_indic_cptm
+)
+ef_relat_viaja_cptm <- func_efeito_relativo(
+  event_study_cptm_viaja,
+  y_medio_pre_viaja_cptm
+)
+ef_relat_trab_cptm <- func_efeito_relativo(
+  event_study_cptm_trab,
+  y_medio_pre_trab_cptm
+)
+ef_relat_educ_cptm <- func_efeito_relativo(
+  event_study_cptm_educ,
+  y_medio_pre_educ_cptm
+)
+ef_relat_emp_cptm <- func_efeito_relativo(
+  event_study_cptm_emp,
+  y_medio_pre_emp_cptm
+)
+ef_relat_trabeducem_cptm <- func_efeito_relativo(
+  event_study_cptm_trabeducem,
+  y_medio_pre_trabeducem_cptm
+)
+ef_relat_lazcompsa_cptm <- func_efeito_relativo(
+  event_study_cptm_lazcompsa,
+  y_medio_pre_lazcompsa_cptm
+)
+
+cptm_completa <- list(
+  'Destino Centro Expandido' = event_study_cptm_dest,
+  'Viagem Geral' = event_study_cptm_viaja,
+  'Trabalho Centro Expandido' = event_study_cptm_trab,
+  'Educação Centro Expandido' = event_study_cptm_educ,
+  'Buscar Emprego Centro Expandido' = event_study_cptm_emp,
+  'Trabalho ou Educação ou Buscar Emprego Centro Expandido' = event_study_cptm_trabeducem,
+  'Lazer ou Compras ou Saúde Centro Expandido' = event_study_cptm_lazcompsa,
+  'Média Pré-Tratamento' = c(
+    y_medio_pre_indic_cptm$media_pre,
+    y_medio_pre_viaja_cptm$media_pre,
+    y_medio_pre_trab_cptm$media_pre,
+    y_medio_pre_educ_cptm$media_pre,
+    NA,
+    NA,
+    NA,
+    y_medio_pre_emp_cptm$media_pre,
+    y_medio_pre_trabeducem_cptm$media_pre,
+    NA,
+    NA,
+    y_medio_pre_lazcompsa_cptm$media_pre,
+    NA
+  ),
+  'Efeito Relativo (%)' = c(
+    ef_relat_indic_cptm,
+    ef_relat_viaja_cptm,
+    ef_relat_trab_cptm,
+    ef_relat_educ_cptm,
+    NA,
+    NA,
+    NA,
+    ef_relat_emp_cptm,
+    ef_relat_trabeducem_cptm,
+    NA,
+    NA,
+    ef_relat_lazcompsa_cptm,
+    NA
+  )
+)
+
+saveRDS(cptm_completa, "lista_modelos_originais_cptm.rds")
 
 ##### Criando as variáveis de pré e pós e realizando a estimação com o grupo de controle pareado #####
 
@@ -1296,6 +1392,20 @@ event_study_match_dest <- feols(
 )
 
 etable(event_study_match_dest)
+
+event_study_match_viaja <- feols(
+  viaja ~ i(ano, tratamento, ref = 2017) +
+    IDADE +
+    SEXO +
+    GRAU_INS +
+    CD_ATIVI |
+    ZMC + ano,
+  data = base_reg_matching,
+  weights = ~weights,
+  cluster = ~ZMC
+)
+
+etable(event_study_match_viaja)
 
 event_study_match_trab <- feols(
   trab_cen ~
@@ -1500,6 +1610,7 @@ tabela_result_did_match_latex <- etable(
 
 lista_event_study_match <- list(
   'Destino Centro Expandido' = event_study_match_dest,
+  'Viagem Geral' = event_study_match_viaja,
   'Trabalho Centro Expandido' = event_study_match_trab,
   'Educação Centro Expandido' = event_study_match_educ,
   'Saúde Centro Expandido' = event_study_match_saude,
@@ -1528,3 +1639,84 @@ tabela_result_es_match_latex <- etable(
   headers = 'auto',
   title = 'Resultados - Event Study - Grupo de Controle Pareado'
 )
+
+#### Obtendo os resultados pré tratamento e os efeitos relativos para cada Event Study ####
+
+y_medio_pre_indic_match <- func_y_medio_pre(base_reg_matching, indic_dest)
+y_medio_pre_viaja_match <- func_y_medio_pre(base_reg_matching, viaja)
+y_medio_pre_trab_match <- func_y_medio_pre(base_reg_matching, trab_cen)
+y_medio_pre_educ_match <- func_y_medio_pre(base_reg_matching, educ_cen)
+y_medio_pre_emp_match <- func_y_medio_pre(base_reg_matching, emp_cen)
+y_medio_pre_trabeducem_match <- func_y_medio_pre(base_reg_matching, trabeducem)
+y_medio_pre_lazcompsa_match <- func_y_medio_pre(base_reg_matching, lazcompsa)
+
+ef_relat_indic_match <- func_efeito_relativo(
+  event_study_match_dest,
+  y_medio_pre_indic_match
+)
+ef_relat_viaja_match <- func_efeito_relativo(
+  event_study_match_viaja,
+  y_medio_pre_viaja_match
+)
+ef_relat_trab_match <- func_efeito_relativo(
+  event_study_match_trab,
+  y_medio_pre_trab_match
+)
+ef_relat_educ_match <- func_efeito_relativo(
+  event_study_match_educ,
+  y_medio_pre_educ_match
+)
+ef_relat_emp_match <- func_efeito_relativo(
+  event_study_match_emp,
+  y_medio_pre_emp_match
+)
+ef_relat_trabeducem_match <- func_efeito_relativo(
+  event_study_match_trabeducem,
+  y_medio_pre_trabeducem_match
+)
+ef_relat_lazcompsa_match <- func_efeito_relativo(
+  event_study_match_lazcompsa,
+  y_medio_pre_lazcompsa_match
+)
+
+match_completa <- list(
+  'Destino Centro Expandido' = event_study_match_dest,
+  'Viagem Geral' = event_study_match_viaja,
+  'Trabalho Centro Expandido' = event_study_match_trab,
+  'Educação Centro Expandido' = event_study_match_educ,
+  'Buscar Emprego Centro Expandido' = event_study_match_emp,
+  'Trabalho ou Educação ou Buscar Emprego Centro Expandido' = event_study_match_trabeducem,
+  'Lazer ou Compras ou Saúde Centro Expandido' = event_study_match_lazcompsa,
+  'Média Pré-Tratamento' = c(
+    y_medio_pre_indic_match$media_pre,
+    y_medio_pre_viaja_match$media_pre,
+    y_medio_pre_trab_match$media_pre,
+    y_medio_pre_educ_match$media_pre,
+    NA,
+    NA,
+    NA,
+    y_medio_pre_emp_match$media_pre,
+    y_medio_pre_trabeducem_match$media_pre,
+    NA,
+    NA,
+    y_medio_pre_lazcompsa_match$media_pre,
+    NA
+  ),
+  'Efeito Relativo (%)' = c(
+    ef_relat_indic_match,
+    ef_relat_viaja_match,
+    ef_relat_trab_match,
+    ef_relat_educ_match,
+    NA,
+    NA,
+    NA,
+    ef_relat_emp_match,
+    ef_relat_trabeducem_match,
+    NA,
+    NA,
+    ef_relat_lazcompsa_match,
+    NA
+  )
+)
+
+saveRDS(match_completa, "lista_modelos_originais_match.rds")
