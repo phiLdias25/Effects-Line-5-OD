@@ -50,4 +50,5 @@ To replicate the results of this study:
 
 **Researcher:** Philipe Libretti Dias  
 **Affiliation:** University of São Paulo (USP) - FEARP/USP
+--
 If you use parts of this code or data in your research, please cite this repository or the associated working paper.
