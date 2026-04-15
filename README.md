@@ -1,4 +1,4 @@
-# The Impact of the São Paulo Metro Line 5-Lilac Integration
+# Next Station? The Impact of Subway Network Integration on Travel Behavior: Evidence from São Paulo’s Line 5 - Lilac
 
 This repository contains the data, replication scripts, and results for the research project evaluating the socio-economic impacts of the São Paulo Metro Line 5-Lilac integration on employment and education variables.
 
